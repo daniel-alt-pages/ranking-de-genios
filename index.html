@@ -6,7 +6,8 @@
     <title>Ranking de Estudiantes - Saber 11</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Agregamos la biblioteca Papa Parse para leer archivos CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -79,7 +80,7 @@
              background-color: white;
              border-radius: 1rem;
              height: 100%;
-        }
+         }
 
         .podium-1 { 
             transform: translateY(-20px);
@@ -199,6 +200,7 @@
             <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Explora y compara los resultados de nuestros estudiantes de una forma interactiva.</p>
         </header>
 
+        <!-- El contenido de la aplicación ahora es visible por defecto -->
         <main class="space-y-8">
             <!-- Podio de Honor -->
             <section>
@@ -324,9 +326,8 @@
         return `${prefix}*****${suffix}`;
     }
 
-    let studentData = [];
-    
     document.addEventListener('DOMContentLoaded', () => {
+        let studentData = []; // Los datos ahora estarán vacíos al inicio
         let state = {
             currentSort: { key: 'globalRank', direction: 'asc' },
             filteredData: [],
@@ -355,49 +356,95 @@
             areaScoreHeader: document.getElementById('area-score-header'),
         };
         
-        async function loadAndProcessData() {
-            try {
-                const response = await fetch('BD.json');
-                if (!response.ok) throw new Error('Network response was not ok');
-                const rawData = await response.json();
+        // --- LÓGICA PARA CARGAR EL ARCHIVO AUTOMÁTICAMENTE ---
+        
+        function loadInitialData() {
+            // El nombre del archivo CSV que se cargará automáticamente
+            const csvFilePath = 'BD - Hoja 1.csv';
 
-                let processedData = rawData.map((s) => ({
-                    id: s.NUMERO_DE_REGISTRO + '-' + s.NOMBRE,
-                    nombre: s.NOMBRE,
-                    registro: s.NUMERO_DE_REGISTRO,
-                    municipio: s.MUNICIPIO,
-                    puntajeGlobal: parseInt(s.PUNTAJE.split('/')[0], 10),
-                    puntajesDetallados: {
-                        lectura: s.LECTURA_CRITICA,
-                        matematicas: s.MATEMATICAS,
-                        sociales: s.SOCIALES,
-                        ciencias: s.CIENCIAS,
-                        ingles: s.INGLES,
-                    }
-                }));
-
-                processedData.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
-                processedData.forEach((student, index) => student.globalRank = index + 1);
-
-                processedData.sort((a, b) => a.puntajeGlobal - b.puntajeGlobal);
-                processedData.forEach((student, index) => student.percentil = Math.round((index / (processedData.length - 1)) * 100));
-
-                const subjects = ['lectura', 'matematicas', 'sociales', 'ciencias', 'ingles'];
-                subjects.forEach(subject => {
-                    processedData.sort((a, b) => a.puntajesDetallados[subject] - b.puntajesDetallados[subject]);
-                    processedData.forEach((student, index) => student.puntajesDetallados[subject + 'Percentil'] = Math.round((index / (processedData.length - 1)) * 100));
-                });
-                
-                return processedData;
-
-            } catch (error) {
-                console.error("Error al cargar o procesar los datos:", error);
-                elements.tableBody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-red-500">Error: No se pudo cargar el archivo BD.json. Asegúrate de que el archivo exista en la misma carpeta.</td></tr>`;
-                elements.mobileList.innerHTML = `<div class="text-center p-8 text-red-500">Error: No se pudo cargar el archivo BD.json. Asegúrate de que el archivo exista en la misma carpeta.</div>`;
-                return [];
-            }
+            Papa.parse(csvFilePath, {
+                download: true, // Indica a PapaParse que debe descargar el archivo
+                header: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    processCSVData(results.data);
+                    initializeDashboard();
+                },
+                error: (error) => {
+                    alert("Ocurrió un error al cargar el archivo de datos CSV. Asegúrate de que el archivo '" + csvFilePath + "' se encuentra en la misma carpeta que este archivo HTML.");
+                    console.error("Error al cargar CSV:", error);
+                }
+            });
         }
         
+        function processCSVData(data) {
+             const processed = data.map((row, index) => {
+                // Mapeo de los nombres de las columnas del CSV a las claves del objeto
+                const s = {
+                    nombre: row['NOMBRE'],
+                    registro: row['NÚMERO DE REGISTRO'],
+                    lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0,
+                    matematicas: parseInt(row['MATEMÁTICAS'], 10) || 0,
+                    sociales: parseInt(row['SOCIALES'], 10) || 0,
+                    ciencias: parseInt(row['CIENCIAS'], 10) || 0,
+                    ingles: parseInt(row['INGLÉS'], 10) || 0,
+                    puntaje: row['PUNTAJE'],
+                    municipio: row['MUNICIPIO']
+                };
+
+                return {
+                    id: s.registro + '-' + s.nombre,
+                    puesto: index + 1,
+                    nombre: s.nombre,
+                    registro: s.registro,
+                    municipio: s.municipio,
+                    colegio: "Seamos Genios",
+                    año: 2025,
+                    puntajeGlobal: parseInt(s.puntaje.split('/')[0], 10),
+                    puntajesDetallados: {
+                        lectura: s.lectura,
+                        matematicas: s.matematicas,
+                        sociales: s.sociales,
+                        ciencias: s.ciencias,
+                        ingles: s.ingles
+                    }
+                };
+            });
+            
+            // Asignar Ranking Global permanente
+            processed.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
+            processed.forEach((student, index) => {
+                student.globalRank = index + 1;
+            });
+
+            // Calcular percentil global
+            processed.sort((a, b) => a.puntajeGlobal - b.puntajeGlobal);
+            processed.forEach((student, index) => {
+                student.percentil = Math.round(((index) / (processed.length - 1)) * 100);
+            });
+
+            // Calcular percentiles por materia
+            const subjects = ['lectura', 'matematicas', 'sociales', 'ciencias', 'ingles'];
+            subjects.forEach(subject => {
+                processed.sort((a, b) => a.puntajesDetallados[subject] - b.puntajesDetallados[subject]);
+                processed.forEach((student, index) => {
+                    student.puntajesDetallados[subject + 'Percentil'] = Math.round(((index) / (processed.length - 1)) * 100);
+                });
+            });
+
+            studentData = [...processed];
+        }
+
+        // --- INICIALIZACIÓN DEL DASHBOARD (DESPUÉS DE CARGAR DATOS) ---
+        function initializeDashboard() {
+            calculateAndDisplayStats();
+            renderPodium();
+            state.currentSort.key = 'globalRank';
+            state.currentSort.direction = 'asc';
+            updateDisplay();
+            setupEventListeners();
+        }
+
         function updateDisplay() {
             filterAndSortData();
             const totalPages = Math.ceil(state.filteredData.length / state.rowsPerPage);
@@ -509,6 +556,7 @@
             const start = (state.currentPage - 1) * state.rowsPerPage;
             const end = start + state.rowsPerPage;
             
+            // For mobile, always sort by global rank, but respect pagination and filtering
             const paginatedItems = [...state.filteredData].sort((a,b) => a.globalRank - b.globalRank).slice(start, end);
 
 
@@ -620,7 +668,8 @@
             if (!student) return;
             const container = elements.studentModal;
             
-            const subjectsHtml = Object.keys(student.puntajesDetallados).filter(k => !k.includes('Percentil')).map(key => {
+            const subjects = ['lectura', 'matematicas', 'sociales', 'ciencias', 'ingles'];
+            const subjectsHtml = subjects.map(key => {
                 const subjectName = key.charAt(0).toUpperCase() + key.slice(1);
                 const score = student.puntajesDetallados[key];
                 const percentile = student.puntajesDetallados[key + 'Percentil'];
@@ -659,9 +708,9 @@
                                 </div>
                             </div>
                              <div class="mt-2 bg-gray-100 text-gray-700 p-3 rounded-lg text-center">
-                                <p class="font-semibold uppercase text-sm">Percentil (Grupo)</p>
-                                <p class="text-3xl font-bold">${student.percentil}%</p>
-                            </div>
+                                 <p class="font-semibold uppercase text-sm">Percentil (Grupo)</p>
+                                 <p class="text-3xl font-bold">${student.percentil}%</p>
+                             </div>
                             <div class="mt-4">
                                 <button id="comprobar-resultado-btn" class="bg-brand-secondary text-white font-bold py-2 px-4 rounded-lg w-full inline-block hover:bg-blue-700 transition-colors">
                                     Comprobar Resultado
@@ -771,8 +820,8 @@
             });
         }
         
-        function calculateAndDisplayStats(data) {
-            const scores = data.map(s => s.puntajeGlobal);
+        function calculateAndDisplayStats() {
+            const scores = studentData.map(s => s.puntajeGlobal);
             const maxScore = Math.max(...scores);
             const minScore = Math.min(...scores);
             const totalAverage = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(0);
@@ -781,18 +830,9 @@
             elements.minScoreEl.textContent = minScore;
             elements.totalAvgScoreEl.textContent = totalAverage;
         }
-
-        async function init() {
-            studentData = await loadAndProcessData();
-            calculateAndDisplayStats(studentData);
-            renderPodium();
-            state.currentSort.key = 'globalRank';
-            state.currentSort.direction = 'asc';
-            updateDisplay();
-            setupEventListeners();
-        }
         
-        init();
+        // Iniciar la carga de datos al cargar la página
+        loadInitialData();
     });
     </script>
 </body>
