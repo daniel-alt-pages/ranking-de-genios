@@ -392,6 +392,8 @@
 
             } catch (error) {
                 console.error("Error al cargar o procesar los datos:", error);
+                elements.tableBody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-red-500">Error: No se pudo cargar el archivo BD.json. Asegúrate de que el archivo exista en la misma carpeta.</td></tr>`;
+                elements.mobileList.innerHTML = `<div class="text-center p-8 text-red-500">Error: No se pudo cargar el archivo BD.json. Asegúrate de que el archivo exista en la misma carpeta.</div>`;
                 return [];
             }
         }
@@ -618,7 +620,7 @@
             if (!student) return;
             const container = elements.studentModal;
             
-            const subjectsHtml = subjects.map(key => {
+            const subjectsHtml = Object.keys(student.puntajesDetallados).filter(k => !k.includes('Percentil')).map(key => {
                 const subjectName = key.charAt(0).toUpperCase() + key.slice(1);
                 const score = student.puntajesDetallados[key];
                 const percentile = student.puntajesDetallados[key + 'Percentil'];
