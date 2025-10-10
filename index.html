@@ -324,67 +324,7 @@
         return `${prefix}*****${suffix}`;
     }
 
-    // --- DATOS REALES (actualizados) ---
-    const rawData = [
-      { puesto: 1, nombre: "Ariadna Arbelaez Pinzon", registro: "AC202532388197", lectura: 68, matematicas: 65, sociales: 68, ciencias: 63, ingles: 67, puntaje: "330/500", municipio: "Ibagué - Tolima" },
-      { puesto: 2, nombre: "Abimael David Figueroa Morelo", registro: "AC202535336847", lectura: 76, matematicas: 83, sociales: 81, ciencias: 77, ingles: 100, puntaje: "404/500", municipio: "Cartagena De Indias - Bolivar" },
-      { puesto: 3, nombre: "Hellen Daniela Mantilla Corzo", registro: "AC202532552933", lectura: 80, matematicas: 100, sociales: 100, ciencias: 100, ingles: 100, puntaje: "477/500", municipio: "Bucaramanga - Santander" },
-      { puesto: 4, nombre: "Luis Santiago De Brigard De La Hoz", registro: "AC202533752664", lectura: 79, matematicas: 85, sociales: 100, ciencias: 80, ingles: 73, puntaje: "425/500", municipio: "Valledupar - Cesar" },
-      { puesto: 5, nombre: "William David Castillo Peñuela", registro: "AC202533752664", lectura: 65, matematicas: 68, sociales: 73, ciencias: 75, ingles: 88, puntaje: "358/500", municipio: "Bogotá D.C. - Bogotá" },
-      { puesto: 6, nombre: "Valentina Ocampo Ordoñez", registro: "AC202536334106", lectura: 80, matematicas: 100, sociales: 100, ciencias: 79, ingles: 100, puntaje: "453/500", municipio: "Palmira - Valle" },
-      { puesto: 7, nombre: "Miguel Angel Hernandez Orozco", registro: "AC202535272653", lectura: 76, matematicas: 86, sociales: 71, ciencias: 70, ingles: 78, puntaje: "380/500", municipio: "Cartagena De Indias - Bolivar" },
-      { puesto: 8, nombre: "Luis David Rodriguez Martinez", registro: "AC202532912269", lectura: 70, matematicas: 76, sociales: 67, ciencias: 68, ingles: 75, puntaje: "353/500", municipio: "Montería - Cordoba" },
-      { puesto: 9, nombre: "Jhean Carlos Marin Leon", registro: "AC202530571950", lectura: 80, matematicas: 100, sociales: 83, ciencias: 77, ingles: 66, puntaje: "418/500", municipio: "Cali - Valle" },
-      { puesto: 10, nombre: "Valeria Ocampo Serpa", registro: "AC202533758190", lectura: 76, matematicas: 100, sociales: 76, ciencias: 100, ingles: 84, puntaje: "438/500", municipio: "Turbaco - Bolivar" },
-      { puesto: 11, nombre: "Sebastián Martinez Piamba", registro: "AC202532193621", lectura: 79, matematicas: 84, sociales: 100, ciencias: 79, ingles: 100, puntaje: "433/500", municipio: "Jamundí - Valle" },
-      { puesto: 12, nombre: "Hellen Sofía Aranda Tovar", registro: "AC202531054113", lectura: 78, matematicas: 100, sociales: 79, ciencias: 77, ingles: 100, puntaje: "424/500", municipio: "Ibagué - Tolima" },
-      { puesto: 13, nombre: "Anyi Nathaly Rodriguez Lopez", registro: "AC202530574731", lectura: 77, matematicas: 100, sociales: 100, ciencias: 83, ingles: 100, puntaje: "454/500", municipio: "Popayán - Cauca" },
-      { puesto: 14, nombre: "Chiudacchang Collazos Trujillo", registro: "AC202532501286", lectura: 76, matematicas: 86, sociales: 80, ciencias: 100, ingles: 79, puntaje: "425/500", municipio: "Santander De Quilichao - Cauca" },
-      { puesto: 15, nombre: "Liseth Camila Cadena Caicedo", registro: "AC202531873496", lectura: 81, matematicas: 100, sociales: 83, ciencias: 100, ingles: 100, puntaje: "458/500", municipio: "Neiva - Huila" },
-      { puesto: 16, nombre: "Jeronimo Osorio Dietes", registro: "AC202530766089", lectura: 77, matematicas: 83, sociales: 100, ciencias: 76, ingles: 82, puntaje: "419/500", municipio: "Yopal - Casanare" },
-      { puesto: 17, nombre: "Nicole Mariana Meneses Melendez", registro: "AC202536332902", lectura: 100, matematicas: 100, sociales: 100, ciencias: 100, ingles: 100, puntaje: "500/500", municipio: "Bucaramanga - Santander" }
-    ];
-
-    let processedData = rawData.map((s, index) => ({
-        id: s.registro + '-' + s.nombre,
-        puesto: index + 1,
-        nombre: s.nombre,
-        registro: s.registro,
-        municipio: s.municipio,
-        colegio: "Seamos Genios",
-        año: 2025,
-        puntajeGlobal: parseInt(s.puntaje.split('/')[0], 10),
-        puntajesDetallados: {
-            lectura: s.lectura,
-            matematicas: s.matematicas,
-            sociales: s.sociales,
-            ciencias: s.ciencias,
-            ingles: s.ingles
-        }
-    }));
-    
-    // Asignar Ranking Global permanente
-    processedData.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
-    processedData.forEach((student, index) => {
-        student.globalRank = index + 1;
-    });
-
-    // Calcular percentil global
-    processedData.sort((a, b) => a.puntajeGlobal - b.puntajeGlobal);
-    processedData.forEach((student, index) => {
-        student.percentil = Math.round(((index) / (processedData.length - 1)) * 100);
-    });
-
-    // Calcular percentiles por materia
-    const subjects = ['lectura', 'matematicas', 'sociales', 'ciencias', 'ingles'];
-    subjects.forEach(subject => {
-        processedData.sort((a, b) => a.puntajesDetallados[subject] - b.puntajesDetallados[subject]);
-        processedData.forEach((student, index) => {
-            student.puntajesDetallados[subject + 'Percentil'] = Math.round(((index) / (processedData.length - 1)) * 100);
-        });
-    });
-
-    const studentData = [...processedData];
+    let studentData = [];
     
     document.addEventListener('DOMContentLoaded', () => {
         let state = {
@@ -414,6 +354,47 @@
             rankingSubtitle: document.getElementById('ranking-subtitle'),
             areaScoreHeader: document.getElementById('area-score-header'),
         };
+        
+        async function loadAndProcessData() {
+            try {
+                const response = await fetch('BD.json');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const rawData = await response.json();
+
+                let processedData = rawData.map((s) => ({
+                    id: s.NUMERO_DE_REGISTRO + '-' + s.NOMBRE,
+                    nombre: s.NOMBRE,
+                    registro: s.NUMERO_DE_REGISTRO,
+                    municipio: s.MUNICIPIO,
+                    puntajeGlobal: parseInt(s.PUNTAJE.split('/')[0], 10),
+                    puntajesDetallados: {
+                        lectura: s.LECTURA_CRITICA,
+                        matematicas: s.MATEMATICAS,
+                        sociales: s.SOCIALES,
+                        ciencias: s.CIENCIAS,
+                        ingles: s.INGLES,
+                    }
+                }));
+
+                processedData.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
+                processedData.forEach((student, index) => student.globalRank = index + 1);
+
+                processedData.sort((a, b) => a.puntajeGlobal - b.puntajeGlobal);
+                processedData.forEach((student, index) => student.percentil = Math.round((index / (processedData.length - 1)) * 100));
+
+                const subjects = ['lectura', 'matematicas', 'sociales', 'ciencias', 'ingles'];
+                subjects.forEach(subject => {
+                    processedData.sort((a, b) => a.puntajesDetallados[subject] - b.puntajesDetallados[subject]);
+                    processedData.forEach((student, index) => student.puntajesDetallados[subject + 'Percentil'] = Math.round((index / (processedData.length - 1)) * 100));
+                });
+                
+                return processedData;
+
+            } catch (error) {
+                console.error("Error al cargar o procesar los datos:", error);
+                return [];
+            }
+        }
         
         function updateDisplay() {
             filterAndSortData();
@@ -526,7 +507,6 @@
             const start = (state.currentPage - 1) * state.rowsPerPage;
             const end = start + state.rowsPerPage;
             
-            // For mobile, always sort by global rank, but respect pagination and filtering
             const paginatedItems = [...state.filteredData].sort((a,b) => a.globalRank - b.globalRank).slice(start, end);
 
 
@@ -638,8 +618,6 @@
             if (!student) return;
             const container = elements.studentModal;
             
-            const imageUrl = `https://example.com/resultados/${student.registro}.jpg`; // Placeholder URL
-
             const subjectsHtml = subjects.map(key => {
                 const subjectName = key.charAt(0).toUpperCase() + key.slice(1);
                 const score = student.puntajesDetallados[key];
@@ -791,8 +769,8 @@
             });
         }
         
-        function calculateAndDisplayStats() {
-            const scores = studentData.map(s => s.puntajeGlobal);
+        function calculateAndDisplayStats(data) {
+            const scores = data.map(s => s.puntajeGlobal);
             const maxScore = Math.max(...scores);
             const minScore = Math.min(...scores);
             const totalAverage = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(0);
@@ -802,8 +780,9 @@
             elements.totalAvgScoreEl.textContent = totalAverage;
         }
 
-        function init() {
-            calculateAndDisplayStats();
+        async function init() {
+            studentData = await loadAndProcessData();
+            calculateAndDisplayStats(studentData);
             renderPodium();
             state.currentSort.key = 'globalRank';
             state.currentSort.direction = 'asc';
