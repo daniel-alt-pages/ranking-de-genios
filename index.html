@@ -170,9 +170,6 @@
             animation: rowFadeIn 0.3s ease-out forwards;
         }
 
-        #ranking-table-body tr {
-            transition: background-color 0.2s ease-in-out;
-        }
         #ranking-table-body tr:hover {
             background-color: #e5e7eb; 
         }
@@ -206,7 +203,7 @@
             <!-- Podio de Honor -->
             <section>
                 <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Podio de Honor</h2>
-                <div id="top-performers" class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-5">
+                <div id="top-performers" class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-12 md:gap-y-8 pt-5">
                     <!-- Generado dinámicamente -->
                 </div>
             </section>
@@ -276,7 +273,7 @@
                         <p id="average-score" class="text-4xl font-bold text-brand-primary">0</p>
                     </div>
                 </div>
-                <div class="overflow-x-auto border rounded-lg">
+                <div class="overflow-x-auto border rounded-lg md:block hidden"> <!-- Oculto en móvil -->
                     <table class="w-full text-left">
                         <thead class="bg-brand-header text-white">
                             <tr>
@@ -291,6 +288,8 @@
                         <tbody id="ranking-table-body" class="divide-y divide-gray-200"></tbody>
                     </table>
                 </div>
+                <div id="mobile-ranking-list" class="space-y-3 md:hidden"></div> <!-- Visible solo en móvil -->
+
                  <!-- Controles de Paginación -->
                 <div id="pagination-controls" class="pt-4 flex items-center justify-center gap-2 flex-wrap">
                     <!-- Generado dinámicamente -->
@@ -301,10 +300,20 @@
         <footer class="text-center mt-12 text-gray-500"><p>&copy; 2025 Tu Curso Pre-Icfes. Todos los derechos reservados.</p></footer>
     </div>
     
-    <!-- Modal de Perfil de Estudiante -->
+    <!-- Modal de Detalles -->
     <div id="student-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
         <!-- Contenido se genera dinámicamente -->
     </div>
+
+    <!-- Modal de Alerta -->
+    <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 sm:p-8 relative transform modal-enter text-center">
+            <h3 class="text-xl font-bold text-brand-secondary mb-4">¡Próximamente!</h3>
+            <p>Estamos diseñando y subiendo los reportes individuales. ¡Vuelve pronto!</p>
+            <button id="close-alert-btn" class="mt-6 bg-brand-primary text-white font-bold py-2 px-6 rounded-lg w-full hover:bg-orange-600 transition-colors">Entendido</button>
+        </div>
+    </div>
+
 
     <script>
     // --- FUNCIÓN PARA ENMASCARAR REGISTRO ---
@@ -388,6 +397,7 @@
         const elements = {
             body: document.body,
             tableBody: document.getElementById('ranking-table-body'),
+            mobileList: document.getElementById('mobile-ranking-list'),
             searchInput: document.getElementById('searchInput'),
             clearSearchBtn: document.getElementById('clearSearchBtn'),
             averageScoreEl: document.getElementById('average-score'),
@@ -395,7 +405,9 @@
             minScoreEl: document.getElementById('min-score'),
             totalAvgScoreEl: document.getElementById('total-avg-score'),
             topPerformersContainer: document.getElementById('top-performers'),
-            studentModalContainer: document.getElementById('student-modal'),
+            studentModal: document.getElementById('student-modal'),
+            alertModal: document.getElementById('alert-modal'),
+            closeAlertBtn: document.getElementById('close-alert-btn'),
             thead: document.querySelector('thead'),
             paginationControls: document.getElementById('pagination-controls'),
             subjectFilterButtons: document.getElementById('subject-filter-buttons'),
@@ -408,6 +420,7 @@
             const totalPages = Math.ceil(state.filteredData.length / state.rowsPerPage);
             if(state.currentPage > totalPages) state.currentPage = totalPages || 1;
             renderPaginatedTable();
+            renderMobileList();
             renderPaginationControls();
             updateAverage(state.filteredData);
             updateSortIcons();
@@ -507,6 +520,52 @@
                 elements.tableBody.appendChild(row);
             });
         }
+        
+        function renderMobileList() {
+            elements.mobileList.innerHTML = '';
+            const start = (state.currentPage - 1) * state.rowsPerPage;
+            const end = start + state.rowsPerPage;
+            
+            // For mobile, always sort by global rank, but respect pagination and filtering
+            const paginatedItems = [...state.filteredData].sort((a,b) => a.globalRank - b.globalRank).slice(start, end);
+
+
+            if (paginatedItems.length === 0) {
+                elements.mobileList.innerHTML = `<div class="text-center p-8 text-gray-500">No se encontraron estudiantes.</div>`;
+                return;
+            }
+
+            paginatedItems.forEach((student, index) => {
+                 let rankHtml;
+                if (student.globalRank === 1) {
+                    rankHtml = `<span class="text-3xl">🥇</span>`;
+                } else if (student.globalRank === 2) {
+                    rankHtml = `<span class="text-3xl">🥈</span>`;
+                } else if (student.globalRank === 3) {
+                    rankHtml = `<span class="text-3xl">🥉</span>`;
+                } else if (student.globalRank <= 5) {
+                    rankHtml = `<div class="rank-badge rank-${student.globalRank} !w-10 !h-10 text-lg">${student.globalRank}</div>`;
+                } else {
+                    rankHtml = `<div class="font-semibold text-xl w-10 h-10 flex items-center justify-center">${student.globalRank}</div>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-md p-4 flex items-center gap-4';
+                card.innerHTML = `
+                    <div class="w-12 text-center flex-shrink-0">${rankHtml}</div>
+                    <div class="flex-grow">
+                        <p class="font-bold text-brand-text">${student.nombre}</p>
+                        <p class="text-sm text-gray-500">${student.municipio}</p>
+                        <p class="font-bold text-brand-primary mt-1">
+                            ${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span>
+                        </p>
+                    </div>
+                    <button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors">Ver más</button>
+                `;
+                elements.mobileList.appendChild(card);
+            });
+        }
+
 
         function renderPaginationControls() {
             elements.paginationControls.innerHTML = '';
@@ -561,13 +620,23 @@
                     </div>`;
             });
         }
+        
+        function showAlertModal() {
+            elements.body.classList.add('overflow-hidden');
+            elements.alertModal.classList.remove('hidden');
+        }
+
+        function closeAlertModal() {
+            elements.body.classList.remove('overflow-hidden');
+            elements.alertModal.classList.add('hidden');
+        }
 
 
         function showDetailsModal(studentId) {
             elements.body.classList.add('overflow-hidden');
             const student = studentData.find(s => s.id === studentId);
             if (!student) return;
-            const container = document.getElementById('student-modal');
+            const container = elements.studentModal;
             
             const imageUrl = `https://example.com/resultados/${student.registro}.jpg`; // Placeholder URL
 
@@ -596,7 +665,7 @@
 
             container.innerHTML = `
                 <div id="modal-content" class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 sm:p-8 relative transform modal-enter">
-                    <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                    <button id="close-student-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
                     <div class="flex flex-col md:flex-row md:items-start gap-8">
                         <div class="w-full md:w-1/3 text-center">
                             <h2 class="text-2xl font-bold text-brand-secondary">${student.nombre}</h2>
@@ -614,9 +683,9 @@
                                 <p class="text-3xl font-bold">${student.percentil}%</p>
                             </div>
                             <div class="mt-4">
-                                <a href="${imageUrl}" target="_blank" class="bg-brand-secondary text-white font-bold py-2 px-4 rounded-lg w-full inline-block hover:bg-blue-700 transition-colors">
+                                <button id="comprobar-resultado-btn" class="bg-brand-secondary text-white font-bold py-2 px-4 rounded-lg w-full inline-block hover:bg-blue-700 transition-colors">
                                     Comprobar Resultado
-                                </a>
+                                </button>
                             </div>
                         </div>
                         <div class="w-full md:w-2/3 space-y-3">
@@ -626,23 +695,24 @@
                     </div>
                 </div>`;
             container.classList.remove('hidden');
-            document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+            document.getElementById('close-student-modal-btn').addEventListener('click', closeDetailsModal);
+            document.getElementById('comprobar-resultado-btn').addEventListener('click', showAlertModal);
         }
         
-        function updateAverage(students) {
-            const avg = students.length ? (students.reduce((sum, s) => sum + s.puntajeGlobal, 0) / students.length).toFixed(0) : 0;
-            elements.averageScoreEl.textContent = avg;
-        }
-
-        function closeModal() {
+        function closeDetailsModal() {
             elements.body.classList.remove('overflow-hidden');
             const modalContent = document.getElementById('modal-content');
             if(!modalContent) return;
             modalContent.classList.remove('modal-enter');
             modalContent.classList.add('modal-leave');
-            setTimeout(() => { document.getElementById('student-modal').classList.add('hidden'); }, 300);
+            setTimeout(() => { elements.studentModal.classList.add('hidden'); }, 300);
         }
-        
+
+        function updateAverage(students) {
+            const avg = students.length ? (students.reduce((sum, s) => sum + s.puntajeGlobal, 0) / students.length).toFixed(0) : 0;
+            elements.averageScoreEl.textContent = avg;
+        }
+
         function updateSortIcons() {
             document.querySelectorAll('.sort-icon').forEach(icon => icon.textContent = '');
             const activeIcon = document.querySelector(`.sortable-header[data-sort-key="${state.currentSort.key}"] .sort-icon`);
@@ -660,8 +730,12 @@
                 state.currentPage = 1;
                 updateDisplay();
             });
+            
+            elements.closeAlertBtn.addEventListener('click', closeAlertModal);
+            elements.alertModal.addEventListener('click', (e) => {
+                if (e.target === elements.alertModal) closeAlertModal();
+            });
 
-            elements.studentModalContainer.addEventListener('click', e => { if (e.target === elements.studentModalContainer) closeModal(); });
             
             elements.thead.addEventListener('click', e => {
                 const header = e.target.closest('.sortable-header');
@@ -676,7 +750,8 @@
                 updateDisplay();
             });
 
-            elements.tableBody.addEventListener('click', e => {
+            // Event listener para ambas vistas (móvil y escritorio)
+            document.getElementById('app-container').addEventListener('click', e => {
                 const button = e.target.closest('.ver-mas-btn');
                 if (button) {
                     const studentId = button.dataset.id;
