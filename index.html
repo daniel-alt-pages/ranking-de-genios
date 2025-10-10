@@ -118,6 +118,14 @@
             background-color: #3B82F6; /* Azul vivo */
             transition: width 0.5s ease-in-out;
         }
+        
+        /* Ocultar y mostrar la columna de puntaje de área */
+        .area-score-col {
+            display: none;
+        }
+        body.show-area-score .area-score-col {
+            display: table-cell;
+        }
 
     </style>
 </head>
@@ -184,9 +192,10 @@
                     <table class="w-full text-left">
                         <thead class="bg-brand-header text-white">
                             <tr>
-                                <th class="p-4 w-16 text-center sortable-header" data-sort-key="rank"># <span class="sort-icon"></span></th>
+                                <th class="p-4 w-16 text-center sortable-header" data-sort-key="globalRank"># <span class="sort-icon"></span></th>
                                 <th class="p-4 sortable-header" data-sort-key="nombre">Nombre Completo <span class="sort-icon"></span></th>
                                 <th class="p-4 text-center sortable-header" data-sort-key="puntajeGlobal">Puntaje Global <span class="sort-icon"></span></th>
+                                <th id="area-score-header" class="p-4 text-center area-score-col">Puntaje de Área</th>
                                 <th class="p-4">Municipio</th>
                                 <th class="p-4 text-center">Detalles</th>
                             </tr>
@@ -239,7 +248,7 @@
       { puesto: 17, nombre: "Nicole Mariana Meneses Melendez", registro: "AC202536332902", lectura: 100, matematicas: 100, sociales: 100, ciencias: 100, ingles: 100, puntaje: "500/500", municipio: "Bucaramanga - Santander" }
     ];
 
-    const processedData = rawData.map((s, index) => ({
+    let processedData = rawData.map((s, index) => ({
         id: s.registro + '-' + s.nombre,
         puesto: index + 1,
         nombre: s.nombre,
@@ -257,6 +266,12 @@
         }
     }));
     
+    // Asignar Ranking Global permanente
+    processedData.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
+    processedData.forEach((student, index) => {
+        student.globalRank = index + 1;
+    });
+
     // Calcular percentil global
     processedData.sort((a, b) => a.puntajeGlobal - b.puntajeGlobal);
     processedData.forEach((student, index) => {
@@ -272,17 +287,18 @@
         });
     });
 
-    const studentData = [...processedData]; // Clonar para el estado inicial
+    const studentData = [...processedData];
     
     document.addEventListener('DOMContentLoaded', () => {
         let state = {
-            currentSort: { key: 'puntajeGlobal', direction: 'desc' },
+            currentSort: { key: 'globalRank', direction: 'asc' },
             filteredData: [],
             currentPage: 1,
             rowsPerPage: 10,
         };
         
         const elements = {
+            body: document.body,
             tableBody: document.getElementById('ranking-table-body'),
             searchInput: document.getElementById('searchInput'),
             averageScoreEl: document.getElementById('average-score'),
@@ -293,6 +309,7 @@
             paginationControls: document.getElementById('pagination-controls'),
             subjectFilterButtons: document.getElementById('subject-filter-buttons'),
             rankingSubtitle: document.getElementById('ranking-subtitle'),
+            areaScoreHeader: document.getElementById('area-score-header'),
         };
         
         function updateDisplay() {
@@ -312,8 +329,9 @@
             });
 
             state.filteredData.sort((a, b) => {
-                let valA, valB;
                 const key = state.currentSort.key;
+                let valA, valB;
+
                 if (key.includes('.')) {
                     const [obj, prop] = key.split('.');
                     valA = a[obj][prop];
@@ -322,17 +340,30 @@
                     valA = a[key];
                     valB = b[key];
                 }
-                
-                if (typeof valA === 'string') {
-                    return state.currentSort.direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
-                }
-                return state.currentSort.direction === 'asc' ? valA - valB : valB - valA;
-            });
 
-            const originalOrder = [...state.filteredData];
-            originalOrder.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
-            const rankMap = new Map(originalOrder.map((s, i) => [s.id, i + 1]));
-            state.filteredData.forEach(s => s.rank = rankMap.get(s.id));
+                let comparison = 0;
+                if (typeof valA === 'string') {
+                    comparison = valA.localeCompare(valB);
+                } else {
+                    comparison = valA - valB;
+                }
+
+                // Lógica de ordenamiento principal
+                let primaryDiff;
+                if (state.currentSort.direction === 'asc') {
+                    primaryDiff = comparison;
+                } else {
+                    primaryDiff = -comparison;
+                }
+                
+                // Si el ordenamiento principal da un resultado, lo usamos.
+                // Si no (son iguales), usamos el puntaje global como desempate.
+                if (primaryDiff !== 0) {
+                    return primaryDiff;
+                } else {
+                    return b.puntajeGlobal - a.puntajeGlobal;
+                }
+            });
         }
 
         function renderPaginatedTable() {
@@ -341,8 +372,12 @@
             const end = start + state.rowsPerPage;
             const paginatedItems = state.filteredData.slice(start, end);
 
+            // Mostrar u ocultar la columna de puntaje de área
+            const isAreaSort = state.currentSort.key.includes('puntajesDetallados');
+            elements.body.classList.toggle('show-area-score', isAreaSort);
+
             if (paginatedItems.length === 0) {
-                elements.tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-gray-500">No se encontraron estudiantes.</td></tr>`;
+                elements.tableBody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-gray-500">No se encontraron estudiantes.</td></tr>`;
                 return;
             }
 
@@ -351,10 +386,20 @@
                 const p = getPerformanceInfo(student.puntajeGlobal);
                 row.className = `transition-colors duration-200 ${p.colorClassBg}`;
                 
+                let areaScoreHtml = '';
+                if(isAreaSort) {
+                    const [obj, prop] = state.currentSort.key.split('.');
+                    const areaScore = student[obj][prop];
+                    areaScoreHtml = `<td class="p-4 text-center font-bold text-brand-secondary area-score-col">${areaScore}</td>`;
+                } else {
+                    areaScoreHtml = `<td class="p-4 text-center font-bold text-brand-secondary area-score-col"></td>`;
+                }
+
                 row.innerHTML = `
-                    <td class="p-4 w-16 text-center font-semibold">${student.rank}</td>
+                    <td class="p-4 w-16 text-center font-semibold">${student.globalRank}</td>
                     <td class="p-4 font-medium text-brand-text whitespace-nowrap">${student.nombre}</td>
                     <td class="p-4 text-center text-lg font-bold text-brand-primary">${student.puntajeGlobal}</td>
+                    ${areaScoreHtml}
                     <td class="p-4 whitespace-nowrap">${student.municipio}</td>
                     <td class="p-4 text-center">
                         <button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors">Ver más</button>
@@ -497,7 +542,7 @@
         function exportToCSV() {
             const headers = ["Ranking", "Nombre", "Puntaje Global", "N° Registro", "Municipio", "Lectura Crítica", "Matemáticas", "Sociales", "Ciencias", "Inglés"];
             const rows = state.filteredData.map(s => [
-                s.rank, 
+                s.globalRank, 
                 s.nombre, 
                 s.puntajeGlobal, 
                 s.registro, 
@@ -554,12 +599,21 @@
                 state.currentSort.key = button.dataset.sortKey;
                 state.currentSort.direction = 'desc';
                 elements.rankingSubtitle.textContent = `Ordenado por ${button.textContent}`;
+                
+                // Actualizar cabecera de la tabla
+                if (button.dataset.sortKey.includes('puntajesDetallados')) {
+                    elements.areaScoreHeader.textContent = `Puntaje ${button.textContent}`;
+                }
+
                 updateDisplay();
             });
         }
 
         function init() {
             renderPodium();
+            // Iniciar con el ordenamiento por ranking global
+            state.currentSort.key = 'globalRank';
+            state.currentSort.direction = 'asc';
             updateDisplay();
             setupEventListeners();
         }
@@ -569,5 +623,4 @@
     </script>
 </body>
 </html>
-
 
