@@ -260,7 +260,7 @@
                     <table class="w-full text-left">
                         <thead class="bg-brand-header text-white">
                             <tr>
-                                <th class="p-4 w-16 text-center sortable-header" data-sort-key="globalRank">#</th>
+                                <th class="p-4 w-16 text-center sortable-header">#</th>
                                 <th class="p-4 w-2/5 text-left sortable-header" data-sort-key="nombre">Nombre Completo</th>
                                 <th class="p-4 w-1/5 text-center sortable-header" data-sort-key="puntajeGlobal">Puntaje Global</th>
                                 <th id="area-score-header" class="p-4 w-1/5 text-center area-score-col">Puntaje de Área</th>
@@ -452,20 +452,20 @@
                 if(isAreaSort) {
                     const [obj, prop] = state.currentSort.key.split('.');
                     const areaScore = student[obj][prop];
-                    areaScoreHtml = `<td class="p-4 text-center font-bold text-brand-secondary area-score-col">${areaScore}</td>`;
+                    areaScoreHtml = `<td class="p-6 text-center font-bold text-brand-secondary area-score-col">${areaScore}</td>`;
                 } else {
-                    areaScoreHtml = `<td class="p-4 text-center font-bold text-brand-secondary area-score-col"></td>`;
+                    areaScoreHtml = `<td class="p-6 text-center font-bold text-brand-secondary area-score-col"></td>`;
                 }
 
                 row.innerHTML = `
-                    <td class="p-4 w-16 text-center font-semibold">${student.globalRank}</td>
-                    <td class="p-4 font-medium text-brand-text text-left">${student.nombre}</td>
-                    <td class="p-4 text-center text-lg font-bold text-brand-primary">
+                    <td class="p-6 w-16 text-center font-semibold">${student.globalRank}</td>
+                    <td class="p-6 font-medium text-brand-text text-left">${student.nombre}</td>
+                    <td class="p-6 text-center text-lg font-bold text-brand-primary">
                         ${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span>
                     </td>
                     ${areaScoreHtml}
-                    <td class="p-4 text-left">${student.municipio}</td>
-                    <td class="p-4 text-center">
+                    <td class="p-6 text-left">${student.municipio}</td>
+                    <td class="p-6 text-center">
                         <button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors">Ver más</button>
                     </td>
                 `;
@@ -532,6 +532,8 @@
             const student = studentData.find(s => s.id === studentId);
             if (!student) return;
             const container = document.getElementById('student-modal');
+            
+            const imageUrl = `https://example.com/resultados/${student.registro}.jpg`; // Placeholder URL
 
             const subjectsHtml = subjects.map(key => {
                 const subjectName = key.charAt(0).toUpperCase() + key.slice(1);
@@ -574,6 +576,11 @@
                              <div class="mt-2 bg-gray-100 text-gray-700 p-3 rounded-lg text-center">
                                 <p class="font-semibold uppercase text-sm">Percentil (Grupo)</p>
                                 <p class="text-3xl font-bold">${student.percentil}%</p>
+                            </div>
+                            <div class="mt-4">
+                                <a href="${imageUrl}" target="_blank" class="bg-brand-secondary text-white font-bold py-2 px-4 rounded-lg w-full inline-block hover:bg-blue-700 transition-colors">
+                                    Comprobar Resultado
+                                </a>
                             </div>
                         </div>
                         <div class="w-full md:w-2/3 space-y-3">
