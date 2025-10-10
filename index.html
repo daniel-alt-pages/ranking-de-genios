@@ -47,6 +47,9 @@
             background-color: #f1f1eb;
             color: #5c5d5c;
         }
+        body.overflow-hidden {
+            overflow: hidden;
+        }
         .main-container {
             max-width: 1280px;
         }
@@ -174,18 +177,20 @@
             background-color: #e5e7eb; 
         }
 
-        .reset-sort-btn {
-            padding: 0.5rem;
-            border-radius: 9999px;
-            background-color: #e5e7eb;
-            color: #5c5d5c;
-            transition: all 0.3s ease;
+        /* Estilos para las insignias del Top 5 */
+        .rank-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
         }
-        .reset-sort-btn:hover {
-            background-color: #d1d5db;
-            transform: rotate(90deg);
-        }
-
+        .rank-4 { background-color: #60A5FA; } /* Azul más claro */
+        .rank-5 { background-color: #93C5FD; } /* Azul aún más claro */
+        
     </style>
 </head>
 <body class="bg-brand-bg text-brand-text">
@@ -206,44 +211,59 @@
                 </div>
             </section>
             
-            <!-- Herramienta de Búsqueda -->
-             <section class="bg-white p-6 rounded-xl shadow-md">
-                 <h3 class="text-xl font-bold text-brand-text mb-4">Buscar Estudiante</h3>
-                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                       <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                        </svg>
+            <!-- Estadísticas Generales -->
+            <section>
+                <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Estadísticas del Grupo</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                        <p class="text-sm font-semibold text-brand-text">Puntaje Máximo</p>
+                        <p id="max-score" class="text-5xl font-bold text-brand-secondary mt-2">0</p>
                     </div>
-                    <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                    <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
-                       <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
+                    <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                        <p class="text-sm font-semibold text-brand-text">Promedio General</p>
+                        <p id="total-avg-score" class="text-5xl font-bold text-brand-primary mt-2">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                        <p class="text-sm font-semibold text-brand-text">Puntaje Mínimo</p>
+                        <p id="min-score" class="text-5xl font-bold text-brand-red mt-2">0</p>
+                    </div>
                 </div>
             </section>
 
-            <!-- Controles Fijos -->
-            <section class="sticky top-4 z-20 bg-white/95 backdrop-blur-sm p-6 rounded-xl shadow-lg border-t-4 border-brand-primary">
-                <div class="flex justify-between items-center">
-                    <div id="subject-filter-buttons" class="flex flex-wrap gap-2 items-center">
-                        <p class="text-lg font-bold mr-4 hidden sm:block text-brand-text">Ordenar Ranking:</p>
-                        <button class="subject-btn active" data-sort-key="puntajeGlobal">Puntaje Global</button>
-                        <button class="subject-btn" data-sort-key="puntajesDetallados.lectura">Lectura Crítica</button>
-                        <button class="subject-btn" data-sort-key="puntajesDetallados.matematicas">Matemáticas</button>
-                        <button class="subject-btn" data-sort-key="puntajesDetallados.sociales">Sociales</button>
-                        <button class="subject-btn" data-sort-key="puntajesDetallados.ciencias">Ciencias</button>
-                        <button class="subject-btn" data-sort-key="puntajesDetallados.ingles">Inglés</button>
+            <!-- Herramientas de Análisis -->
+             <section class="bg-white p-6 rounded-xl shadow-md space-y-6">
+                <h3 class="text-2xl font-bold text-brand-text">Herramientas de Análisis</h3>
+                <div class="space-y-4 border-t border-gray-200 pt-4">
+                    <div>
+                        <label for="searchInput" class="block text-sm font-medium text-gray-700 mb-1">Buscar Estudiante</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                               <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                            <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
+                               <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <button id="resetSortBtn" title="Restablecer orden" class="reset-sort-btn ml-4 flex-shrink-0">
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                           <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
+                    <div>
+                        <p class="text-sm font-medium text-gray-700">Ordenar Ranking por:</p>
+                        <div id="subject-filter-buttons" class="flex flex-wrap gap-2 items-center mt-2">
+                            <button class="subject-btn active" data-sort-key="puntajeGlobal">Puntaje Global</button>
+                            <button class="subject-btn" data-sort-key="puntajesDetallados.lectura">Lectura Crítica</button>
+                            <button class="subject-btn" data-sort-key="puntajesDetallados.matematicas">Matemáticas</button>
+                            <button class="subject-btn" data-sort-key="puntajesDetallados.sociales">Sociales</button>
+                            <button class="subject-btn" data-sort-key="puntajesDetallados.ciencias">Ciencias</button>
+                            <button class="subject-btn" data-sort-key="puntajesDetallados.ingles">Inglés</button>
+                        </div>
+                    </div>
                 </div>
             </section>
-
+            
             <!-- Tabla de Ranking y Paginación -->
             <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
                  <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
@@ -371,12 +391,14 @@
             searchInput: document.getElementById('searchInput'),
             clearSearchBtn: document.getElementById('clearSearchBtn'),
             averageScoreEl: document.getElementById('average-score'),
+            maxScoreEl: document.getElementById('max-score'),
+            minScoreEl: document.getElementById('min-score'),
+            totalAvgScoreEl: document.getElementById('total-avg-score'),
             topPerformersContainer: document.getElementById('top-performers'),
             studentModalContainer: document.getElementById('student-modal'),
             thead: document.querySelector('thead'),
             paginationControls: document.getElementById('pagination-controls'),
             subjectFilterButtons: document.getElementById('subject-filter-buttons'),
-            resetSortBtn: document.getElementById('resetSortBtn'),
             rankingSubtitle: document.getElementById('ranking-subtitle'),
             areaScoreHeader: document.getElementById('area-score-header'),
         };
@@ -457,8 +479,21 @@
                     areaScoreHtml = `<td class="p-6 text-center font-bold text-brand-secondary area-score-col"></td>`;
                 }
 
+                let rankHtml;
+                if (student.globalRank === 1) {
+                    rankHtml = `<span class="text-2xl">🥇</span>`;
+                } else if (student.globalRank === 2) {
+                    rankHtml = `<span class="text-2xl">🥈</span>`;
+                } else if (student.globalRank === 3) {
+                    rankHtml = `<span class="text-2xl">🥉</span>`;
+                } else if (student.globalRank <= 5) {
+                    rankHtml = `<div class="rank-badge rank-${student.globalRank}">${student.globalRank}</div>`;
+                } else {
+                    rankHtml = student.globalRank;
+                }
+
                 row.innerHTML = `
-                    <td class="p-6 w-16 text-center font-semibold">${student.globalRank}</td>
+                    <td class="p-6 w-16 text-center font-semibold">${rankHtml}</td>
                     <td class="p-6 font-medium text-brand-text text-left">${student.nombre}</td>
                     <td class="p-6 text-center text-lg font-bold text-brand-primary">
                         ${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span>
@@ -529,6 +564,7 @@
 
 
         function showDetailsModal(studentId) {
+            elements.body.classList.add('overflow-hidden');
             const student = studentData.find(s => s.id === studentId);
             if (!student) return;
             const container = document.getElementById('student-modal');
@@ -561,7 +597,7 @@
             container.innerHTML = `
                 <div id="modal-content" class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 sm:p-8 relative transform modal-enter">
                     <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-                    <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="flex flex-col md:flex-row md:items-start gap-8">
                         <div class="w-full md:w-1/3 text-center">
                             <h2 class="text-2xl font-bold text-brand-secondary">${student.nombre}</h2>
                             <p class="text-gray-600 mt-1">${student.municipio}</p>
@@ -599,6 +635,7 @@
         }
 
         function closeModal() {
+            elements.body.classList.remove('overflow-hidden');
             const modalContent = document.getElementById('modal-content');
             if(!modalContent) return;
             modalContent.classList.remove('modal-enter');
@@ -647,16 +684,14 @@
                 }
             });
             
-            elements.resetSortBtn.addEventListener('click', () => {
-                const globalButton = elements.subjectFilterButtons.querySelector('[data-sort-key="puntajeGlobal"]');
-                if (globalButton && !globalButton.classList.contains('active')) {
-                    globalButton.click();
-                }
-            });
-
             elements.subjectFilterButtons.addEventListener('click', e => {
                 const button = e.target.closest('.subject-btn');
                 if (!button) return;
+
+                if (button.dataset.sortKey === 'puntajeGlobal' && button.classList.contains('active')) {
+                     const isAlreadyGlobal = state.currentSort.key === 'globalRank' || state.currentSort.key === 'puntajeGlobal';
+                     if(isAlreadyGlobal) return;
+                }
 
                 elements.subjectFilterButtons.querySelector('.active').classList.remove('active');
                 button.classList.add('active');
@@ -680,8 +715,20 @@
                 updateDisplay();
             });
         }
+        
+        function calculateAndDisplayStats() {
+            const scores = studentData.map(s => s.puntajeGlobal);
+            const maxScore = Math.max(...scores);
+            const minScore = Math.min(...scores);
+            const totalAverage = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(0);
+            
+            elements.maxScoreEl.textContent = maxScore;
+            elements.minScoreEl.textContent = minScore;
+            elements.totalAvgScoreEl.textContent = totalAverage;
+        }
 
         function init() {
+            calculateAndDisplayStats();
             renderPodium();
             state.currentSort.key = 'globalRank';
             state.currentSort.direction = 'asc';
