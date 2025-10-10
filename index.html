@@ -270,9 +270,16 @@
                         <h2 class="text-2xl font-bold text-brand-secondary">Ranking General</h2>
                         <p id="ranking-subtitle" class="text-sm text-gray-500 mt-1">Ordenado por Puntaje Global</p>
                     </div>
-                    <div class="bg-orange-50 border border-brand-primary/20 p-4 rounded-lg flex flex-col justify-center items-center w-full md:w-auto">
-                        <p class="text-sm font-semibold text-brand-text">Promedio (Filtro Actual)</p>
-                        <p id="average-score" class="text-4xl font-bold text-brand-primary">0</p>
+                    <!-- Wrapper para las tarjetas de estadísticas -->
+                    <div class="flex items-stretch gap-4">
+                        <div class="bg-blue-50 border border-brand-secondary/20 p-4 rounded-lg flex flex-col justify-center items-center w-full md:w-auto">
+                             <p class="text-sm font-semibold text-brand-text">Total Estudiantes</p>
+                             <p id="total-students" class="text-4xl font-bold text-brand-secondary">0</p>
+                        </div>
+                        <div class="bg-orange-50 border border-brand-primary/20 p-4 rounded-lg flex flex-col justify-center items-center w-full md:w-auto">
+                            <p class="text-sm font-semibold text-brand-text">Promedio (Filtro Actual)</p>
+                            <p id="average-score" class="text-4xl font-bold text-brand-primary">0</p>
+                        </div>
                     </div>
                 </div>
                 <div class="overflow-x-auto border rounded-lg md:block hidden"> <!-- Oculto en móvil -->
@@ -342,6 +349,7 @@
             searchInput: document.getElementById('searchInput'),
             clearSearchBtn: document.getElementById('clearSearchBtn'),
             averageScoreEl: document.getElementById('average-score'),
+            totalStudentsEl: document.getElementById('total-students'),
             maxScoreEl: document.getElementById('max-score'),
             minScoreEl: document.getElementById('min-score'),
             totalAvgScoreEl: document.getElementById('total-avg-score'),
@@ -453,6 +461,7 @@
             renderMobileList();
             renderPaginationControls();
             updateAverage(state.filteredData);
+            elements.totalStudentsEl.textContent = state.filteredData.length;
             updateSortIcons();
         }
 
