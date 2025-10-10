@@ -125,7 +125,6 @@
             display: table-cell;
         }
 
-        /* Animación para filas de la tabla */
         @keyframes rowFadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -134,13 +133,25 @@
             animation: rowFadeIn 0.3s ease-out forwards;
         }
 
-        /* Mejoras en hover de la tabla */
         #ranking-table-body tr {
             transition: background-color 0.2s ease-in-out;
         }
         #ranking-table-body tr:hover {
-            background-color: #e5e7eb !important; /* Usar !important para sobreescribir colores de performance */
+            background-color: #e5e7eb !important; 
         }
+
+        .reset-sort-btn {
+            padding: 0.5rem;
+            border-radius: 9999px;
+            background-color: #e5e7eb;
+            color: #5c5d5c;
+            transition: all 0.3s ease;
+        }
+        .reset-sort-btn:hover {
+            background-color: #d1d5db;
+            transform: rotate(90deg);
+        }
+
     </style>
 </head>
 <body class="bg-brand-bg text-brand-text">
@@ -149,10 +160,10 @@
         
         <header class="text-center mb-12">
             <h1 class="text-4xl sm:text-5xl font-extrabold text-brand-text tracking-tight">Ranking de Resultados Saber 11</h1>
-            <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Explora, filtra y compara los resultados de nuestros estudiantes de una forma interactiva.</p>
+            <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Explora y compara los resultados de nuestros estudiantes de una forma interactiva.</p>
         </header>
 
-        <main class="space-y-12">
+        <main class="space-y-8">
             <!-- Podio de Honor -->
             <section>
                 <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Podio de Honor</h2>
@@ -161,34 +172,41 @@
                 </div>
             </section>
             
-            <!-- Controles -->
-            <section class="bg-white p-6 rounded-xl shadow-md space-y-4">
-                 <h3 class="text-xl font-bold text-brand-text">Herramientas de Análisis</h3>
-                <div class="border-t border-gray-200 pt-4 space-y-4">
-                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                           <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                        <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
-                           <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
+            <!-- Herramienta de Búsqueda -->
+             <section class="bg-white p-6 rounded-xl shadow-md">
+                 <h3 class="text-xl font-bold text-brand-text mb-4">Buscar Estudiante</h3>
+                 <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                       <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
                     </div>
-                    <div>
-                        <p class="font-semibold mb-2">Ordenar por:</p>
-                        <div id="subject-filter-buttons" class="flex flex-wrap gap-2">
-                            <button class="subject-btn active" data-sort-key="puntajeGlobal">Puntaje Global</button>
-                            <button class="subject-btn" data-sort-key="puntajesDetallados.lectura">Lectura Crítica</button>
-                            <button class="subject-btn" data-sort-key="puntajesDetallados.matematicas">Matemáticas</button>
-                            <button class="subject-btn" data-sort-key="puntajesDetallados.sociales">Sociales</button>
-                            <button class="subject-btn" data-sort-key="puntajesDetallados.ciencias">Ciencias</button>
-                            <button class="subject-btn" data-sort-key="puntajesDetallados.ingles">Inglés</button>
-                        </div>
+                    <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
+                       <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Controles Fijos -->
+            <section class="sticky top-4 z-20 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center">
+                    <div id="subject-filter-buttons" class="flex flex-wrap gap-2 items-center">
+                        <p class="font-semibold mr-2 hidden sm:block">Ordenar por:</p>
+                        <button class="subject-btn active" data-sort-key="puntajeGlobal">Puntaje Global</button>
+                        <button class="subject-btn" data-sort-key="puntajesDetallados.lectura">Lectura Crítica</button>
+                        <button class="subject-btn" data-sort-key="puntajesDetallados.matematicas">Matemáticas</button>
+                        <button class="subject-btn" data-sort-key="puntajesDetallados.sociales">Sociales</button>
+                        <button class="subject-btn" data-sort-key="puntajesDetallados.ciencias">Ciencias</button>
+                        <button class="subject-btn" data-sort-key="puntajesDetallados.ingles">Inglés</button>
                     </div>
+                    <button id="resetSortBtn" title="Restablecer orden" class="reset-sort-btn ml-4 flex-shrink-0">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                           <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 </div>
             </section>
 
@@ -324,6 +342,7 @@
             thead: document.querySelector('thead'),
             paginationControls: document.getElementById('pagination-controls'),
             subjectFilterButtons: document.getElementById('subject-filter-buttons'),
+            resetSortBtn: document.getElementById('resetSortBtn'),
             rankingSubtitle: document.getElementById('ranking-subtitle'),
             areaScoreHeader: document.getElementById('area-score-header'),
         };
@@ -590,6 +609,13 @@
                 if (button) {
                     const studentId = button.dataset.id;
                     showDetailsModal(studentId);
+                }
+            });
+            
+            elements.resetSortBtn.addEventListener('click', () => {
+                const globalButton = elements.subjectFilterButtons.querySelector('[data-sort-key="puntajeGlobal"]');
+                if (globalButton) {
+                    globalButton.click();
                 }
             });
 
