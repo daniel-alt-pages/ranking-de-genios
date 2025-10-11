@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Agregamos la biblioteca Papa Parse para leer archivos CSV -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- Agregamos Chart.js para la gráfica de dispersión -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -38,7 +40,7 @@
             --color-matematicas: #dc2626; /* red-600 */
             --color-sociales: #ca8a04; /* yellow-600 */
             --color-ciencias: #16a34a; /* green-600 */
-            --color-ingles: #9333ea;   /* purple-600 */
+            --color-ingles: #9333ea;    /* purple-600 */
         }
         /* ------------------------------------------- */
 
@@ -101,7 +103,7 @@
              background-color: white;
              border-radius: 1rem;
              height: 100%;
-         }
+        }
 
         .podium-1 { 
             /* No hay transform inicial para que el espaciado sea consistente en móvil */
@@ -333,101 +335,111 @@
                 </div>
             </section>
 
+            <!-- Nueva Sección: Gráfica de Dispersión -->
+            <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                 <h2 class="text-2xl font-bold text-brand-secondary text-center">Distribución de Puntajes Individuales de Egresados Seamos Genios (2025-3)</h2>
+                 <p class="text-sm text-gray-500 mt-1 text-center mb-6">Pasa el cursor sobre un punto para ver el detalle del estudiante.</p>
+                 <div class="relative h-96 w-full">
+                     <canvas id="scatter-plot-chart"></canvas>
+                 </div>
+            </section>
+
+
             <!-- Tabla de Ranking y Paginación -->
             <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
                  <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-                    <div class="text-center md:text-left">
-                        <h2 class="text-2xl font-bold text-brand-secondary">Ranking General</h2>
-                        <p id="ranking-subtitle" class="text-sm text-gray-500 mt-1">Ordenado por Puntaje Global</p>
-                    </div>
-                    <!-- Wrapper para las tarjetas de estadísticas -->
-                    <div class="flex items-stretch gap-4">
-                        <div class="bg-blue-50 border border-brand-secondary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-                             <p class="text-sm font-semibold text-brand-text">Total Estudiantes</p>
-                             <p id="total-students" class="text-4xl font-bold text-brand-secondary">0</p>
-                        </div>
-                        <div class="bg-orange-50 border border-brand-primary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-                            <p class="text-sm font-semibold text-brand-text">Promedio</p>
-                            <p id="average-score" class="text-4xl font-bold text-brand-primary">0</p>
-                        </div>
-                         <div class="bg-green-50 border border-green-500/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-                            <p class="text-sm font-semibold text-green-800">Mediana</p>
-                            <p id="median-score" class="text-4xl font-bold text-green-600">0</p>
-                        </div>
-                    </div>
-                </div>
+                     <div class="text-center md:text-left">
+                         <h2 class="text-2xl font-bold text-brand-secondary">Ranking General</h2>
+                         <p id="ranking-subtitle" class="text-sm text-gray-500 mt-1">Ordenado por Puntaje Global</p>
+                     </div>
+                     <!-- Wrapper para las tarjetas de estadísticas -->
+                     <div class="flex items-stretch gap-4">
+                         <div class="bg-blue-50 border border-brand-secondary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+                              <p class="text-sm font-semibold text-brand-text">Total Estudiantes</p>
+                              <p id="total-students" class="text-4xl font-bold text-brand-secondary">0</p>
+                         </div>
+                         <div class="bg-orange-50 border border-brand-primary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+                             <p class="text-sm font-semibold text-brand-text">Promedio</p>
+                             <p id="average-score" class="text-4xl font-bold text-brand-primary">0</p>
+                         </div>
+                          <div class="bg-green-50 border border-green-500/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+                             <p class="text-sm font-semibold text-green-800">Mediana</p>
+                             <p id="median-score" class="text-4xl font-bold text-green-600">0</p>
+                         </div>
+                     </div>
+                 </div>
 
-                <!-- Contenedor de herramientas de análisis -->
-                <div class="max-w-5xl mx-auto my-8">
-                    <!-- Controles para móvil -->
-                    <div class="md:hidden mb-4 space-y-4">
-                        <button id="open-filter-menu-btn" class="w-full bg-brand-primary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center justify-center gap-2 shadow-md hover:bg-orange-600 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
-                            Menú de Filtros
-                        </button>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                               <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
-                            </div>
-                            <input type="text" id="searchInputMobile" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                            <button id="clearSearchBtnMobile" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
-                               <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
-                            </button>
-                        </div>
-                    </div>
+                 <!-- Contenedor de herramientas de análisis -->
+                 <div class="max-w-5xl mx-auto my-8">
+                     <!-- Controles para móvil -->
+                     <div class="md:hidden mb-4 space-y-4">
+                         <button id="open-filter-menu-btn" class="w-full bg-brand-primary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center justify-center gap-2 shadow-md hover:bg-orange-600 transition-colors">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
+                             Menú de Filtros
+                         </button>
+                         <div class="relative">
+                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                             </div>
+                             <input type="text" id="searchInputMobile" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                             <button id="clearSearchBtnMobile" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
+                                <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                             </button>
+                         </div>
+                     </div>
 
-                    <!-- Herramientas de Análisis para Escritorio -->
-                    <div id="desktop-filters" class="hidden md:flex bg-gray-50 p-4 rounded-xl border flex-col md:flex-row items-center gap-4 md:gap-6">
-                        <!-- Search Input (Izquierda) -->
-                        <div class="w-full md:flex-1">
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                   <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
-                                </div>
-                                <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                                <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
-                                   <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
-                                </button>
-                            </div>
-                        </div>
+                     <!-- Herramientas de Análisis para Escritorio -->
+                     <div id="desktop-filters" class="hidden md:flex bg-gray-50 p-4 rounded-xl border flex-col md:flex-row items-center gap-4 md:gap-6">
+                         <!-- Search Input (Izquierda) -->
+                         <div class="w-full md:flex-1">
+                             <div class="relative">
+                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                     <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                                 </div>
+                                 <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                 <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
+                                     <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                                 </button>
+                             </div>
+                         </div>
 
-                        <!-- Filtros con Dropdown (Derecha) -->
-                        <div class="flex items-center gap-2">
-                             <span class="text-sm font-medium text-gray-600">Ordenar por:</span>
-                             <div class="relative w-full md:w-auto">
-                                <button id="sort-dropdown-btn" class="w-full md:w-56 bg-brand-secondary text-white font-semibold rounded-full py-2 px-4 text-left flex justify-between items-center transition-shadow hover:shadow-md">
-                                    <span id="sort-dropdown-label" class="truncate">Puntaje Global</span>
-                                    <svg class="h-5 w-5 transform transition-transform" id="sort-dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                </button>
-                                <div id="sort-dropdown-options" class="hidden absolute right-0 mt-2 w-full bg-white rounded-lg shadow-xl z-20 border">
-                                    <!-- Opciones generadas por JS -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                         <!-- Filtros con Dropdown (Derecha) -->
+                         <div class="flex items-center gap-2">
+                              <span class="text-sm font-medium text-gray-600">Ordenar por:</span>
+                              <div class="relative w-full md:w-auto">
+                                 <button id="sort-dropdown-btn" class="w-full md:w-56 bg-brand-secondary text-white font-semibold rounded-full py-2 px-4 text-left flex justify-between items-center transition-shadow hover:shadow-md">
+                                     <span id="sort-dropdown-label" class="truncate">Puntaje Global</span>
+                                     <svg class="h-5 w-5 transform transition-transform" id="sort-dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                 </button>
+                                 <div id="sort-dropdown-options" class="hidden absolute right-0 mt-2 w-full bg-white rounded-lg shadow-xl z-20 border">
+                                     <!-- Opciones generadas por JS -->
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
 
-                <div class="overflow-x-auto border rounded-lg md:block hidden"> <!-- Oculto en móvil -->
-                    <table class="w-full text-left">
-                        <thead class="bg-brand-header text-white">
-                            <tr>
-                                <th class="p-4 w-16 text-center sortable-header">#</th>
-                                <th class="p-4 w-2/5 text-left sortable-header" data-sort-key="nombre">Nombre Completo</th>
-                                <th class="p-4 w-1/5 text-center sortable-header" data-sort-key="puntajeGlobal">Puntaje Global</th>
-                                <th id="area-score-header" class="p-4 w-1/5 text-center area-score-col">Puntaje de Área</th>
-                                <th class="p-4 w-1/5 text-left">Municipio</th>
-                                <th class="p-4 w-28 text-center">Detalles</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ranking-table-body" class="divide-y divide-gray-200"></tbody>
-                    </table>
-                </div>
-                <div id="mobile-ranking-list" class="space-y-3 md:hidden"></div> <!-- Visible solo en móvil -->
+                 <div class="overflow-x-auto border rounded-lg md:block hidden"> <!-- Oculto en móvil -->
+                     <table class="w-full text-left">
+                         <thead class="bg-brand-header text-white">
+                             <tr>
+                                 <th class="p-4 w-16 text-center sortable-header">#</th>
+                                 <th class="p-4 w-2/5 text-left sortable-header" data-sort-key="nombre">Nombre Completo</th>
+                                 <th class="p-4 w-1/5 text-center sortable-header" data-sort-key="puntajeGlobal">Puntaje Global</th>
+                                 <th id="area-score-header" class="p-4 w-1/5 text-center area-score-col">Puntaje de Área</th>
+                                 <th class="p-4 w-1/5 text-left">Municipio</th>
+                                 <th class="p-4 w-28 text-center">Detalles</th>
+                             </tr>
+                         </thead>
+                         <tbody id="ranking-table-body" class="divide-y divide-gray-200"></tbody>
+                     </table>
+                 </div>
+                 <div id="mobile-ranking-list" class="space-y-3 md:hidden"></div> <!-- Visible solo en móvil -->
 
-                 <!-- Controles de Paginación -->
-                <div id="pagination-controls" class="pt-4 flex items-center justify-center gap-2 flex-wrap">
-                    <!-- Generado dinámicamente -->
-                </div>
+                  <!-- Controles de Paginación -->
+                 <div id="pagination-controls" class="pt-4 flex items-center justify-center gap-2 flex-wrap">
+                     <!-- Generado dinámicamente -->
+                 </div>
             </section>
         </main>
         
@@ -476,6 +488,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         let studentData = [];
+        let scatterChartInstance = null; // Variable para mantener la instancia del gráfico
         let state = {
             currentSort: { key: 'globalRank', direction: 'asc' },
             filteredData: [],
@@ -515,6 +528,7 @@
             sortDropdownLabel: document.getElementById('sort-dropdown-label'),
             sortDropdownArrow: document.getElementById('sort-dropdown-arrow'),
             sortDropdownOptions: document.getElementById('sort-dropdown-options'),
+            scatterPlotCanvas: document.getElementById('scatter-plot-chart'),
         };
 
         const filterOptions = [
@@ -543,62 +557,171 @@
         
         function processCSVData(data) {
              const processed = data.map((row, index) => {
-                const s = {
-                    nombre: row['NOMBRE'], registro: row['NÚMERO DE REGISTRO'],
-                    lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0,
-                    matematicas: parseInt(row['MATEMÁTICAS'], 10) || 0,
-                    sociales: parseInt(row['SOCIALES'], 10) || 0,
-                    ciencias: parseInt(row['CIENCIAS'], 10) || 0,
-                    ingles: parseInt(row['INGLÉS'], 10) || 0,
-                    puntaje: row['PUNTAJE'], municipio: row['MUNICIPIO']
-                };
-                return {
-                    id: `${s.registro}-${s.nombre}`, puesto: index + 1, nombre: s.nombre,
-                    registro: s.registro, municipio: s.municipio, colegio: "Seamos Genios", año: 2025,
-                    puntajeGlobal: parseInt(s.puntaje.split('/')[0], 10),
-                    puntajesDetallados: { lectura: s.lectura, matematicas: s.matematicas, sociales: s.sociales, ciencias: s.ciencias, ingles: s.ingles }
-                };
-            });
+                 const s = {
+                     nombre: row['NOMBRE'], registro: row['NÚMERO DE REGISTRO'],
+                     lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0,
+                     matematicas: parseInt(row['MATEMÁTICAS'], 10) || 0,
+                     sociales: parseInt(row['SOCIALES'], 10) || 0,
+                     ciencias: parseInt(row['CIENCIAS'], 10) || 0,
+                     ingles: parseInt(row['INGLÉS'], 10) || 0,
+                     puntaje: row['PUNTAJE'], municipio: row['MUNICIPIO']
+                 };
+                 return {
+                     id: `${s.registro}-${s.nombre}`, puesto: index + 1, nombre: s.nombre,
+                     registro: s.registro, municipio: s.municipio, colegio: "Seamos Genios", año: 2025,
+                     puntajeGlobal: parseInt(s.puntaje.split('/')[0], 10),
+                     puntajesDetallados: { lectura: s.lectura, matematicas: s.matematicas, sociales: s.sociales, ciencias: s.ciencias, ingles: s.ingles }
+                 };
+             });
             
-            processed.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
-            processed.forEach((student, index) => { student.globalRank = index + 1; });
+             processed.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
+             processed.forEach((student, index) => { student.globalRank = index + 1; });
 
-            const calculatePercentile = (arr, score) => {
-                const count = arr.length;
-                if (count === 0) return 0;
-                let lesserOrEqual = 0;
-                for (const s of arr) {
-                    if (s <= score) {
-                        lesserOrEqual++;
-                    }
-                }
-                return Math.round((lesserOrEqual / count) * 100);
-            };
+             const calculatePercentile = (arr, score) => {
+                 const count = arr.length;
+                 if (count === 0) return 0;
+                 let lesserOrEqual = 0;
+                 for (const s of arr) {
+                     if (s <= score) {
+                         lesserOrEqual++;
+                     }
+                 }
+                 return Math.round((lesserOrEqual / count) * 100);
+             };
 
-            const allGlobalScores = processed.map(s => s.puntajeGlobal);
-            processed.forEach(student => {
-                student.percentil = calculatePercentile(allGlobalScores, student.puntajeGlobal);
-            });
+             const allGlobalScores = processed.map(s => s.puntajeGlobal);
+             processed.forEach(student => {
+                 student.percentil = calculatePercentile(allGlobalScores, student.puntajeGlobal);
+             });
 
-            const subjects = ['lectura', 'matematicas', 'sociales', 'ciencias', 'ingles'];
-            subjects.forEach(subject => {
-                const allSubjectScores = processed.map(s => s.puntajesDetallados[subject]);
-                processed.forEach(student => {
-                    student.puntajesDetallados[`${subject}Percentil`] = calculatePercentile(allSubjectScores, student.puntajesDetallados[subject]);
-                });
-            });
+             const subjects = ['lectura', 'matematicas', 'sociales', 'ciencias', 'ingles'];
+             subjects.forEach(subject => {
+                 const allSubjectScores = processed.map(s => s.puntajesDetallados[subject]);
+                 processed.forEach(student => {
+                     student.puntajesDetallados[`${subject}Percentil`] = calculatePercentile(allSubjectScores, student.puntajesDetallados[subject]);
+                 });
+             });
 
 
-            studentData = [...processed];
+             studentData = [...processed];
         }
 
         function initializeDashboard() {
             populateFilterOptions();
             calculateAndDisplayStats();
             renderPodium();
+            renderScatterPlot(); // Llamar a la nueva función
             handleFilterSelection(filterOptions[0].key, filterOptions[0].label, false); 
             updateDisplay();
             setupEventListeners();
+        }
+        
+        // --- Nueva Función para la Gráfica de Dispersión ---
+        function renderScatterPlot() {
+            if (!studentData || studentData.length === 0) return;
+
+            // 1. Definir los intervalos para el eje X
+            const intervalSize = 30;
+            const minScore = Math.min(...studentData.map(s => s.puntajeGlobal));
+            const maxScore = Math.max(...studentData.map(s => s.puntajeGlobal));
+            
+            const startInterval = Math.floor(minScore / intervalSize) * intervalSize;
+            const endInterval = Math.ceil(maxScore / intervalSize) * intervalSize;
+            
+            const intervals = [];
+            for (let i = startInterval; i < endInterval; i += intervalSize) {
+                intervals.push({
+                    min: i,
+                    max: i + intervalSize - 1,
+                    label: `${i}-${i + intervalSize - 1}`
+                });
+            }
+
+            // 2. Preparar los datos para Chart.js
+            const chartData = studentData.map(student => {
+                const interval = intervals.find(iv => student.puntajeGlobal >= iv.min && student.puntajeGlobal <= iv.max);
+                return {
+                    x: interval ? interval.label : 'N/A',
+                    y: student.puntajeGlobal,
+                    studentInfo: student // Adjuntamos toda la info del estudiante
+                };
+            });
+
+            // 3. Destruir el gráfico anterior si existe para evitar duplicados
+            if (scatterChartInstance) {
+                scatterChartInstance.destroy();
+            }
+            
+            // 4. Crear el gráfico
+            const ctx = elements.scatterPlotCanvas.getContext('2d');
+            scatterChartInstance = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Puntaje de Estudiante',
+                        data: chartData,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        pointRadius: 5,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'category',
+                            labels: intervals.map(iv => iv.label),
+                            title: {
+                                display: true,
+                                text: 'Grupos de Intervalos de Puntaje Global',
+                                font: { size: 14 }
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            min: minScore - 20, // Dar un poco de espacio
+                            title: {
+                                display: true,
+                                text: 'Puntaje Global Individual',
+                                font: { size: 14 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // Ocultamos la leyenda ya que solo hay una serie
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: '#333',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 12 },
+                            padding: 10,
+                            callbacks: {
+                                // Personalizamos el tooltip para mostrar la info completa
+                                label: function(context) {
+                                    const student = context.raw.studentInfo;
+                                    if (!student) return '';
+                                    
+                                    const lines = [
+                                        `Nombre: ${student.nombre}`,
+                                        `Puntaje Global: ${student.puntajeGlobal}`,
+                                        '--- Puntajes por Área ---',
+                                        `Lectura Crítica: ${student.puntajesDetallados.lectura}`,
+                                        `Matemáticas: ${student.puntajesDetallados.matematicas}`,
+                                        `Sociales y Ciudadanas: ${student.puntajesDetallados.sociales}`,
+                                        `Ciencias Naturales: ${student.puntajesDetallados.ciencias}`,
+                                        `Inglés: ${student.puntajesDetallados.ingles}`
+                                    ];
+                                    return lines;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
         
         function populateFilterOptions() {
