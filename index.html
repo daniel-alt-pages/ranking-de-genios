@@ -160,8 +160,8 @@
             <section>
                 <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Análisis Gráfico</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Distribución de Puntajes Globales</h3><canvas id="score-distribution-chart"></canvas></div>
-                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Comparativa de Áreas</h3><canvas id="subject-radar-chart"></canvas></div>
+                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Distribución de Puntajes Globales</h3><div class="relative h-80"><canvas id="score-distribution-chart"></canvas></div></div>
+                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Comparativa de Áreas</h3><div class="relative h-80"><canvas id="subject-doughnut-chart"></canvas></div></div>
                 </div>
             </section>
 
@@ -217,6 +217,8 @@
             currentPage: 1,
             rowsPerPage: 10,
         };
+        let scoreDistributionChart = null;
+        let subjectDoughnutChart = null;
         
         const elements = {
             body: document.body,
@@ -649,7 +651,15 @@
         }
 
         function createCharts() {
-            // Gráfico de Distribución de Puntajes
+            if (scoreDistributionChart) { scoreDistributionChart.destroy(); }
+            if (subjectDoughnutChart) { subjectDoughnutChart.destroy(); }
+
+            // --- Gráfico de Distribución de Puntajes (Barras) ---
+            const barCtx = document.getElementById('score-distribution-chart').getContext('2d');
+            const barGradient = barCtx.createLinearGradient(0, 0, 0, 400);
+            barGradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
+            barGradient.addColorStop(1, 'rgba(59, 130, 246, 0.2)');
+
             const scoreRanges = { '200-250': 0, '251-300': 0, '301-350': 0, '351-400': 0, '401-450': 0, '451-500': 0 };
             studentData.forEach(s => {
                 if (s.puntajeGlobal <= 250) scoreRanges['200-250']++;
@@ -659,39 +669,85 @@
                 else if (s.puntajeGlobal <= 450) scoreRanges['401-450']++;
                 else scoreRanges['451-500']++;
             });
-            new Chart(document.getElementById('score-distribution-chart'), {
+
+            scoreDistributionChart = new Chart(barCtx, {
                 type: 'bar',
                 data: {
                     labels: Object.keys(scoreRanges),
                     datasets: [{
                         label: 'Nº de Estudiantes',
                         data: Object.values(scoreRanges),
-                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        backgroundColor: barGradient,
                         borderColor: 'rgba(59, 130, 246, 1)',
-                        borderWidth: 1
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        hoverBackgroundColor: 'rgba(59, 130, 246, 1)',
                     }]
                 },
-                options: { scales: { y: { beginAtZero: true } }, responsive: true }
+                options: { 
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 1000, easing: 'easeInOutQuart' },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            title: { display: true, text: 'Número de Estudiantes', font: { weight: 'bold' } },
+                            grid: { drawBorder: false, color: 'rgba(0, 0, 0, 0.05)' },
+                        },
+                        x: {
+                             title: { display: true, text: 'Rangos de Puntaje', font: { weight: 'bold' } },
+                             grid: { display: false },
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#fff', titleColor: '#333', bodyColor: '#666',
+                            borderColor: '#ddd', borderWidth: 1, cornerRadius: 8, padding: 10,
+                            callbacks: { label: (context) => ` ${context.dataset.label}: ${context.raw}` }
+                        }
+                    }
+                }
             });
 
-            // Gráfico Radar de Promedios
+            // --- Gráfico Comparativo de Áreas (Doughnut) ---
+            const doughnutCtx = document.getElementById('subject-doughnut-chart').getContext('2d');
             const subjectAverages = filterOptions.slice(1).map(opt => {
                 const key = opt.key.split('.')[1];
-                return studentData.reduce((acc, s) => acc + s.puntajesDetallados[key], 0) / studentData.length;
+                return (studentData.reduce((acc, s) => acc + s.puntajesDetallados[key], 0) / studentData.length).toFixed(1);
             });
-            new Chart(document.getElementById('subject-radar-chart'), {
-                type: 'radar',
+            const subjectLabels = filterOptions.slice(1).map(opt => opt.label);
+            const subjectColors = filterOptions.slice(1).map(opt => getComputedStyle(document.documentElement).getPropertyValue(opt.colorVar.match(/--[\w-]+/)[0]));
+
+            subjectDoughnutChart = new Chart(doughnutCtx, {
+                type: 'doughnut',
                 data: {
-                    labels: filterOptions.slice(1).map(opt => opt.label),
+                    labels: subjectLabels,
                     datasets: [{
-                        label: 'Promedio General por Área',
+                        label: 'Promedio de Área',
                         data: subjectAverages,
-                        backgroundColor: 'rgba(249, 115, 22, 0.2)',
-                        borderColor: 'rgba(249, 115, 22, 1)',
-                        borderWidth: 2
+                        backgroundColor: subjectColors,
+                        borderColor: '#fff',
+                        borderWidth: 3,
+                        hoverOffset: 10,
                     }]
                 },
-                options: { responsive: true, scales: { r: { beginAtZero: true, max: 100 } } }
+                options: { 
+                    responsive: true, maintainAspectRatio: false,
+                    cutout: '70%',
+                    animation: { animateRotate: true, animateScale: true, duration: 1200 },
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { usePointStyle: true, pointStyle: 'circle', padding: 20, font: { size: 12 } }
+                        },
+                        tooltip: {
+                            backgroundColor: '#fff', titleColor: '#333', bodyColor: '#666',
+                            borderColor: '#ddd', borderWidth: 1, cornerRadius: 8, padding: 10,
+                            callbacks: { label: (context) => ` ${context.label}: ${context.raw}` }
+                        }
+                    }
+                }
             });
         }
         
