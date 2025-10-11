@@ -31,6 +31,17 @@
     </script>
 
     <style>
+        /* --- COLORES POR ASIGNATURA (Placeholder) --- */
+        /* En el futuro, solo necesitarás cambiar estos colores */
+        :root {
+            --color-lectura: #0284c7; /* sky-600 */
+            --color-matematicas: #dc2626; /* red-600 */
+            --color-sociales: #ca8a04; /* yellow-600 */
+            --color-ciencias: #16a34a; /* green-600 */
+            --color-ingles: #9333ea;   /* purple-600 */
+        }
+        /* ------------------------------------------- */
+
         @property --angle {
           syntax: '<angle>';
           initial-value: 0deg;
@@ -228,12 +239,20 @@
                         <p id="max-score" class="text-5xl font-bold text-brand-secondary mt-2">0</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                        <p class="text-sm font-semibold text-brand-text">Promedio General</p>
-                        <p id="total-avg-score" class="text-5xl font-bold text-brand-primary mt-2">0</p>
+                        <p class="text-sm font-semibold text-brand-text">Estudiantes &gt; 350 Pts</p>
+                        <p id="high-scorers-count" class="text-5xl font-bold text-brand-primary mt-2">0</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-md text-center">
                         <p class="text-sm font-semibold text-brand-text">Puntaje Mínimo</p>
                         <p id="min-score" class="text-5xl font-bold text-brand-red mt-2">0</p>
+                    </div>
+                </div>
+
+                <!-- Promedios por Área -->
+                <div class="bg-white p-6 rounded-xl shadow-md mt-6">
+                    <h3 class="text-lg font-bold text-center mb-4">Promedios por Área</h3>
+                    <div id="subject-averages-container" class="flex flex-wrap justify-center gap-x-6 gap-y-4">
+                        <!-- Generado dinámicamente -->
                     </div>
                 </div>
             </section>
@@ -339,19 +358,13 @@
     <div id="filter-menu-panel" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40">
         <div id="filter-menu-content" class="absolute top-0 right-0 h-full w-full max-w-xs bg-white shadow-lg p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-brand-secondary">Menú de Filtros</h3>
+                <h3 class="text-xl font-bold text-brand-secondary">Ordenar Por</h3>
                 <button id="close-filter-menu-btn">
                     <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
-            <div class="space-y-6">
-                 <!-- Filtros por Área para Móvil -->
-                <div>
-                    <p class="text-sm font-medium text-gray-700 mb-2">Ordenar por Área</p>
-                    <div id="subject-filter-buttons-panel" class="flex flex-col gap-2 items-stretch">
-                        <!-- Botones generados por JS -->
-                    </div>
-                </div>
+            <div id="subject-filter-buttons-panel" class="flex flex-col gap-2 items-stretch">
+                <!-- Botones generados por JS -->
             </div>
         </div>
     </div>
@@ -402,7 +415,8 @@
             totalStudentsEl: document.getElementById('total-students'),
             maxScoreEl: document.getElementById('max-score'),
             minScoreEl: document.getElementById('min-score'),
-            totalAvgScoreEl: document.getElementById('total-avg-score'),
+            highScorersCount: document.getElementById('high-scorers-count'),
+            subjectAveragesContainer: document.getElementById('subject-averages-container'),
             topPerformersContainer: document.getElementById('top-performers'),
             studentModal: document.getElementById('student-modal'),
             alertModal: document.getElementById('alert-modal'),
@@ -424,11 +438,11 @@
 
         const filterOptions = [
             { key: 'puntajeGlobal', label: 'Puntaje Global' },
-            { key: 'puntajesDetallados.lectura', label: 'Lectura Crítica' },
-            { key: 'puntajesDetallados.matematicas', label: 'Matemáticas' },
-            { key: 'puntajesDetallados.sociales', label: 'Sociales' },
-            { key: 'puntajesDetallados.ciencias', label: 'Ciencias' },
-            { key: 'puntajesDetallados.ingles', label: 'Inglés' },
+            { key: 'puntajesDetallados.lectura', label: 'Lectura Crítica', colorVar: 'var(--color-lectura)' },
+            { key: 'puntajesDetallados.matematicas', label: 'Matemáticas', colorVar: 'var(--color-matematicas)' },
+            { key: 'puntajesDetallados.sociales', label: 'Sociales', colorVar: 'var(--color-sociales)' },
+            { key: 'puntajesDetallados.ciencias', label: 'Ciencias', colorVar: 'var(--color-ciencias)' },
+            { key: 'puntajesDetallados.ingles', label: 'Inglés', colorVar: 'var(--color-ingles)' },
         ];
         
         function loadInitialData() {
@@ -484,7 +498,7 @@
             populateFilterOptions();
             calculateAndDisplayStats();
             renderPodium();
-            handleFilterSelection(filterOptions[0].key, filterOptions[0].label, false); // Set initial state without re-rendering
+            handleFilterSelection(filterOptions[0].key, filterOptions[0].label, false); 
             updateDisplay();
             setupEventListeners();
         }
@@ -517,7 +531,8 @@
             elements.clearSearchBtnMobile.classList.toggle('hidden', searchVal.length === 0);
             
             state.filteredData = studentData.filter(student => 
-                student.nombre.toLowerCase().includes(searchVal) || student.municipio.toLowerCase().includes(searchVal)
+                (student.nombre && student.nombre.toLowerCase().includes(searchVal)) || 
+                (student.municipio && student.municipio.toLowerCase().includes(searchVal))
             );
 
             state.filteredData.sort((a, b) => {
@@ -753,13 +768,28 @@
         }
         
         function calculateAndDisplayStats() {
+            if (studentData.length === 0) return;
+
             const scores = studentData.map(s => s.puntajeGlobal);
-            const maxScore = Math.max(...scores);
-            const minScore = Math.min(...scores);
-            const totalAverage = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(0);
-            elements.maxScoreEl.textContent = maxScore;
-            elements.minScoreEl.textContent = minScore;
-            elements.totalAvgScoreEl.textContent = totalAverage;
+            elements.maxScoreEl.textContent = Math.max(...scores);
+            elements.minScoreEl.textContent = Math.min(...scores);
+            elements.highScorersCount.textContent = studentData.filter(s => s.puntajeGlobal > 350).length;
+
+            elements.subjectAveragesContainer.innerHTML = '';
+            filterOptions.slice(1).forEach(subjectInfo => { // Slice(1) para omitir 'Puntaje Global'
+                const subjectKey = subjectInfo.key.split('.')[1];
+                const total = studentData.reduce((sum, s) => sum + s.puntajesDetallados[subjectKey], 0);
+                const average = (total / studentData.length).toFixed(1);
+                
+                const statEl = document.createElement('div');
+                statEl.className = 'flex items-center gap-2';
+                statEl.innerHTML = `
+                    <span class="w-3 h-3 rounded-full" style="background-color: ${subjectInfo.colorVar};"></span>
+                    <span class="text-sm font-semibold">${subjectInfo.label}:</span>
+                    <span class="font-bold text-lg">${average}</span>
+                `;
+                elements.subjectAveragesContainer.appendChild(statEl);
+            });
         }
         
         loadInitialData();
