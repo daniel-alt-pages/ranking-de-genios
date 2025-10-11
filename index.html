@@ -143,6 +143,27 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
         
+        /* Estilos para los nuevos botones de íconos en móvil */
+        .subject-btn-icon {
+            padding: 0.75rem;
+            border-radius: 9999px;
+            background-color: transparent;
+            color: #5c5d5c;
+            transition: all 0.2s ease;
+        }
+        .subject-btn-icon:hover {
+            background-color: #d1d5db;
+        }
+        .subject-btn-icon.active {
+            background-color: #F97316;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .subject-btn-icon svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
         .progress-bar-bg {
             background-color: #e5e7eb;
             border-radius: 9999px;
@@ -229,40 +250,6 @@
                 </div>
             </section>
 
-            <!-- Herramientas de Análisis -->
-             <section class="bg-white p-6 rounded-xl shadow-md space-y-6">
-                <h3 class="text-2xl font-bold text-brand-text">Herramientas de Análisis</h3>
-                <div class="space-y-4 border-t border-gray-200 pt-4">
-                    <div>
-                        <label for="searchInput" class="block text-sm font-medium text-gray-700 mb-1">Buscar Estudiante</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                               <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                            <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
-                               <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-700">Ordenar Ranking por:</p>
-                        <div id="subject-filter-buttons" class="flex flex-wrap gap-2 items-center mt-2">
-                            <button class="subject-btn active" data-sort-key="puntajeGlobal">Puntaje Global</button>
-                            <button class="subject-btn" data-sort-key="puntajesDetallados.lectura">Lectura Crítica</button>
-                            <button class="subject-btn" data-sort-key="puntajesDetallados.matematicas">Matemáticas</button>
-                            <button class="subject-btn" data-sort-key="puntajesDetallados.sociales">Sociales</button>
-                            <button class="subject-btn" data-sort-key="puntajesDetallados.ciencias">Ciencias</button>
-                            <button class="subject-btn" data-sort-key="puntajesDetallados.ingles">Inglés</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
             <!-- Tabla de Ranking y Paginación -->
             <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
                  <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
@@ -282,6 +269,63 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Herramientas de Análisis (REUBICADAS) -->
+                <div class="bg-gray-50 p-6 rounded-xl border max-w-3xl mx-auto my-8">
+                    <h3 class="text-xl font-bold text-brand-text text-center">Herramientas de Análisis</h3>
+                    <div class="space-y-6 mt-4">
+                        <div>
+                            <label for="searchInput" class="block text-sm font-medium text-gray-700 mb-1 text-center">Buscar Estudiante</label>
+                            <div class="relative max-w-md mx-auto">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                   <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
+                                   <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="border-t pt-4">
+                            <p class="text-sm font-medium text-gray-700 text-center">Ordenar Ranking por:</p>
+                            <!-- Filtros de Escritorio -->
+                            <div id="subject-filter-buttons-desktop" class="hidden md:flex flex-wrap gap-2 items-center justify-center mt-2">
+                                <button class="subject-btn active" data-sort-key="puntajeGlobal">Puntaje Global</button>
+                                <button class="subject-btn" data-sort-key="puntajesDetallados.lectura">Lectura Crítica</button>
+                                <button class="subject-btn" data-sort-key="puntajesDetallados.matematicas">Matemáticas</button>
+                                <button class="subject-btn" data-sort-key="puntajesDetallados.sociales">Sociales</button>
+                                <button class="subject-btn" data-sort-key="puntajesDetallados.ciencias">Ciencias</button>
+                                <button class="subject-btn" data-sort-key="puntajesDetallados.ingles">Inglés</button>
+                            </div>
+                            <!-- Filtros de Móvil (Iconos) -->
+                            <div id="subject-filter-buttons-mobile" class="flex md:hidden justify-around items-center mt-4 p-2 bg-gray-200 rounded-full">
+                                <button class="subject-btn-icon active" data-sort-key="puntajeGlobal" title="Puntaje Global">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-6.75c-.621 0-1.125.504-1.125 1.125V18.75m9 0h-9" /></svg>
+                                </button>
+                                <button class="subject-btn-icon" data-sort-key="puntajesDetallados.lectura" title="Lectura Crítica">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                                </button>
+                                <button class="subject-btn-icon" data-sort-key="puntajesDetallados.matematicas" title="Matemáticas">
+                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7.5l3 4.5m0 0l3-4.5M12 12v5.25M15 12H9m6 3H9m12-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </button>
+                                <button class="subject-btn-icon" data-sort-key="puntajesDetallados.sociales" title="Sociales">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962a3.75 3.75 0 015.25 0m-5.25 0a3.75 3.75 0 00-5.25 0M3 13.5g3.75 2.25 5.25-2.25" /></svg>
+                                </button>
+                                <button class="subject-btn-icon" data-sort-key="puntajesDetallados.ciencias" title="Ciencias">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.215-.283.49-1.01.49-1.488s-.275-1.205-.49-1.488c-.215-.283-.401-.604-.401-.959a.75.75 0 011.5 0c0 .355-.186.676-.401.959-.215.283-.49 1.01-.49 1.488s.275 1.205.49 1.488c.215.283.401.604.401.959a.75.75 0 01-1.5 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 9.75a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75zM8.25 6.087a.75.75 0 011.5 0c0 .355-.186.676-.401.959-.215.283-.49 1.01-.49 1.488s.275 1.205.49 1.488c.215.283.401.604.401.959a.75.75 0 01-1.5 0c0-.355.186-.676.401-.959.215-.283.49-1.01.49-1.488s-.275-1.205-.49-1.488c-.215-.283-.401-.604-.401-.959zM4.5 9.75A.75.75 0 015.25 9h3a.75.75 0 010 1.5h-3A.75.75 0 014.5 9.75z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 15.75a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75zM15 15.75a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75z" /></svg>
+                                </button>
+                                <button class="subject-btn-icon" data-sort-key="puntajesDetallados.ingles" title="Inglés">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C13.18 7.061 14.287 7.5 15.5 7.5c1.213 0 2.32-.439 3.166-1.136" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="overflow-x-auto border rounded-lg md:block hidden"> <!-- Oculto en móvil -->
                     <table class="w-full text-left">
                         <thead class="bg-brand-header text-white">
@@ -359,7 +403,8 @@
             closeAlertBtn: document.getElementById('close-alert-btn'),
             thead: document.querySelector('thead'),
             paginationControls: document.getElementById('pagination-controls'),
-            subjectFilterButtons: document.getElementById('subject-filter-buttons'),
+            subjectFilterButtonsDesktop: document.getElementById('subject-filter-buttons-desktop'),
+            subjectFilterButtonsMobile: document.getElementById('subject-filter-buttons-mobile'),
             rankingSubtitle: document.getElementById('ranking-subtitle'),
             areaScoreHeader: document.getElementById('area-score-header'),
         };
@@ -797,20 +842,20 @@
                 }
             });
             
-            elements.subjectFilterButtons.addEventListener('click', e => {
-                const button = e.target.closest('.subject-btn');
+            function handleFilterSelection(button) {
                 if (!button) return;
-
-                if (button.dataset.sortKey === 'puntajeGlobal' && button.classList.contains('active')) {
-                     const isAlreadyGlobal = state.currentSort.key === 'globalRank' || state.currentSort.key === 'puntajeGlobal';
-                     if(isAlreadyGlobal) return;
-                }
-
-                elements.subjectFilterButtons.querySelector('.active').classList.remove('active');
-                button.classList.add('active');
                 
-                let sortKey = button.dataset.sortKey;
-                
+                const sortKey = button.dataset.sortKey;
+
+                // Actualizar clase activa en ambos contenedores de filtros
+                document.querySelectorAll('.subject-btn, .subject-btn-icon').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.sortKey === sortKey) {
+                        btn.classList.add('active');
+                    }
+                });
+
+                // Actualizar estado de ordenamiento
                 if (sortKey === 'puntajeGlobal') {
                     state.currentSort.key = 'globalRank';
                     state.currentSort.direction = 'asc';
@@ -819,14 +864,21 @@
                     state.currentSort.direction = 'desc';
                 }
 
-                elements.rankingSubtitle.textContent = `Ordenado por ${button.textContent}`;
+                // Actualizar subtítulos
+                const desktopButton = elements.subjectFilterButtonsDesktop.querySelector(`[data-sort-key="${sortKey}"]`);
+                const buttonText = desktopButton ? desktopButton.textContent : button.title;
+                elements.rankingSubtitle.textContent = `Ordenado por ${buttonText}`;
                 
                 if (sortKey.includes('puntajesDetallados')) {
-                    elements.areaScoreHeader.textContent = `Puntaje ${button.textContent}`;
+                    elements.areaScoreHeader.textContent = `Puntaje ${buttonText}`;
                 }
 
+                state.currentPage = 1;
                 updateDisplay();
-            });
+            }
+
+            elements.subjectFilterButtonsDesktop.addEventListener('click', e => handleFilterSelection(e.target.closest('.subject-btn')));
+            elements.subjectFilterButtonsMobile.addEventListener('click', e => handleFilterSelection(e.target.closest('.subject-btn-icon')));
         }
         
         function calculateAndDisplayStats() {
