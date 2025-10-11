@@ -161,7 +161,7 @@
                 <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Análisis Gráfico</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Distribución de Puntajes Globales</h3><div class="relative h-80"><canvas id="score-distribution-chart"></canvas></div></div>
-                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Comparativa de Áreas</h3><div class="relative h-80"><canvas id="subject-doughnut-chart"></canvas></div></div>
+                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Comparativa de Áreas</h3><div class="relative h-80"><canvas id="subject-comparison-chart"></canvas></div></div>
                 </div>
             </section>
 
@@ -218,7 +218,7 @@
             rowsPerPage: 10,
         };
         let scoreDistributionChart = null;
-        let subjectDoughnutChart = null;
+        let subjectComparisonChart = null;
         
         const elements = {
             body: document.body,
@@ -652,7 +652,7 @@
 
         function createCharts() {
             if (scoreDistributionChart) { scoreDistributionChart.destroy(); }
-            if (subjectDoughnutChart) { subjectDoughnutChart.destroy(); }
+            if (subjectComparisonChart) { subjectComparisonChart.destroy(); }
 
             // --- Gráfico de Distribución de Puntajes (Barras) ---
             const barCtx = document.getElementById('score-distribution-chart').getContext('2d');
@@ -710,41 +710,62 @@
                 }
             });
 
-            // --- Gráfico Comparativo de Áreas (Doughnut) ---
-            const doughnutCtx = document.getElementById('subject-doughnut-chart').getContext('2d');
+            // --- Gráfico Comparativo de Áreas (Barras Horizontales) ---
+            const horizontalBarCtx = document.getElementById('subject-comparison-chart').getContext('2d');
             const subjectAverages = filterOptions.slice(1).map(opt => {
                 const key = opt.key.split('.')[1];
                 return (studentData.reduce((acc, s) => acc + s.puntajesDetallados[key], 0) / studentData.length).toFixed(1);
             });
             const subjectLabels = filterOptions.slice(1).map(opt => opt.label);
-            const subjectColors = filterOptions.slice(1).map(opt => getComputedStyle(document.documentElement).getPropertyValue(opt.colorVar.match(/--[\w-]+/)[0]));
+            const subjectColors = filterOptions.slice(1).map(opt => getComputedStyle(document.documentElement).getPropertyValue(opt.colorVar.match(/--[\w-]+/)[0]).trim());
 
-            subjectDoughnutChart = new Chart(doughnutCtx, {
-                type: 'doughnut',
+            subjectComparisonChart = new Chart(horizontalBarCtx, {
+                type: 'bar',
                 data: {
                     labels: subjectLabels,
                     datasets: [{
                         label: 'Promedio de Área',
                         data: subjectAverages,
-                        backgroundColor: subjectColors,
-                        borderColor: '#fff',
-                        borderWidth: 3,
-                        hoverOffset: 10,
+                        backgroundColor: (context) => {
+                            const chart = context.chart;
+                            const {ctx, chartArea} = chart;
+                            if (!chartArea) { return null; }
+                            const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+                            const color = subjectColors[context.dataIndex];
+                            const colorRgb = color.match(/\d+/g).slice(0, 3).join(',');
+                            gradient.addColorStop(0, `rgba(${colorRgb}, 0.9)`);
+                            gradient.addColorStop(1, `rgba(${colorRgb}, 0.4)`);
+                            return gradient;
+                        },
+                        borderColor: subjectColors,
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
                     }]
                 },
-                options: { 
-                    responsive: true, maintainAspectRatio: false,
-                    cutout: '70%',
-                    animation: { animateRotate: true, animateScale: true, duration: 1200 },
-                    plugins: {
-                        legend: { 
-                            position: 'bottom',
-                            labels: { usePointStyle: true, pointStyle: 'circle', padding: 20, font: { size: 12 } }
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 1200, easing: 'easeInOutCubic' },
+                    scales: {
+                        x: {
+                            beginAtZero: true, max: 100,
+                            grid: { drawBorder: false, color: 'rgba(0, 0, 0, 0.05)'},
+                             ticks: { font: { weight: 'bold' } }
                         },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { weight: 'bold' } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#fff', titleColor: '#333', bodyColor: '#666',
-                            borderColor: '#ddd', borderWidth: 1, cornerRadius: 8, padding: 10,
-                            callbacks: { label: (context) => ` ${context.label}: ${context.raw}` }
+                            enabled: true,
+                             backgroundColor: '#333', titleColor: '#fff', bodyColor: '#fff',
+                            cornerRadius: 8, padding: 10,
+                            callbacks: { label: (context) => ` Promedio: ${context.raw}` }
                         }
                     }
                 }
