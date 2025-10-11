@@ -260,12 +260,21 @@
 
                 <!-- Contenedor de herramientas de análisis -->
                 <div class="max-w-5xl mx-auto my-8">
-                    <!-- Botón para abrir el menú en móvil -->
-                    <div class="md:hidden text-center mb-4">
-                        <button id="open-filter-menu-btn" class="bg-brand-primary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center gap-2 shadow-md hover:bg-orange-600 transition-colors">
+                    <!-- Controles para móvil -->
+                    <div class="md:hidden mb-4 space-y-4">
+                        <button id="open-filter-menu-btn" class="w-full bg-brand-primary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center justify-center gap-2 shadow-md hover:bg-orange-600 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
                             Menú de Filtros
                         </button>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                               <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <input type="text" id="searchInputMobile" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                            <button id="clearSearchBtnMobile" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
+                               <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Herramientas de Análisis para Escritorio -->
@@ -336,17 +345,7 @@
                 </button>
             </div>
             <div class="space-y-6">
-                <!-- Buscador para Móvil -->
-                <div>
-                    <label for="searchInputPanel" class="block text-sm font-medium text-gray-700 mb-1">Buscar Estudiante</label>
-                    <div class="relative">
-                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
-                        </div>
-                        <input type="text" id="searchInputPanel" placeholder="Nombre o municipio..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                    </div>
-                </div>
-                <!-- Filtros por Área para Móvil -->
+                 <!-- Filtros por Área para Móvil -->
                 <div>
                     <p class="text-sm font-medium text-gray-700 mb-2">Ordenar por Área</p>
                     <div id="subject-filter-buttons-panel" class="flex flex-col gap-2 items-stretch">
@@ -396,8 +395,9 @@
             tableBody: document.getElementById('ranking-table-body'),
             mobileList: document.getElementById('mobile-ranking-list'),
             searchInput: document.getElementById('searchInput'),
-            searchInputPanel: document.getElementById('searchInputPanel'),
+            searchInputMobile: document.getElementById('searchInputMobile'),
             clearSearchBtn: document.getElementById('clearSearchBtn'),
+            clearSearchBtnMobile: document.getElementById('clearSearchBtnMobile'),
             averageScoreEl: document.getElementById('average-score'),
             totalStudentsEl: document.getElementById('total-students'),
             maxScoreEl: document.getElementById('max-score'),
@@ -514,6 +514,7 @@
         function filterAndSortData() {
             const searchVal = elements.searchInput.value.toLowerCase();
             elements.clearSearchBtn.classList.toggle('hidden', searchVal.length === 0);
+            elements.clearSearchBtnMobile.classList.toggle('hidden', searchVal.length === 0);
             
             state.filteredData = studentData.filter(student => 
                 student.nombre.toLowerCase().includes(searchVal) || student.municipio.toLowerCase().includes(searchVal)
@@ -660,20 +661,17 @@
         function closeFilterMenu() { elements.filterMenuContent.classList.remove('panel-enter-active'); elements.filterMenuContent.classList.add('panel-leave-active'); setTimeout(() => { elements.filterMenuPanel.classList.add('hidden'); }, 300); elements.body.classList.remove('overflow-hidden'); }
         
         function handleFilterSelection(sortKey, label, shouldUpdateDisplay = true) {
-            // Update state
             state.currentSort = (sortKey === 'puntajeGlobal')
                 ? { key: 'globalRank', direction: 'asc' }
                 : { key: sortKey, direction: 'desc' };
             state.currentPage = 1;
 
-            // Update UI elements
             elements.sortDropdownLabel.textContent = label;
             elements.rankingSubtitle.textContent = `Ordenado por ${label}`;
             if (sortKey.includes('puntajesDetallados')) {
                 elements.areaScoreHeader.textContent = `Puntaje ${label}`;
             }
             
-            // Update active classes for panel buttons
             elements.subjectFilterButtonsPanel.querySelectorAll('.subject-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.sortKey === sortKey);
             });
@@ -687,13 +685,21 @@
             const syncSearchInputs = (e) => {
                 const value = e.target.value;
                 elements.searchInput.value = value;
-                elements.searchInputPanel.value = value;
+                elements.searchInputMobile.value = value;
                 state.currentPage = 1; 
                 updateDisplay();
             };
             elements.searchInput.addEventListener('input', syncSearchInputs);
-            elements.searchInputPanel.addEventListener('input', syncSearchInputs);
-            elements.clearSearchBtn.addEventListener('click', () => { elements.searchInput.value = ''; elements.searchInputPanel.value = ''; state.currentPage = 1; updateDisplay(); });
+            elements.searchInputMobile.addEventListener('input', syncSearchInputs);
+            
+            const clearSearch = () => {
+                elements.searchInput.value = '';
+                elements.searchInputMobile.value = '';
+                state.currentPage = 1;
+                updateDisplay();
+            };
+            elements.clearSearchBtn.addEventListener('click', clearSearch);
+            elements.clearSearchBtnMobile.addEventListener('click', clearSearch);
             
             elements.closeAlertBtn.addEventListener('click', closeAlertModal);
             elements.alertModal.addEventListener('click', (e) => { if (e.target === elements.alertModal) closeAlertModal(); });
@@ -716,7 +722,6 @@
 
             document.getElementById('app-container').addEventListener('click', e => { if (e.target.closest('.ver-mas-btn')) { showDetailsModal(e.target.closest('.ver-mas-btn').dataset.id); } });
             
-            // Dropdown listeners
             elements.sortDropdownBtn.addEventListener('click', () => {
                 elements.sortDropdownOptions.classList.toggle('hidden');
                 elements.sortDropdownArrow.classList.toggle('rotate-180');
@@ -736,7 +741,6 @@
                 }
             });
 
-            // Mobile Panel listeners
             elements.subjectFilterButtonsPanel.addEventListener('click', e => {
                 if(e.target.matches('.subject-btn')) {
                     handleFilterSelection(e.target.dataset.sortKey, e.target.textContent);
