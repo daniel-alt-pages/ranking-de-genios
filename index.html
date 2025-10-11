@@ -279,7 +279,9 @@
         }
         
         function processCSVData(data) {
-             const processed = data.map((row, index) => {
+             const processed = data
+                .filter(row => row && row.NOMBRE && row.PUNTAJE) // Filtro para ignorar filas vacías o malformadas
+                .map((row, index) => {
                 const s = {
                     nombre: row['NOMBRE'], registro: row['NÚMERO DE REGISTRO'],
                     lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0,
@@ -289,10 +291,13 @@
                     ingles: parseInt(row['INGLÉS'], 10) || 0,
                     puntaje: row['PUNTAJE'], municipio: row['MUNICIPIO']
                 };
+                
+                const puntajeGlobal = s.puntaje ? parseInt(s.puntaje.split('/')[0], 10) : 0;
+
                 return {
                     id: `${s.registro}-${s.nombre}`, puesto: index + 1, nombre: s.nombre,
                     registro: s.registro, municipio: s.municipio, colegio: "Seamos Genios", año: 2025,
-                    puntajeGlobal: parseInt(s.puntaje.split('/')[0], 10),
+                    puntajeGlobal: isNaN(puntajeGlobal) ? 0 : puntajeGlobal,
                     puntajesDetallados: { lectura: s.lectura, matematicas: s.matematicas, sociales: s.sociales, ciencias: s.ciencias, ingles: s.ingles }
                 };
             });
@@ -777,4 +782,5 @@
     </script>
 </body>
 </html>
+"
 
