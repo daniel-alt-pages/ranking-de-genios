@@ -104,10 +104,11 @@
          }
 
         .podium-1 { 
-            transform: translateY(-20px);
+            /* No hay transform inicial para que el espaciado sea consistente en móvil */
         }
         .podium-1:hover {
-            transform: translateY(-30px) scale(1.02);
+            /* Se mantiene un hover consistente para todos los tamaños */
+            transform: translateY(-10px) scale(1.02);
         }
         .podium-1::before {
             background: conic-gradient(from var(--angle), #B8860B, #FFD700, #F0E68C, #FFD700, #B8860B);
@@ -250,6 +251,16 @@
           #subject-averages-container > :last-child:nth-child(odd) {
             grid-column: span 2 / span 2;
           }
+        }
+
+        /* Aplica el levantamiento del podio solo en pantallas de escritorio */
+        @media (min-width: 768px) {
+            .podium-1 {
+                transform: translateY(-20px);
+            }
+            .podium-1:hover {
+                transform: translateY(-30px) scale(1.02);
+            }
         }
     </style>
 </head>
