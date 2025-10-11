@@ -161,7 +161,7 @@
                 <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Análisis Gráfico</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Distribución de Puntajes Globales</h3><div class="relative h-80"><canvas id="score-distribution-chart"></canvas></div></div>
-                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Comparativa de Áreas</h3><div class="relative h-80"><canvas id="subject-comparison-chart"></canvas></div></div>
+                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Comparativa de Áreas</h3><div class="relative h-80"><canvas id="subject-doughnut-chart"></canvas></div></div>
                 </div>
             </section>
 
@@ -218,7 +218,7 @@
             rowsPerPage: 10,
         };
         let scoreDistributionChart = null;
-        let subjectComparisonChart = null;
+        let subjectDoughnutChart = null;
         
         const elements = {
             body: document.body,
@@ -279,9 +279,7 @@
         }
         
         function processCSVData(data) {
-             const processed = data
-                .filter(row => row && row.NOMBRE && row.PUNTAJE) // Filtro para ignorar filas vacías o malformadas
-                .map((row, index) => {
+             const processed = data.map((row, index) => {
                 const s = {
                     nombre: row['NOMBRE'], registro: row['NÚMERO DE REGISTRO'],
                     lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0,
@@ -291,13 +289,10 @@
                     ingles: parseInt(row['INGLÉS'], 10) || 0,
                     puntaje: row['PUNTAJE'], municipio: row['MUNICIPIO']
                 };
-                
-                const puntajeGlobal = s.puntaje ? parseInt(s.puntaje.split('/')[0], 10) : 0;
-
                 return {
                     id: `${s.registro}-${s.nombre}`, puesto: index + 1, nombre: s.nombre,
                     registro: s.registro, municipio: s.municipio, colegio: "Seamos Genios", año: 2025,
-                    puntajeGlobal: isNaN(puntajeGlobal) ? 0 : puntajeGlobal,
+                    puntajeGlobal: parseInt(s.puntaje.split('/')[0], 10),
                     puntajesDetallados: { lectura: s.lectura, matematicas: s.matematicas, sociales: s.sociales, ciencias: s.ciencias, ingles: s.ingles }
                 };
             });
@@ -657,7 +652,7 @@
 
         function createCharts() {
             if (scoreDistributionChart) { scoreDistributionChart.destroy(); }
-            if (subjectComparisonChart) { subjectComparisonChart.destroy(); }
+            if (subjectDoughnutChart) { subjectDoughnutChart.destroy(); }
 
             // --- Gráfico de Distribución de Puntajes (Barras) ---
             const barCtx = document.getElementById('score-distribution-chart').getContext('2d');
@@ -715,62 +710,41 @@
                 }
             });
 
-            // --- Gráfico Comparativo de Áreas (Barras Horizontales) ---
-            const horizontalBarCtx = document.getElementById('subject-comparison-chart').getContext('2d');
+            // --- Gráfico Comparativo de Áreas (Doughnut) ---
+            const doughnutCtx = document.getElementById('subject-doughnut-chart').getContext('2d');
             const subjectAverages = filterOptions.slice(1).map(opt => {
                 const key = opt.key.split('.')[1];
                 return (studentData.reduce((acc, s) => acc + s.puntajesDetallados[key], 0) / studentData.length).toFixed(1);
             });
             const subjectLabels = filterOptions.slice(1).map(opt => opt.label);
-            const subjectColors = filterOptions.slice(1).map(opt => getComputedStyle(document.documentElement).getPropertyValue(opt.colorVar.match(/--[\w-]+/)[0]).trim());
+            const subjectColors = filterOptions.slice(1).map(opt => getComputedStyle(document.documentElement).getPropertyValue(opt.colorVar.match(/--[\w-]+/)[0]));
 
-            subjectComparisonChart = new Chart(horizontalBarCtx, {
-                type: 'bar',
+            subjectDoughnutChart = new Chart(doughnutCtx, {
+                type: 'doughnut',
                 data: {
                     labels: subjectLabels,
                     datasets: [{
                         label: 'Promedio de Área',
                         data: subjectAverages,
-                        backgroundColor: (context) => {
-                            const chart = context.chart;
-                            const {ctx, chartArea} = chart;
-                            if (!chartArea) { return null; }
-                            const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-                            const color = subjectColors[context.dataIndex];
-                            const colorRgb = color.match(/\d+/g).slice(0, 3).join(',');
-                            gradient.addColorStop(0, `rgba(${colorRgb}, 0.9)`);
-                            gradient.addColorStop(1, `rgba(${colorRgb}, 0.4)`);
-                            return gradient;
-                        },
-                        borderColor: subjectColors,
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        borderSkipped: false,
+                        backgroundColor: subjectColors,
+                        borderColor: '#fff',
+                        borderWidth: 3,
+                        hoverOffset: 10,
                     }]
                 },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: { duration: 1200, easing: 'easeInOutCubic' },
-                    scales: {
-                        x: {
-                            beginAtZero: true, max: 100,
-                            grid: { drawBorder: false, color: 'rgba(0, 0, 0, 0.05)'},
-                             ticks: { font: { weight: 'bold' } }
-                        },
-                        y: {
-                            grid: { display: false },
-                            ticks: { font: { weight: 'bold' } }
-                        }
-                    },
+                options: { 
+                    responsive: true, maintainAspectRatio: false,
+                    cutout: '70%',
+                    animation: { animateRotate: true, animateScale: true, duration: 1200 },
                     plugins: {
-                        legend: { display: false },
+                        legend: { 
+                            position: 'bottom',
+                            labels: { usePointStyle: true, pointStyle: 'circle', padding: 20, font: { size: 12 } }
+                        },
                         tooltip: {
-                            enabled: true,
-                             backgroundColor: '#333', titleColor: '#fff', bodyColor: '#fff',
-                            cornerRadius: 8, padding: 10,
-                            callbacks: { label: (context) => ` Promedio: ${context.raw}` }
+                            backgroundColor: '#fff', titleColor: '#333', bodyColor: '#666',
+                            borderColor: '#ddd', borderWidth: 1, cornerRadius: 8, padding: 10,
+                            callbacks: { label: (context) => ` ${context.label}: ${context.raw}` }
                         }
                     }
                 }
@@ -782,5 +756,4 @@
     </script>
 </body>
 </html>
-"
 
