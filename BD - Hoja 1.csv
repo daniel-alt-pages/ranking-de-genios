@@ -1,6 +1,5 @@
 ,NOMBRE,NÚMERO DE REGISTRO,LECTURA CRÍTICA,MATEMÁTICAS,SOCIALES,CIENCIAS,INGLÉS,PUNTAJE,MUNICIPIO
 ,Ariadna Arbelaez Pinzon,AC202532388197,68,65,68,63,67,330/500,Ibagué - Tolima
-,Abimael David Figueroa Morelo,AC202535336847,76,83,81,77,100,404/500,Cartagena De Indias - Bolivar
 ,Hellen Daniela Mantilla Corzo,AC202532552933,80,100,100,100,100,477/500,Bucaramanga - Santander
 ,Luis Santiago De Brigard De La Hoz,AC202533752664,79,85,100,80,73,425/500,Valledupar - Cesar
 ,William David Castillo Peñuela,AC202533752664,65,68,73,75,88,358/500,Bogotá D.C. - Bogotá
@@ -15,7 +14,6 @@
 ,Chiudacchang Collazos Trujillo,AC202532501286,76,86,80,100,79,425/500,Santander De Quilichao - Cauca
 ,Liseth Camila Cadena Caicedo,AC202531873496,81,100,83,100,100,458/500,Neiva - Huila
 ,Jeronimo Osorio Dietes,AC202530766089,77,83,100,76,82,419/500,Yopal - Casanare
-,Valeria Ocampo Serpa,AC202533758190,76,100,76,100,84,438/500,Turbaco - Bolivar
 ,Adriana Estefania Maya Maya,AC202535748884,80,100,100,100,100,477/500,Túquerres - Nariño
 ,Luis Angel Medina Gómez ,AC202536062301,74,81,79,77,77,388/500,Jamundí - Valle
 ,Saul Daniel Fontiveros Dejanon,AC202532715654,75,84,70,72,80,378/500,Cúcuta - Norte Santander
@@ -31,8 +29,6 @@
 ,Gloria Carolina Humanez Tobar,AC202533570769,80,83,82,82,100,416/500,Montería - Cordoba
 ,Juan Miguel Guerrero Tenorio,AC202530627216,73,68,73,75,66,359/500,Cali - Valle
 ,Jose Luis Rodriguez Garzon,AC202530157594,53,71,57,54,59,294/500,Puerto Concordia - Meta
-,Gloria Carolina Humanez Tobar,AC202533570769,80,83,82,82,100,416/500,Montería - Cordoba
-,Yeliana Campo Barraza,AC202530123679,78,82,80,80,76,398/500,Barranquilla - Atlantico
 ,Jhosep Herney Vargas Vargas,AC202510043380,78,100,79,100,81,443/500, Aguachica - Cesar
 ,Juan Daniel Villamizar Espinel,AC202533845518,69,100,79,69,67,392/500,Sardinata - Norte Santander
 ,Yuliana Paola Chacon Barragan,AC202530790733,100,100,79,79,78,443/500,Barranquilla - Atlantico
@@ -74,3 +70,4 @@
 ,Julieth Andreina Mongue Tueros,AC202533104445,79,83,78,76,80,395/500,"San Sebastián De Buenavista - Magdalena"
 ,"Mahonrie Moriáncumer Cortes Delgado",AC202536183206,80,100,83,82,100,437/500,Neiva - Huila
 ,Ricardo Jesus Narvaez Rosero,AC202533377306,68,69,76,61,69,343/500,Consacá - Nariño
+
