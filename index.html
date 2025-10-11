@@ -158,15 +158,891 @@
             
             <!-- Análisis Gráfico -->
             <section>
-                <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Análisis Gráfico</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Distribución de Puntajes Globales</h3><div class="relative h-80"><canvas id="score-distribution-chart"></canvas></div></div>
-                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold text-center mb-4">Comparativa de Áreas</h3><div class="relative h-80"><canvas id="subject-comparison-chart"></canvas></div></div>
+                 <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Análisis Gráfico</h2>
+                 <div class="bg-white p-6 rounded-xl shadow-md">
+                     <h3 class="text-lg font-bold text-center mb-4">Distribución de Puntajes Globales</h3>
+                     <div class="relative h-80">
+                         <canvas id="score-distribution-chart"></canvas>
+                     </div>
+                 </div>
+            </section>
+
+            <!-- Tabla de Clasificación -->
+            <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                    <div class="text-center md:text-left"><h2 class="text-2xl font-bold text-brand-secondary">Clasificación de Egresados: Seamos Genios 2025-3</h2><p id="ranking-subtitle" class="text-sm text-gray-500 mt-1">Ordenado por Puntaje Global</p></div>
+                    <div class="flex items-stretch gap-4">
+                        <div class="bg-blue-50 border border-brand-secondary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center"><p class="text-sm font-semibold text-brand-text">Total Estudiantes</p><p id="total-students" class="text-4xl font-bold text-brand-secondary">0</p></div>
+                        <div class="bg-orange-50 border border-brand-primary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center"><p class="text-sm font-semibold text-brand-text">Promedio</p><p id="average-score" class="text-4xl font-bold text-brand-primary">0</p></div>
+                        <div class="bg-green-50 border border-green-500/20 p-4 rounded-lg flex flex-col justify-center items-center text-center"><p class="text-sm font-semibold text-green-800">Mediana</p><p id="median-score" class="text-4xl font-bold text-green-600">0</p></div>
+                    </div>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-md mt-8">
-                    <h3 class="text-lg font-bold text-center mb-4">Distribución de Puntajes Individuales de Egresados Seamos Genios (2025-3)</h3>
-                    <div class="relative h-96"><canvas id="individual-scatter-chart"></canvas></div>
+
+                <div class="max-w-5xl mx-auto my-8">
+                    <div class="md:hidden mb-4 space-y-4">
+                        <button id="open-filter-menu-btn" class="w-full bg-brand-primary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center justify-center gap-2 shadow-md hover:bg-orange-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>Menú de Filtros</button>
+                        <div class="relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg></div><input type="text" id="searchInputMobile" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary"><button id="clearSearchBtnMobile" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden"><svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg></button></div>
+                    </div>
+                    <div id="desktop-filters" class="hidden md:flex bg-gray-50 p-4 rounded-xl border flex-col md:flex-row items-center gap-4 md:gap-6">
+                        <div class="w-full md:flex-1"><div class="relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg></div><input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary"><button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden"><svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg></button></div></div>
+                        <div class="flex items-center gap-2"><span class="text-sm font-medium text-gray-600">Ordenar por:</span><div class="relative w-full md:w-auto"><button id="sort-dropdown-btn" class="w-full md:w-56 bg-brand-secondary text-white font-semibold rounded-full py-2 px-4 text-left flex justify-between items-center transition-shadow hover:shadow-md"><span id="sort-dropdown-label" class="truncate">Puntaje Global</span><svg class="h-5 w-5 transform transition-transform" id="sort-dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button><div id="sort-dropdown-options" class="hidden absolute right-0 mt-2 w-full bg-white rounded-lg shadow-xl z-20 border"></div></div></div>
+                    </div>
                 </div>
+
+                <div class="overflow-x-auto border rounded-lg md:block hidden"><table class="w-full text-left"><thead class="bg-brand-header text-white"><tr><th class="p-4 w-16 text-center sortable-header">#</th><th class="p-4 w-2/5 text-left sortable-header" data-sort-key="nombre">Nombre Completo</th><th class="p-4 w-1/5 text-center sortable-header" data-sort-key="puntajeGlobal">Puntaje Global</th><th id="area-score-header" class="p-4 w-1/5 text-center area-score-col">Puntaje de Área</th><th class="p-4 w-1/5 text-left">Municipio</th><th class="p-4 w-28 text-center">Detalles</th></tr></thead><tbody id="ranking-table-body" class="divide-y divide-gray-200"></tbody></table></div>
+                <div id="mobile-ranking-list" class="space-y-3 md:hidden"></div>
+                <div id="pagination-controls" class="pt-4 flex items-center justify-center gap-2 flex-wrap"></div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 text-gray-500"><p>&copy; 2025 SeamosGenios. Todos los derechos reservados.</p></footer>
+    </div>
+    
+    <div id="filter-menu-panel" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"><div id="filter-menu-content" class="absolute top-0 right-0 h-full w-full max-w-xs bg-white shadow-lg p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-brand-secondary">Ordenar Por</h3><button id="close-filter-menu-btn"><svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="subject-filter-buttons-panel" class="flex flex-col gap-2 items-stretch"></div></div></div>
+    <div id="student-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-start justify-center p-4 overflow-y-auto hidden z-50"></div>
+    <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50"><div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 sm:p-8 relative transform modal-enter text-center"><h3 class="text-xl font-bold text-brand-secondary mb-4">¡Próximamente!</h3><p>Estamos diseñando y subiendo los reportes individuales. ¡Vuelve pronto!</p><button id="close-alert-btn" class="mt-6 bg-brand-primary text-white font-bold py-2 px-6 rounded-lg w-full hover:bg-orange-600 transition-colors">Entendido</button></div></div>
+
+    <script>
+    // --- FUNCIÓN PARA ENMASCARAR REGISTRO ---
+    function maskRegistrationNumber(reg) {
+        if (typeof reg !== 'string' || reg.length < 8) return reg;
+        const prefix = reg.substring(0, 4);
+        const suffix = reg.substring(reg.length - 4);
+        return `${prefix}*****${suffix}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        let studentData = [];
+        let state = {
+            currentSort: { key: 'globalRank', direction: 'asc' },
+            filteredData: [],
+            currentPage: 1,
+            rowsPerPage: 10,
+        };
+        let scoreDistributionChart = null;
+        let subjectComparisonChart = null;
+        let individualScatterChart = null;
+        
+        const elements = {
+            body: document.body,
+            tableBody: document.getElementById('ranking-table-body'),
+            mobileList: document.getElementById('mobile-ranking-list'),
+            searchInput: document.getElementById('searchInput'),
+            searchInputMobile: document.getElementById('searchInputMobile'),
+            clearSearchBtn: document.getElementById('clearSearchBtn'),
+            clearSearchBtnMobile: document.getElementById('clearSearchBtnMobile'),
+            averageScoreEl: document.getElementById('average-score'),
+            medianScoreEl: document.getElementById('median-score'),
+            totalStudentsEl: document.getElementById('total-students'),
+            maxScoreEl: document.getElementById('max-score'),
+            minScoreEl: document.getElementById('min-score'),
+            highScorersCount: document.getElementById('high-scorers-count'),
+            subjectAveragesContainer: document.getElementById('subject-averages-container'),
+            topPerformersContainer: document.getElementById('top-performers'),
+            studentModal: document.getElementById('student-modal'),
+            alertModal: document.getElementById('alert-modal'),
+            closeAlertBtn: document.getElementById('close-alert-btn'),
+            thead: document.querySelector('thead'),
+            paginationControls: document.getElementById('pagination-controls'),
+            subjectFilterButtonsPanel: document.getElementById('subject-filter-buttons-panel'),
+            rankingSubtitle: document.getElementById('ranking-subtitle'),
+            areaScoreHeader: document.getElementById('area-score-header'),
+            openFilterMenuBtn: document.getElementById('open-filter-menu-btn'),
+            closeFilterMenuBtn: document.getElementById('close-filter-menu-btn'),
+            filterMenuPanel: document.getElementById('filter-menu-panel'),
+            filterMenuContent: document.getElementById('filter-menu-content'),
+            sortDropdownBtn: document.getElementById('sort-dropdown-btn'),
+            sortDropdownLabel: document.getElementById('sort-dropdown-label'),
+            sortDropdownArrow: document.getElementById('sort-dropdown-arrow'),
+            sortDropdownOptions: document.getElementById('sort-dropdown-options'),
+        };
+
+        const filterOptions = [
+            { key: 'puntajeGlobal', label: 'Puntaje Global' },
+            { key: 'puntajesDetallados.lectura', label: 'Lectura Crítica', colorVar: 'var(--color-lectura)' },
+            { key: 'puntajesDetallados.matematicas', label: 'Matemáticas', colorVar: 'var(--color-matematicas)' },
+            { key: 'puntajesDetallados.sociales', label: 'Sociales', colorVar: 'var(--color-sociales)' },
+            { key: 'puntajesDetallados.ciencias', label: 'Ciencias', colorVar: 'var(--color-ciencias)' },
+            { key: 'puntajesDetallados.ingles', label: 'Inglés', colorVar: 'var(--color-ingles)' },
+        ];
+        
+        function loadInitialData() {
+            const csvFilePath = 'BD - Hoja 1.csv';
+            Papa.parse(csvFilePath, {
+                download: true, header: true, skipEmptyLines: true,
+                complete: (results) => {
+                    processCSVData(results.data);
+                    initializeDashboard();
+                },
+                error: (error) => {
+                    alert(`Ocurrió un error al cargar el archivo de datos CSV. Asegúrate de que el archivo '${csvFilePath}' se encuentra en la misma carpeta que este archivo HTML.`);
+                    console.error("Error al cargar CSV:", error);
+                }
+            });
+        }
+        
+        function processCSVData(data) {
+             const processed = data
+                .filter(row => row && row.NOMBRE && row.PUNTAJE) // Filtro para ignorar filas vacías o malformadas
+                .map((row, index) => {
+                const s = {
+                    nombre: row['NOMBRE'], registro: row['NÚMERO DE REGISTRO'],
+                    lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0,
+                    matematicas: parseInt(row['MATEMÁTICAS'], 10) || 0,
+                    sociales: parseInt(row['SOCIALES'], 10) || 0,
+                    ciencias: parseInt(row['CIENCIAS'], 10) || 0,
+                    ingles: parseInt(row['INGLÉS'], 10) || 0,
+                    puntaje: row['PUNTAJE'], municipio: row['MUNICIPIO']
+                };
+                
+                const puntajeGlobal = s.puntaje ? parseInt(s.puntaje.split('/')[0], 10) : 0;
+
+                return {
+                    id: `${s.registro}-${s.nombre}`, puesto: index + 1, nombre: s.nombre,
+                    registro: s.registro, municipio: s.municipio, colegio: "Seamos Genios", año: 2025,
+                    puntajeGlobal: isNaN(puntajeGlobal) ? 0 : puntajeGlobal,
+                    puntajesDetallados: { lectura: s.lectura, matematicas: s.matematicas, sociales: s.sociales, ciencias: s.ciencias, ingles: s.ingles }
+                };
+            });
+            
+            processed.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
+            processed.forEach((student, index) => { student.globalRank = index + 1; });
+
+            const calculatePercentile = (arr, score) => {
+                const count = arr.length;
+                if (count === 0) return 0;
+                let lesserOrEqual = 0;
+                for (const s of arr) { if (s <= score) { lesserOrEqual++; } }
+                return Math.round((lesserOrEqual / count) * 100);
+            };
+
+            const allGlobalScores = processed.map(s => s.puntajeGlobal);
+            processed.forEach(student => { student.percentil = calculatePercentile(allGlobalScores, student.puntajeGlobal); });
+
+            const subjects = ['lectura', 'matematicas', 'sociales', 'ciencias', 'ingles'];
+            subjects.forEach(subject => {
+                const allSubjectScores = processed.map(s => s.puntajesDetallados[subject]);
+                processed.forEach(student => { student.puntajesDetallados[`${subject}Percentil`] = calculatePercentile(allSubjectScores, student.puntajesDetallados[subject]); });
+            });
+
+            studentData = [...processed];
+        }
+
+        function initializeDashboard() {
+            populateFilterOptions();
+            calculateAndDisplayStats();
+            createCharts();
+            renderPodium();
+            handleFilterSelection(filterOptions[0].key, filterOptions[0].label, false); 
+            updateDisplay();
+            setupEventListeners();
+        }
+        
+        function populateFilterOptions() {
+            elements.sortDropdownOptions.innerHTML = filterOptions.map(opt => `<a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" data-sort-key="${opt.key}">${opt.label}</a>`).join('');
+            elements.subjectFilterButtonsPanel.innerHTML = filterOptions.map(opt => `<button class="subject-btn" data-sort-key="${opt.key}">${opt.label}</button>`).join('');
+        }
+
+        function updateDisplay() {
+            filterAndSortData();
+            const totalPages = Math.ceil(state.filteredData.length / state.rowsPerPage);
+            if(state.currentPage > totalPages) state.currentPage = totalPages || 1;
+            renderPaginatedTable();
+            renderMobileList();
+            renderPaginationControls();
+            updateAverageAndMedian(state.filteredData);
+            elements.totalStudentsEl.textContent = state.filteredData.length;
+            updateSortIcons();
+        }
+
+        function filterAndSortData() {
+            const searchVal = elements.searchInput.value.toLowerCase();
+            elements.clearSearchBtn.classList.toggle('hidden', searchVal.length === 0);
+            elements.clearSearchBtnMobile.classList.toggle('hidden', searchVal.length === 0);
+            
+            state.filteredData = studentData.filter(student => 
+                (student.nombre && student.nombre.toLowerCase().includes(searchVal)) || 
+                (student.municipio && student.municipio.toLowerCase().includes(searchVal))
+            );
+
+            state.filteredData.sort((a, b) => {
+                const key = state.currentSort.key;
+                let valA, valB;
+                if (key.includes('.')) {
+                    const [obj, prop] = key.split('.');
+                    valA = a[obj][prop]; valB = b[obj][prop];
+                } else {
+                    valA = a[key]; valB = b[key];
+                }
+                let comparison = (typeof valA === 'string') ? valA.localeCompare(valB) : valA - valB;
+                let primaryDiff = (state.currentSort.direction === 'asc') ? comparison : -comparison;
+                return primaryDiff !== 0 ? primaryDiff : b.puntajeGlobal - a.puntajeGlobal;
+            });
+        }
+
+        function renderPaginatedTable() {
+            elements.tableBody.innerHTML = '';
+            const start = (state.currentPage - 1) * state.rowsPerPage;
+            const end = start + state.rowsPerPage;
+            const paginatedItems = state.filteredData.slice(start, end);
+            elements.body.classList.toggle('show-area-score', state.currentSort.key.includes('puntajesDetallados'));
+
+            if (paginatedItems.length === 0) {
+                elements.tableBody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-gray-500">No se encontraron estudiantes.</td></tr>`;
+                return;
+            }
+
+            paginatedItems.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.className = `table-row-animate`;
+                row.style.animationDelay = `${index * 50}ms`;
+                
+                let areaScoreHtml = '';
+                if (state.currentSort.key.includes('puntajesDetallados')) {
+                    const [obj, prop] = state.currentSort.key.split('.');
+                    areaScoreHtml = `<td class="p-6 text-center font-bold text-brand-secondary area-score-col">${student[obj][prop]}</td>`;
+                } else {
+                    areaScoreHtml = `<td class="p-6 text-center font-bold text-brand-secondary area-score-col"></td>`;
+                }
+
+                let rankHtml = student.globalRank;
+                if (student.globalRank <= 3) rankHtml = `<span class="text-2xl">${['🥇', '🥈', '🥉'][student.globalRank-1]}</span>`;
+                else if (student.globalRank <= 5) rankHtml = `<div class="rank-badge rank-${student.globalRank}">${student.globalRank}</div>`;
+
+                row.innerHTML = `
+                    <td class="p-6 w-16 text-center font-semibold">${rankHtml}</td>
+                    <td class="p-6 font-medium text-brand-text text-left">${student.nombre}</td>
+                    <td class="p-6 text-center text-lg font-bold text-brand-primary">${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span></td>
+                    ${areaScoreHtml}
+                    <td class="p-6 text-left">${student.municipio}</td>
+                    <td class="p-6 text-center"><button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors">Ver más</button></td>`;
+                elements.tableBody.appendChild(row);
+            });
+        }
+        
+        function renderMobileList() {
+            elements.mobileList.innerHTML = '';
+            const start = (state.currentPage - 1) * state.rowsPerPage;
+            const end = start + state.rowsPerPage;
+            const paginatedItems = [...state.filteredData].sort((a,b) => a.globalRank - b.globalRank).slice(start, end);
+            if (paginatedItems.length === 0) {
+                elements.mobileList.innerHTML = `<div class="text-center p-8 text-gray-500">No se encontraron estudiantes.</div>`;
+                return;
+            }
+            paginatedItems.forEach((student) => {
+                let rankHtml = `<div class="font-semibold text-xl w-10 h-10 flex items-center justify-center">${student.globalRank}</div>`;
+                if (student.globalRank <= 3) rankHtml = `<span class="text-3xl">${['🥇', '🥈', '🥉'][student.globalRank-1]}</span>`;
+                else if (student.globalRank <= 5) rankHtml = `<div class="rank-badge rank-${student.globalRank} !w-10 !h-10 text-lg">${student.globalRank}</div>`;
+                
+                let areaScoreHtml = '';
+                if (state.currentSort.key.includes('puntajesDetallados')) {
+                    const subjectInfo = filterOptions.find(opt => opt.key === state.currentSort.key);
+                    const subjectKey = subjectInfo.key.split('.')[1];
+                    areaScoreHtml = `<div class="mobile-area-score text-sm" style="color: ${subjectInfo.colorVar};">
+                        <span class="font-semibold">${subjectInfo.label}:</span>
+                        <span class="font-bold">${student.puntajesDetallados[subjectKey]}</span>
+                    </div>`;
+                } else {
+                     areaScoreHtml = `<div class="mobile-area-score"></div>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-md p-4 flex items-center gap-4';
+                card.innerHTML = `<div class="w-12 text-center flex-shrink-0">${rankHtml}</div><div class="flex-grow"><p class="font-bold text-brand-text">${student.nombre}</p><p class="text-sm text-gray-500">${student.municipio}</p><div><p class="font-bold text-brand-primary mt-1 inline-block">${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span></p>${areaScoreHtml}</div></div><button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors">Ver más</button>`;
+                elements.mobileList.appendChild(card);
+            });
+        }
+
+        function renderPaginationControls() {
+            elements.paginationControls.innerHTML = '';
+            const totalPages = Math.ceil(state.filteredData.length / state.rowsPerPage);
+            if (totalPages <= 1) return;
+            let buttons = '';
+            buttons += `<button class="pagination-btn" ${state.currentPage === 1 ? 'disabled' : ''} data-page="${state.currentPage - 1}">Anterior</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                buttons += `<button class="pagination-btn ${i === state.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+            buttons += `<button class="pagination-btn" ${state.currentPage === totalPages ? 'disabled' : ''} data-page="${state.currentPage + 1}">Siguiente</button>`;
+            elements.paginationControls.innerHTML = buttons;
+        }
+
+        function renderPodium() {
+            const top3 = [...studentData].sort((a, b) => b.puntajeGlobal - a.puntajeGlobal).slice(0, 3);
+            const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
+            elements.topPerformersContainer.innerHTML = podiumOrder.map(index => {
+                if (!top3[index]) return '<div class="podium-card-wrapper"></div>'; // Placeholder
+                const student = top3[index]; const rank = index + 1;
+                return `<div class="podium-card-wrapper podium-${rank}"><div class="podium-card-content p-6 text-center"><div class="text-5xl mb-2">${['🥇', '🥈', '🥉'][rank-1]}</div><h3 class="text-xl font-bold text-brand-text">${student.nombre}</h3><p class="text-gray-600">${student.municipio}</p><p class="text-4xl font-extrabold text-brand-text mt-2">${student.puntajeGlobal}<span class="text-2xl font-medium text-gray-400">/500</span></p></div></div>`;
+            }).join('');
+        }
+        
+        function showAlertModal() { elements.body.classList.add('overflow-hidden'); elements.alertModal.classList.remove('hidden'); }
+        function closeAlertModal() { elements.body.classList.remove('overflow-hidden'); elements.alertModal.classList.add('hidden'); }
+
+        function showDetailsModal(studentId) {
+            const student = studentData.find(s => s.id === studentId); if (!student) return;
+            elements.body.classList.add('overflow-hidden');
+            
+            const subjectsHtml = filterOptions.slice(1).map(subjectInfo => { // Use filterOptions to ensure correct color mapping
+                const subjectKey = subjectInfo.key.split('.')[1];
+                const subjectColor = subjectInfo.colorVar;
+                const subjectName = subjectInfo.label;
+                const score = student.puntajesDetallados[subjectKey];
+                const percentile = student.puntajesDetallados[`${subjectKey}Percentil`];
+                return `<div class="bg-gray-50 p-3 rounded-lg"><div class="flex justify-between items-center mb-1"><span class="font-semibold">${subjectName}</span><span class="font-bold" style="color: ${subjectColor};">${score}<span class="text-sm font-normal text-gray-400">/100</span></span></div><div class="progress-bar-bg"><div class="progress-bar" style="width: ${score}%; background-color: ${subjectColor};"></div></div><div class="flex justify-between items-center mt-1 text-xs text-gray-500"><span>Percentil (Grupo)</span><span>${percentile}%</span></div></div>`;
+            }).join('');
+
+            elements.studentModal.innerHTML = `<div id="modal-content" class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 sm:p-8 relative transform modal-enter my-8"><button id="close-student-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><div class="flex flex-col md:flex-row md:items-start gap-8"><div class="w-full md:w-1/3 text-center"><h2 class="text-2xl font-bold text-brand-secondary">${student.nombre}</h2><p class="text-gray-600 mt-1">${student.municipio}</p><p class="text-xs text-gray-400 mt-2">Registro: ${maskRegistrationNumber(student.registro)}</p><div class="mt-4 bg-brand-primary text-white p-4 rounded-lg text-center"><p class="font-semibold uppercase text-sm">Puntaje Global</p><div class="text-5xl font-bold flex items-baseline justify-center whitespace-nowrap"><span>${student.puntajeGlobal}</span><span class="text-2xl font-medium text-orange-200">/500</span></div></div><div class="mt-2 bg-gray-100 text-gray-700 p-3 rounded-lg text-center"><p class="font-semibold uppercase text-sm">Percentil (Grupo)</p><p class="text-3xl font-bold">${student.percentil}%</p></div><div class="mt-4"><button id="comprobar-resultado-btn" class="bg-brand-secondary text-white font-bold py-2 px-4 rounded-lg w-full inline-block hover:bg-blue-700 transition-colors">Comprobar Resultado</button></div></div><div class="w-full md:w-2/3 space-y-3"><h3 class="text-lg font-semibold text-center mb-2">Desempeño por Materia</h3>${subjectsHtml}</div></div></div>`;
+            elements.studentModal.classList.remove('hidden');
+            document.getElementById('close-student-modal-btn').addEventListener('click', closeDetailsModal);
+            document.getElementById('comprobar-resultado-btn').addEventListener('click', showAlertModal);
+        }
+        
+        function closeDetailsModal() {
+            elements.body.classList.remove('overflow-hidden');
+            const modalContent = document.getElementById('modal-content');
+            if(!modalContent) return;
+            modalContent.classList.remove('modal-enter'); modalContent.classList.add('modal-leave');
+            setTimeout(() => { elements.studentModal.classList.add('hidden'); }, 300);
+        }
+
+        function updateAverageAndMedian(students) {
+            if (students.length === 0) {
+                elements.averageScoreEl.textContent = 0;
+                elements.medianScoreEl.textContent = 0;
+                return;
+            }
+            const scores = students.map(s => s.puntajeGlobal).sort((a, b) => a - b);
+            const sum = scores.reduce((a, b) => a + b, 0);
+            elements.averageScoreEl.textContent = (sum / scores.length).toFixed(0);
+
+            const mid = Math.floor(scores.length / 2);
+            const median = scores.length % 2 !== 0 ? scores[mid] : (scores[mid - 1] + scores[mid]) / 2;
+            elements.medianScoreEl.textContent = median.toFixed(0);
+        }
+
+        function updateSortIcons() {
+            document.querySelectorAll('.sort-icon').forEach(icon => icon.remove());
+            const activeHeader = document.querySelector(`.sortable-header[data-sort-key="${state.currentSort.key}"]`);
+            if (activeHeader) {
+                const icon = document.createElement('span');
+                icon.className = 'sort-icon';
+                icon.textContent = state.currentSort.direction === 'asc' ? '▲' : '▼';
+                activeHeader.appendChild(icon);
+            }
+        }
+
+        function openFilterMenu() { elements.filterMenuPanel.classList.remove('hidden'); elements.filterMenuContent.classList.add('panel-enter-active'); elements.filterMenuContent.classList.remove('panel-leave-active'); elements.body.classList.add('overflow-hidden'); }
+        function closeFilterMenu() { elements.filterMenuContent.classList.remove('panel-enter-active'); elements.filterMenuContent.classList.add('panel-leave-active'); setTimeout(() => { elements.filterMenuPanel.classList.add('hidden'); }, 300); elements.body.classList.remove('overflow-hidden'); }
+        
+        function handleFilterSelection(sortKey, label, shouldUpdateDisplay = true) {
+            state.currentSort = (sortKey === 'puntajeGlobal')
+                ? { key: 'globalRank', direction: 'asc' }
+                : { key: sortKey, direction: 'desc' };
+            state.currentPage = 1;
+
+            elements.sortDropdownLabel.textContent = label;
+            elements.rankingSubtitle.textContent = `Ordenado por ${label}`;
+            
+            const header = document.getElementById('area-score-header');
+            if (sortKey.includes('puntajesDetallados')) {
+                const subjectInfo = filterOptions.find(opt => opt.key === sortKey);
+                header.textContent = `Puntaje ${label}`;
+                header.style.backgroundColor = subjectInfo.colorVar;
+            } else {
+                header.style.backgroundColor = ''; // Revert to default
+            }
+            
+            elements.subjectFilterButtonsPanel.querySelectorAll('.subject-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.sortKey === sortKey);
+            });
+            
+            if (shouldUpdateDisplay) {
+                updateDisplay();
+            }
+        }
+        
+        function setupEventListeners() {
+            const syncSearchInputs = (e) => {
+                const value = e.target.value;
+                elements.searchInput.value = value;
+                elements.searchInputMobile.value = value;
+                state.currentPage = 1; 
+                updateDisplay();
+            };
+            elements.searchInput.addEventListener('input', syncSearchInputs);
+            elements.searchInputMobile.addEventListener('input', syncSearchInputs);
+            
+            const clearSearch = () => {
+                elements.searchInput.value = '';
+                elements.searchInputMobile.value = '';
+                state.currentPage = 1;
+                updateDisplay();
+            };
+            elements.clearSearchBtn.addEventListener('click', clearSearch);
+            elements.clearSearchBtnMobile.addEventListener('click', clearSearch);
+            
+            elements.closeAlertBtn.addEventListener('click', closeAlertModal);
+            elements.alertModal.addEventListener('click', (e) => { if (e.target === elements.alertModal) closeAlertModal(); });
+            
+            elements.thead.addEventListener('click', e => {
+                const header = e.target.closest('.sortable-header'); if (!header) return;
+                const key = header.dataset.sortKey;
+                if (state.currentSort.key === key) {
+                    state.currentSort.direction = state.currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else { state.currentSort.key = key; state.currentSort.direction = 'desc'; }
+                updateDisplay();
+            });
+
+            elements.paginationControls.addEventListener('click', (e) => {
+                if (e.target.matches('.pagination-btn') && !e.target.disabled) {
+                    state.currentPage = Number(e.target.dataset.page);
+                    updateDisplay();
+                }
+            });
+
+            document.getElementById('app-container').addEventListener('click', e => { if (e.target.closest('.ver-mas-btn')) { showDetailsModal(e.target.closest('.ver-mas-btn').dataset.id); } });
+            
+            elements.sortDropdownBtn.addEventListener('click', () => {
+                elements.sortDropdownOptions.classList.toggle('hidden');
+                elements.sortDropdownArrow.classList.toggle('rotate-180');
+            });
+            elements.sortDropdownOptions.addEventListener('click', e => {
+                e.preventDefault();
+                if (e.target.matches('a')) {
+                    handleFilterSelection(e.target.dataset.sortKey, e.target.textContent);
+                    elements.sortDropdownOptions.classList.add('hidden');
+                    elements.sortDropdownArrow.classList.remove('rotate-180');
+                }
+            });
+            window.addEventListener('click', (e) => {
+                if (!elements.sortDropdownBtn.contains(e.target) && !elements.sortDropdownOptions.contains(e.target)) {
+                    elements.sortDropdownOptions.classList.add('hidden');
+                    elements.sortDropdownArrow.classList.remove('rotate-180');
+                }
+            });
+
+            elements.subjectFilterButtonsPanel.addEventListener('click', e => {
+                if(e.target.matches('.subject-btn')) {
+                    handleFilterSelection(e.target.dataset.sortKey, e.target.textContent);
+                    closeFilterMenu();
+                }
+            });
+            elements.openFilterMenuBtn.addEventListener('click', openFilterMenu);
+            elements.closeFilterMenuBtn.addEventListener('click', closeFilterMenu);
+            elements.filterMenuPanel.addEventListener('click', (e) => { if(e.target === elements.filterMenuPanel) closeFilterMenu(); });
+        }
+        
+        function calculateAndDisplayStats() {
+            if (studentData.length === 0) return;
+
+            const scores = studentData.map(s => s.puntajeGlobal);
+            elements.maxScoreEl.textContent = Math.max(...scores);
+            elements.minScoreEl.textContent = Math.min(...scores);
+            elements.highScorersCount.textContent = studentData.filter(s => s.puntajeGlobal > 350).length;
+
+            elements.subjectAveragesContainer.innerHTML = '';
+            filterOptions.slice(1).forEach(subjectInfo => { // Slice(1) para omitir 'Puntaje Global'
+                const subjectKey = subjectInfo.key.split('.')[1];
+                const total = studentData.reduce((sum, s) => sum + (s.puntajesDetallados[subjectKey] || 0), 0);
+                const average = (total / studentData.length).toFixed(1);
+                
+                const statEl = document.createElement('div');
+                statEl.className = 'subject-average-card';
+                statEl.style.setProperty('--subject-color', subjectInfo.colorVar);
+                statEl.innerHTML = `
+                    <span class="text-sm font-semibold">${subjectInfo.label}</span>
+                    <span class="font-bold text-2xl mt-1">${average}</span>
+                `;
+                elements.subjectAveragesContainer.appendChild(statEl);
+            });
+        }
+
+        function createCharts() {
+            if (scoreDistributionChart) { scoreDistributionChart.destroy(); }
+            if (subjectComparisonChart) { subjectComparisonChart.destroy(); }
+            if (individualScatterChart) { individualScatterChart.destroy(); }
+
+            // --- Gráfico de Distribución de Puntajes (Barras) ---
+            const barCtx = document.getElementById('score-distribution-chart').getContext('2d');
+            const barGradient = barCtx.createLinearGradient(0, 0, 0, 400);
+            barGradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
+            barGradient.addColorStop(1, 'rgba(59, 130, 246, 0.2)');
+
+            const scoreRanges = { '200-250': 0, '251-300': 0, '301-350': 0, '351-400': 0, '401-450': 0, '451-500': 0 };
+            studentData.forEach(s => {
+                if (s.puntajeGlobal <= 250) scoreRanges['200-250']++;
+                else if (s.puntajeGlobal <= 300) scoreRanges['251-300']++;
+                else if (s.puntajeGlobal <= 350) scoreRanges['301-350']++;
+                else if (s.puntajeGlobal <= 400) scoreRanges['351-400']++;
+                else if (s.puntajeGlobal <= 450) scoreRanges['401-450']++;
+                else scoreRanges['451-500']++;
+            });
+
+            scoreDistributionChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(scoreRanges),
+                    datasets: [{
+                        label: 'Nº de Estudiantes',
+                        data: Object.values(scoreRanges),
+                        backgroundColor: barGradient,
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        hoverBackgroundColor: 'rgba(59, 130, 246, 1)',
+                    }]
+                },
+                options: { 
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 1000, easing: 'easeInOutQuart' },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            title: { display: true, text: 'Número de Estudiantes', font: { weight: 'bold' } },
+                            grid: { drawBorder: false, color: 'rgba(0, 0, 0, 0.05)' },
+                        },
+                        x: {
+                             title: { display: true, text: 'Rangos de Puntaje', font: { weight: 'bold' } },
+                             grid: { display: false },
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#fff', titleColor: '#333', bodyColor: '#666',
+                            borderColor: '#ddd', borderWidth: 1, cornerRadius: 8, padding: 10,
+                            callbacks: { label: (context) => ` ${context.dataset.label}: ${context.raw}` }
+                        }
+                    }
+                }
+            });
+
+            // --- Gráfico Comparativo de Áreas (Barras Horizontales) ---
+            const horizontalBarCtx = document.getElementById('subject-comparison-chart').getContext('2d');
+            const subjectAverages = filterOptions.slice(1).map(opt => {
+                const key = opt.key.split('.')[1];
+                return (studentData.reduce((acc, s) => acc + s.puntajesDetallados[key], 0) / studentData.length).toFixed(1);
+            });
+            const subjectLabels = filterOptions.slice(1).map(opt => opt.label);
+            const subjectColors = filterOptions.slice(1).map(opt => getComputedStyle(document.documentElement).getPropertyValue(opt.colorVar.match(/--[\w-]+/)[0]).trim());
+
+            subjectComparisonChart = new Chart(horizontalBarCtx, {
+                type: 'bar',
+                data: {
+                    labels: subjectLabels,
+                    datasets: [{
+                        label: 'Promedio de Área',
+                        data: subjectAverages,
+                        backgroundColor: (context) => {
+                            const chart = context.chart;
+                            const {ctx, chartArea} = chart;
+                            if (!chartArea) { return null; }
+                            const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+                            const color = subjectColors[context.dataIndex];
+                            const colorRgb = color.match(/\d+/g).slice(0, 3).join(',');
+                            gradient.addColorStop(0, `rgba(${colorRgb}, 0.9)`);
+                            gradient.addColorStop(1, `rgba(${colorRgb}, 0.4)`);
+                            return gradient;
+                        },
+                        borderColor: subjectColors,
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 1200, easing: 'easeInOutCubic' },
+                    scales: {
+                        x: {
+                            beginAtZero: true, max: 100,
+                            grid: { drawBorder: false, color: 'rgba(0, 0, 0, 0.05)'},
+                             ticks: { font: { weight: 'bold' } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { weight: 'bold' } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                             backgroundColor: '#333', titleColor: '#fff', bodyColor: '#fff',
+                            cornerRadius: 8, padding: 10,
+                            callbacks: { label: (context) => ` Promedio: ${context.raw}` }
+                        }
+                    }
+                }
+            });
+
+            // --- Gráfico de Dispersión Individual ---
+            const scatterCtx = document.getElementById('individual-scatter-chart').getContext('2d');
+            const getScoreRange = (score) => {
+                const step = 30;
+                const lowerBound = Math.floor((score - 250) / step) * step + 250;
+                return `${lowerBound}-${lowerBound + step - 1}`;
+            };
+            const scatterData = studentData.map(student => ({
+                x: getScoreRange(student.puntajeGlobal),
+                y: student.puntajeGlobal,
+                student: student
+            }));
+            const scatterLabels = [...new Set(scatterData.map(d => d.x))].sort((a,b) => parseInt(a.split('-')[0]) - parseInt(b.split('-')[0]));
+            
+            individualScatterChart = new Chart(scatterCtx, {
+                type: 'scatter',
+                data: {
+                    labels: scatterLabels,
+                    datasets: [{
+                        label: 'Puntaje de Estudiante',
+                        data: scatterData,
+                        backgroundColor: 'rgba(249, 115, 22, 0.7)',
+                        borderColor: 'rgba(249, 115, 22, 1)',
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 1500, easing: 'easeOutExpo'},
+                    scales: {
+                        x: {
+                            type: 'category',
+                            title: { display: true, text: 'Intervalos de Puntaje Global', font: { weight: 'bold' } },
+                             grid: { display: false },
+                        },
+                        y: {
+                            beginAtZero: false,
+                            min: Math.min(...studentData.map(s => s.puntajeGlobal)) - 10,
+                            title: { display: true, text: 'Puntaje Global Individual', font: { weight: 'bold' } },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: '#fff', titleFont: { weight: 'bold' }, titleColor: '#333', bodyColor: '#666',
+                            borderColor: '#ddd', borderWidth: 1, cornerRadius: 8, padding: 12,
+                            callbacks: {
+                                title: (context) => context[0].raw.student.nombre,
+                                afterBody: (context) => {
+                                    const s = context[0].raw.student;
+                                    return [
+                                        `\nPuntaje Global: ${s.puntajeGlobal}`,
+                                        `--------------------`,
+                                        `Lectura Crítica: ${s.puntajesDetallados.lectura}`,
+                                        `Matemáticas: ${s.puntajesDetallados.matematicas}`,
+                                        `Sociales y Ciudadanas: ${s.puntajesDetallados.sociales}`,
+                                        `Ciencias Naturales: ${s.puntajesDetallados.ciencias}`,
+                                        `Inglés: ${s.puntajesDetallados.ingles}`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        loadInitialData();
+    });
+    </script>
+</body>
+</html>
+", in which I have selected the entire content. 
+I want you to make the following edits:
+"En lugar de que el título "Análisis Gráfico" aparezca una vez para toda la sección, quiero que cada gráfico tenga su propio título individual y descriptivo, y que la sección principal de "Análisis Gráfico" se elimine por completo.
+
+Especificaciones de los Títulos:
+Gráfico de Distribución de Puntajes Globales:
+Título: "Distribución y Frecuencia de Puntajes Globales"
+Estilo: Centrado, en negrita y con un tamaño de fuente ligeramente mayor que el de los títulos de las tarjetas de estadísticas, para darle más jerarquía.
+Gráfico de Comparativa de Áreas:
+Título: "Rendimiento Promedio por Área de Conocimiento"
+Estilo: Igual al del primer gráfico (centrado, en negrita y con un tamaño de fuente destacado).
+Gráfico de Dispersión Individual:
+Título: "Análisis de Dispersión: Puntaje Individual por Rango"
+Estilo: Igual a los dos anteriores (centrado, en negrita y con un tamaño de fuente destacado).
+Adicionalmente, quiero que los tres gráficos estén organizados en una cuadrícula (grid) que se adapte de la siguiente manera:
+Vista de Escritorio (Desktop): Los tres gráficos deben aparecer en una sola fila horizontal, ocupando cada uno un tercio del espacio disponible.
+Vista de Tableta (Tablet): Los dos primeros gráficos (Distribución de Puntajes y Rendimiento por Área) deben aparecer en una fila, y el tercer gráfico (Análisis de Dispersión) debe aparecer debajo, ocupando todo el ancho.
+Vista Móvil (Mobile): Los tres gráficos deben apilarse verticalmente, ocupando cada uno el ancho completo de la pantalla.
+Propósito del Cambio: Este ajuste busca eliminar la redundancia del título general, darle a cada visualización su propio contexto y jerarquía, y optimizar el diseño para una mejor visualización y aprovechamiento del espacio en diferentes dispositivos."
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking de Estudiantes - Saber 11</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Agregamos la biblioteca Papa Parse para leer archivos CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- Agregamos Chart.js para las gráficas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        // Configuración de Tailwind para la nueva paleta de colores (más vivos)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-primary': '#F97316',   // Naranja más vivo
+                        'brand-secondary': '#3B82F6', // Azul más vivo
+                        'brand-text': '#5c5d5c',      // Dark Gray
+                        'brand-bg': '#f1f1eb',        // Off-white
+                        'brand-header': '#5c5d5c',   // Dark Gray for table header
+                        'brand-red': '#ac3236',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- COLORES POR ASIGNATURA (Placeholder) --- */
+        :root {
+            --color-lectura: #0284c7; /* sky-600 */
+            --color-matematicas: #dc2626; /* red-600 */
+            --color-sociales: #ca8a04; /* yellow-600 */
+            --color-ciencias: #16a34a; /* green-600 */
+            --color-ingles: #9333ea;   /* purple-600 */
+        }
+        /* ------------------------------------------- */
+
+        @property --angle {
+          syntax: '<angle>';
+          initial-value: 0deg;
+          inherits: false;
+        }
+
+        @keyframes spin { to { --angle: 360deg; } }
+
+        body { font-family: 'Inter', sans-serif; background-color: #f1f1eb; color: #5c5d5c; }
+        body.overflow-hidden { overflow: hidden; }
+        .main-container { max-width: 1280px; }
+        .modal-enter { animation: fadeIn 0.3s ease-out forwards; }
+        .modal-leave { animation: fadeOut 0.3s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+        
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes slideOutRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
+        .panel-enter-active { animation: slideInRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        .panel-leave-active { animation: slideOutRight 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
+
+        .podium-card-wrapper { border-radius: 1.25rem; transition: all 0.3s ease; position: relative; padding: 4px; width: 100%; max-width: 320px; }
+        .podium-card-wrapper:hover { transform: translateY(-10px) scale(1.02); }
+        .podium-card-wrapper::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; animation: spin 4s linear infinite; }
+        .podium-card-content { background-color: white; border-radius: 1rem; height: 100%; }
+        .podium-1:hover { transform: translateY(-10px) scale(1.02); }
+        .podium-1::before { background: conic-gradient(from var(--angle), #B8860B, #FFD700, #F0E68C, #FFD700, #B8860B); }
+        .podium-2::before { background: conic-gradient(from var(--angle), #A9A9A9, #E0E0E0, #C0C0C0, #E0E0E0, #A9A9A9); }
+        .podium-3::before { background: conic-gradient(from var(--angle), #8B5A2B, #CD7F32, #A5694F, #CD7F32, #8B5A2B); }
+
+        .sortable-header { cursor: pointer; user-select: none; }
+        .sort-icon { display: inline-block; width: 1em; height: 1em; margin-left: 0.5rem; opacity: 0.5; transition: opacity 0.2s; }
+        .sortable-header:hover .sort-icon { opacity: 1; }
+        
+        .pagination-btn { padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; transition: all 0.2s ease-in-out; }
+        .pagination-btn.active { background-color: #F97316; color: white; transform: scale(1.05); }
+        .pagination-btn:not(.active) { background-color: #ffffff; color: #5c5d5c; }
+        .pagination-btn:not(.active):hover { background-color: #e5e7eb; }
+        .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .subject-btn { padding: 0.5rem 1rem; border-radius: 9999px; font-weight: 600; background-color: #e5e7eb; color: #5c5d5c; transition: all 0.2s ease; width: 100%; text-align: left; }
+        .subject-btn:hover { background-color: #d1d5db; }
+        .subject-btn.active { background-color: #F97316; color: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        
+        .progress-bar-bg { background-color: #e5e7eb; border-radius: 9999px; height: 10px; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 9999px; transition: width 0.5s ease-in-out; }
+        
+        .area-score-col { display: none; }
+        body.show-area-score .area-score-col { display: table-cell; }
+
+        /* Animación para puntaje de área en móvil */
+        .mobile-area-score {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, margin-top 0.5s ease-in-out;
+        }
+        body.show-area-score .mobile-area-score {
+            max-height: 50px; /* Suficiente para el contenido */
+            opacity: 1;
+            margin-top: 0.25rem; /* 4px */
+        }
+
+
+        @keyframes rowFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .table-row-animate { animation: rowFadeIn 0.3s ease-out forwards; }
+        #ranking-table-body tr:hover { background-color: #e5e7eb; }
+
+        .rank-badge { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; color: white; }
+        .rank-4 { background-color: #60A5FA; }
+        .rank-5 { background-color: #93C5FD; }
+        
+        .subject-average-card { position: relative; overflow: hidden; border-radius: 0.75rem; color: white; background: var(--subject-color); transition: transform 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.75rem; text-align: center; }
+        .subject-average-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%); transform: scale(0); transition: transform 0.5s ease; }
+        .subject-average-card:hover::before { transform: scale(2); }
+        .subject-average-card:hover { transform: scale(1.05) translateY(-5px); }
+        
+        @media (max-width: 639px) { #subject-averages-container > :last-child:nth-child(odd) { grid-column: span 2 / span 2; } }
+        @media (min-width: 768px) { .podium-1 { transform: translateY(-20px); } .podium-1:hover { transform: translateY(-30px) scale(1.02); } }
+    </style>
+</head>
+<body class="bg-brand-bg text-brand-text">
+
+    <div id="app-container" class="main-container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-brand-text tracking-tight">Ranking de Resultados Saber 11</h1>
+            <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Explora y compara los resultados de nuestros estudiantes de una forma interactiva.</p>
+        </header>
+
+        <main class="space-y-8">
+            <!-- Podio de Honor -->
+            <section>
+                <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Podio de Honor</h2>
+                <div id="top-performers" class="flex flex-col md:flex-row justify-center items-center md:items-end gap-8 pt-5">
+                    <!-- Vista Previa del Podio -->
+                    <div class="podium-card-wrapper podium-2"><div class="podium-card-content p-6 text-center animate-pulse"><div class="text-5xl mb-2">🥈</div><div class="h-6 bg-gray-200 rounded-md w-3/4 mx-auto"></div><div class="h-4 bg-gray-200 rounded-md w-1/2 mx-auto mt-2"></div><div class="h-10 bg-gray-200 rounded-md w-1/3 mx-auto mt-2"></div></div></div>
+                    <div class="podium-card-wrapper podium-1"><div class="podium-card-content p-6 text-center animate-pulse"><div class="text-5xl mb-2">🥇</div><div class="h-6 bg-gray-200 rounded-md w-3/4 mx-auto"></div><div class="h-4 bg-gray-200 rounded-md w-1/2 mx-auto mt-2"></div><div class="h-10 bg-gray-200 rounded-md w-1/3 mx-auto mt-2"></div></div></div>
+                    <div class="podium-card-wrapper podium-3"><div class="podium-card-content p-6 text-center animate-pulse"><div class="text-5xl mb-2">🥉</div><div class="h-6 bg-gray-200 rounded-md w-3/4 mx-auto"></div><div class="h-4 bg-gray-200 rounded-md w-1/2 mx-auto mt-2"></div><div class="h-10 bg-gray-200 rounded-md w-1/3 mx-auto mt-2"></div></div></div>
+                </div>
+            </section>
+            
+            <!-- Estadísticas Generales -->
+            <section>
+                <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Estadísticas del Grupo</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md text-center"><p class="text-sm font-semibold text-brand-text">Puntaje Máximo</p><p id="max-score" class="text-5xl font-bold text-brand-secondary mt-2">0</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-md text-center"><p class="text-sm font-semibold text-brand-text">Estudiantes con más de 350 Puntos</p><p id="high-scorers-count" class="text-5xl font-bold text-brand-primary mt-2">0</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-md text-center"><p class="text-sm font-semibold text-brand-text">Puntaje Mínimo</p><p id="min-score" class="text-5xl font-bold text-brand-red mt-2">0</p></div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md mt-6"><h3 class="text-lg font-bold text-center mb-4">Promedios por Área</h3><div id="subject-averages-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div></div>
+            </section>
+            
+            <!-- Análisis Gráfico -->
+            <section>
+                 <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Análisis Gráfico</h2>
+                 <div class="bg-white p-6 rounded-xl shadow-md">
+                     <h3 class="text-lg font-bold text-center mb-4">Distribución de Puntajes Globales</h3>
+                     <div class="relative h-80">
+                         <canvas id="score-distribution-chart"></canvas>
+                     </div>
+                 </div>
             </section>
 
             <!-- Tabla de Clasificación -->
