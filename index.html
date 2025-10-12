@@ -44,18 +44,6 @@
         }
         /* ------------------------------------------- */
 
-        @property --angle {
-          syntax: '<angle>';
-          initial-value: 0deg;
-          inherits: false;
-        }
-
-        @keyframes spin {
-          to: {
-            --angle: 360deg;
-          }
-        }
-
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f1f1eb;
@@ -79,48 +67,36 @@
         .panel-enter-active { animation: slideInRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
         .panel-leave-active { animation: slideOutRight 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
 
-
+        /* --- NUEVOS ESTILOS PARA EL PODIO --- */
         .podium-card-wrapper { 
             border-radius: 1.25rem; 
             transition: all 0.3s ease; 
             position: relative;
-            padding: 4px; /* Controla el grosor del borde animado */
             width: 100%;
             max-width: 320px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
         }
-        .podium-card-wrapper:hover { transform: translateY(-10px) scale(1.02); }
-        
-        .podium-card-wrapper::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: -1;
-            border-radius: inherit;
-            animation: spin 4s linear infinite;
-        }
-        
-        .podium-card-content {
-             background-color: white;
-             border-radius: 1rem;
-             height: 100%;
+        .podium-card-wrapper:hover { 
+            transform: translateY(-10px) scale(1.03); 
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
         }
 
-        .podium-1 { 
-            /* No hay transform inicial para que el espaciado sea consistente en móvil */
+        .podium-card-content {
+            border-radius: 1.25rem; /* Match wrapper */
+            height: 100%;
         }
-        .podium-1:hover {
-            /* Se mantiene un hover consistente para todos los tamaños */
-            transform: translateY(-10px) scale(1.02);
+
+        /* Gradients for podium cards */
+        .podium-1 .podium-card-content {
+            background: linear-gradient(145deg, #fefce8, #fde047, #eab308);
         }
-        .podium-1::before {
-            background: conic-gradient(from var(--angle), #B8860B, #FFD700, #F0E68C, #FFD700, #B8860B);
+        .podium-2 .podium-card-content {
+            background: linear-gradient(145deg, #f9fafb, #e5e7eb, #d1d5db);
         }
-        .podium-2::before {
-             background: conic-gradient(from var(--angle), #A9A9A9, #E0E0E0, #C0C0C0, #E0E0E0, #A9A9A9);
+        .podium-3 .podium-card-content {
+            background: linear-gradient(145deg, #fde68a, #d97706, #b45309);
         }
-        .podium-3::before {
-            background: conic-gradient(from var(--angle), #8B5A2B, #CD7F32, #A5694F, #CD7F32, #8B5A2B);
-        }
+        /* --- FIN DE NUEVOS ESTILOS --- */
 
 
         .sortable-header { cursor: pointer; user-select: none; }
@@ -164,7 +140,6 @@
             background-color: #d1d5db;
         }
         .subject-btn.active {
-            background-color: #F97316;
             color: white;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
@@ -258,10 +233,16 @@
         /* Aplica el levantamiento del podio solo en pantallas de escritorio */
         @media (min-width: 768px) {
             .podium-1 {
-                transform: translateY(-20px);
+                transform: translateY(-30px);
+            }
+            .podium-2 {
+                transform: translateY(-15px);
             }
             .podium-1:hover {
-                transform: translateY(-30px) scale(1.02);
+                transform: translateY(-40px) scale(1.03);
+            }
+            .podium-2:hover {
+                transform: translateY(-25px) scale(1.03);
             }
         }
 
@@ -280,7 +261,7 @@
     <div id="app-container" class="main-container mx-auto p-4 sm:p-6 lg:p-8">
         
         <header class="text-center mb-12">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-brand-text tracking-tight">Ranking de Resultados Saber 11</h1>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-brand-text tracking-tight">Ranking de Resultados Saber 11</h1>
             <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Explora y compara los resultados de nuestros estudiantes de una forma interactiva.</p>
         </header>
 
@@ -288,30 +269,38 @@
             <!-- Podio de Honor -->
             <section>
                 <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Podio de Honor</h2>
-                <div id="top-performers" class="flex flex-col md:flex-row justify-center items-center md:items-end gap-8 pt-5">
-                    <!-- Vista Previa del Podio -->
-                    <div class="podium-card-wrapper podium-2">
-                        <div class="podium-card-content p-6 text-center animate-pulse">
-                            <div class="text-5xl mb-2">🥈</div>
-                            <div class="h-6 bg-gray-200 rounded-md w-3/4 mx-auto"></div>
-                            <div class="h-4 bg-gray-200 rounded-md w-1/2 mx-auto mt-2"></div>
-                            <div class="h-10 bg-gray-200 rounded-md w-1/3 mx-auto mt-2"></div>
+                <div id="top-performers" class="flex flex-col md:flex-row justify-center items-center md:items-end gap-4 md:gap-2 pt-5 md:pt-10">
+                    <!-- Vista Previa del Podio - Plata -->
+                    <div class="podium-card-wrapper podium-2 w-full max-w-sm md:w-1/3 order-2 md:order-1">
+                        <div class="podium-card-content p-6 text-center animate-pulse bg-gray-200 h-64 flex flex-col justify-around">
+                           <div class="w-16 h-16 mx-auto rounded-full bg-gray-300"></div>
+                            <div>
+                                <div class="h-5 bg-gray-300 rounded-md w-3/4 mx-auto"></div>
+                                <div class="h-4 bg-gray-300 rounded-md w-1/2 mx-auto mt-2"></div>
+                            </div>
+                            <div class="h-10 bg-gray-300 rounded-md w-1/3 mx-auto"></div>
                         </div>
                     </div>
-                    <div class="podium-card-wrapper podium-1">
-                        <div class="podium-card-content p-6 text-center animate-pulse">
-                            <div class="text-5xl mb-2">🥇</div>
-                            <div class="h-6 bg-gray-200 rounded-md w-3/4 mx-auto"></div>
-                            <div class="h-4 bg-gray-200 rounded-md w-1/2 mx-auto mt-2"></div>
-                            <div class="h-10 bg-gray-200 rounded-md w-1/3 mx-auto mt-2"></div>
+                     <!-- Vista Previa del Podio - Oro -->
+                    <div class="podium-card-wrapper podium-1 w-full max-w-sm md:w-1/3 order-1 md:order-2">
+                        <div class="podium-card-content p-6 text-center animate-pulse bg-gray-200 h-72 flex flex-col justify-around">
+                            <div class="w-16 h-16 mx-auto rounded-full bg-gray-300"></div>
+                            <div>
+                                <div class="h-6 bg-gray-300 rounded-md w-3/4 mx-auto"></div>
+                                <div class="h-4 bg-gray-300 rounded-md w-1/2 mx-auto mt-2"></div>
+                            </div>
+                            <div class="h-12 bg-gray-300 rounded-md w-1/3 mx-auto"></div>
                         </div>
                     </div>
-                    <div class="podium-card-wrapper podium-3">
-                        <div class="podium-card-content p-6 text-center animate-pulse">
-                            <div class="text-5xl mb-2">🥉</div>
-                            <div class="h-6 bg-gray-200 rounded-md w-3/4 mx-auto"></div>
-                            <div class="h-4 bg-gray-200 rounded-md w-1/2 mx-auto mt-2"></div>
-                            <div class="h-10 bg-gray-200 rounded-md w-1/3 mx-auto mt-2"></div>
+                     <!-- Vista Previa del Podio - Bronce -->
+                    <div class="podium-card-wrapper podium-3 w-full max-w-sm md:w-1/3 order-3 md:order-3">
+                        <div class="podium-card-content p-6 text-center animate-pulse bg-gray-200 h-56 flex flex-col justify-around">
+                            <div class="w-16 h-16 mx-auto rounded-full bg-gray-300"></div>
+                            <div>
+                                <div class="h-5 bg-gray-300 rounded-md w-3/4 mx-auto"></div>
+                                <div class="h-4 bg-gray-300 rounded-md w-1/2 mx-auto mt-2"></div>
+                            </div>
+                            <div class="h-10 bg-gray-300 rounded-md w-1/3 mx-auto"></div>
                         </div>
                     </div>
                 </div>
@@ -323,15 +312,15 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-md text-center">
                         <p class="text-sm font-semibold text-brand-text">Puntaje Máximo</p>
-                        <p id="max-score" class="text-5xl font-bold text-brand-secondary mt-2">0</p>
+                        <p id="max-score" class="text-4xl sm:text-5xl font-bold text-brand-secondary mt-2">0</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-md text-center">
                         <p class="text-sm font-semibold text-brand-text">Estudiantes con más de 350 Puntos</p>
-                        <p id="high-scorers-count" class="text-5xl font-bold text-brand-primary mt-2">0</p>
+                        <p id="high-scorers-count" class="text-4xl sm:text-5xl font-bold text-brand-primary mt-2">0</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-md text-center">
                         <p class="text-sm font-semibold text-brand-text">Puntaje Mínimo</p>
-                        <p id="min-score" class="text-5xl font-bold text-brand-red mt-2">0</p>
+                        <p id="min-score" class="text-4xl sm:text-5xl font-bold text-brand-red mt-2">0</p>
                     </div>
                 </div>
 
@@ -348,7 +337,7 @@
             <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
                  <h2 class="text-2xl font-bold text-brand-secondary text-center">Distribución de Puntajes por Ranking Global</h2>
                  <p class="text-sm text-gray-500 mt-1 text-center mb-6">Cada punto representa un estudiante. Pasa el cursor para ver el detalle.</p>
-                 <div class="relative h-96 w-full">
+                 <div class="relative h-72 sm:h-96 w-full">
                      <canvas id="scatter-plot-chart"></canvas>
                  </div>
             </section>
@@ -362,7 +351,7 @@
                          <p id="ranking-subtitle" class="text-sm text-gray-500 mt-1">Ordenado por Puntaje Global</p>
                      </div>
                      <!-- Wrapper para las tarjetas de estadísticas -->
-                     <div class="flex items-stretch gap-4">
+                     <div class="flex flex-col sm:flex-row items-stretch gap-4">
                          <div class="bg-blue-50 border border-brand-secondary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
                               <p class="text-sm font-semibold text-brand-text">Total Estudiantes</p>
                               <p id="total-students" class="text-4xl font-bold text-brand-secondary">0</p>
@@ -624,22 +613,18 @@
         function renderScatterPlot() {
             if (!studentData || studentData.length === 0) return;
 
-            // Encontrar puntajes mínimos y máximos para el gradiente
             const scores = studentData.map(s => s.puntajeGlobal);
             const minScore = Math.min(...scores);
             const maxScore = Math.max(...scores);
             
-            // Función para obtener el color basado en el puntaje
             const getPointColor = (score) => {
                 const ratio = (score - minScore) / (maxScore - minScore);
-                // Gradiente de rojo -> amarillo -> verde
                 const hue = (ratio * 120).toString(10);
                 return `hsl(${hue}, 90%, 55%)`;
             };
 
-            // Preparar los datos con un ligero "jitter" (vibración) para separar puntos
             const chartData = studentData.map(student => ({
-                x: student.globalRank + (Math.random() - 0.5) * 0.6, // Un poco más de jitter
+                x: student.globalRank + (Math.random() - 0.5) * 0.6,
                 y: student.puntajeGlobal,
                 studentInfo: student
             }));
@@ -647,6 +632,10 @@
             if (scatterChartInstance) {
                 scatterChartInstance.destroy();
             }
+
+            const isMobile = window.innerWidth < 768;
+            const titleFontSize = isMobile ? 14 : 16;
+            const ticksFontSize = isMobile ? 10 : 12;
             
             const ctx = elements.scatterPlotCanvas.getContext('2d');
             scatterChartInstance = new Chart(ctx, {
@@ -672,15 +661,15 @@
                             grid: { color: '#e5e7eb' },
                             ticks: { 
                                 font: { 
-                                    size: 12, 
+                                    size: ticksFontSize, 
                                     family: "'Inter', sans-serif" 
                                 } 
                             },
                             title: {
                                 display: true,
-                                text: 'Ranking Global (1 = Mejor Puntaje)',
+                                text: 'Puesto en el Ranking Global', // ETIQUETA DEL EJE X CORREGIDA
                                 font: { 
-                                    size: 16, 
+                                    size: titleFontSize, 
                                     weight: 'bold', 
                                     family: "'Inter', sans-serif" 
                                 },
@@ -691,7 +680,7 @@
                             grid: { color: '#e5e7eb' },
                             ticks: { 
                                 font: { 
-                                    size: 12, 
+                                    size: ticksFontSize, 
                                     family: "'Inter', sans-serif" 
                                 } 
                             },
@@ -699,7 +688,7 @@
                                 display: true,
                                 text: 'Puntaje Global Individual',
                                 font: { 
-                                    size: 16, 
+                                    size: titleFontSize, 
                                     weight: 'bold', 
                                     family: "'Inter', sans-serif" 
                                 },
@@ -869,11 +858,34 @@
 
         function renderPodium() {
             const top3 = [...studentData].sort((a, b) => b.puntajeGlobal - a.puntajeGlobal).slice(0, 3);
-            const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
-            elements.topPerformersContainer.innerHTML = podiumOrder.map(index => {
-                if (!top3[index]) return '';
-                const student = top3[index]; const rank = index + 1;
-                return `<div class="podium-card-wrapper podium-${rank}"><div class="podium-card-content p-6 text-center"><div class="text-5xl mb-2">${['🥇', '🥈', '🥉'][rank-1]}</div><h3 class="text-xl font-bold text-brand-text">${student.nombre}</h3><p class="text-gray-600">${student.municipio}</p><p class="text-4xl font-extrabold text-brand-text mt-2">${student.puntajeGlobal}<span class="text-2xl font-medium text-gray-400">/500</span></p></div></div>`;
+            
+            elements.topPerformersContainer.innerHTML = top3.map((student, index) => {
+                const rank = student.globalRank;
+                const podiumClass = { 1: 'podium-1 order-1 md:order-2', 2: 'podium-2 order-2 md:order-1', 3: 'podium-3 order-3 md:order-3' };
+                const rankColors = {
+                    1: { bg: 'bg-yellow-400', shadow: 'shadow-yellow-500/50' },
+                    2: { bg: 'bg-gray-300', shadow: 'shadow-gray-400/50' },
+                    3: { bg: 'bg-orange-400', shadow: 'shadow-orange-500/50' }
+                };
+                const textColor = rank === 3 ? 'text-white' : 'text-gray-800';
+
+                return `
+                <div class="podium-card-wrapper w-full max-w-sm md:w-1/3 ${podiumClass[rank]}">
+                    <div class="podium-card-content p-6 text-center flex flex-col justify-between h-full ${textColor}">
+                        <div class="flex-shrink-0">
+                            <div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl font-extrabold shadow-lg ${rankColors[rank].bg} ${rankColors[rank].shadow}">
+                                ${['🥇', '🥈', '🥉'][rank-1]}
+                            </div>
+                        </div>
+                        <div class="flex-grow flex flex-col justify-center py-4">
+                            <h3 class="text-xl font-bold">${student.nombre}</h3>
+                            <p class="opacity-80 text-sm">${student.municipio}</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <p class="text-4xl font-extrabold">${student.puntajeGlobal}<span class="text-2xl font-medium opacity-70">/500</span></p>
+                        </div>
+                    </div>
+                </div>`;
             }).join('');
         }
         
@@ -937,19 +949,19 @@
             elements.studentModal.innerHTML = `
                 <div id="modal-content" class="bg-gray-50 w-full max-w-4xl rounded-2xl shadow-2xl relative transform modal-enter my-8 overflow-hidden flex flex-col md:flex-row">
                     <!-- Columna Izquierda (Perfil) -->
-                    <div class="w-full md:w-1/3 bg-gradient-to-b from-brand-secondary to-blue-700 text-white p-8 flex flex-col items-center justify-center text-center">
-                        <h2 class="text-3xl font-bold leading-tight">${student.nombre}</h2>
+                    <div class="w-full md:w-1/3 bg-gradient-to-b from-brand-secondary to-blue-700 text-white p-6 md:p-8 flex flex-col items-center justify-center text-center">
+                        <h2 class="text-2xl md:text-3xl font-bold leading-tight">${student.nombre}</h2>
                         <p class="opacity-80 mt-2">${student.municipio}</p>
                         <div class="my-8 space-y-4 w-full">
                             <div class="bg-white/20 p-4 rounded-lg backdrop-blur-sm">
                                  <p class="font-semibold uppercase text-sm opacity-80">Puntaje Global</p>
-                                 <div class="text-6xl font-bold flex items-baseline justify-center whitespace-nowrap">
-                                     <span>${student.puntajeGlobal}</span><span class="text-3xl font-medium opacity-70">/500</span>
+                                 <div class="text-5xl md:text-6xl font-bold flex items-baseline justify-center whitespace-nowrap">
+                                     <span>${student.puntajeGlobal}</span><span class="text-2xl md:text-3xl font-medium opacity-70">/500</span>
                                  </div>
                              </div>
                              <div class="bg-white/20 p-4 rounded-lg backdrop-blur-sm">
                                  <p class="font-semibold uppercase text-sm opacity-80">Percentil</p>
-                                 <p class="text-4xl font-bold">${student.percentil}%</p>
+                                 <p class="text-3xl md:text-4xl font-bold">${student.percentil}%</p>
                              </div>
                         </div>
                          <button id="comprobar-resultado-btn" class="bg-white text-brand-secondary font-bold py-3 px-6 rounded-full w-full inline-flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors transform hover:scale-105">
@@ -960,7 +972,7 @@
                     </div>
 
                     <!-- Columna Derecha (Detalles) -->
-                    <div class="w-full md:w-2/3 p-8 overflow-y-auto">
+                    <div class="w-full md:w-2/3 p-6 md:p-8 overflow-y-auto">
                          <button id="close-student-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors z-10">
                             <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
@@ -1018,14 +1030,41 @@
                 : { key: sortKey, direction: 'desc' };
             state.currentPage = 1;
 
-            elements.sortDropdownLabel.textContent = label;
             elements.rankingSubtitle.textContent = `Ordenado por ${label}`;
+            elements.sortDropdownLabel.textContent = label;
+
             if (sortKey.includes('puntajesDetallados')) {
                 elements.areaScoreHeader.textContent = `Puntaje ${label}`;
             }
-            
+
+            // Lógica para colorear los filtros
+            const selectedOption = filterOptions.find(opt => opt.key === sortKey);
+
+            // Botón de Escritorio
+            if (selectedOption && selectedOption.colorVar) {
+                const color = getComputedStyle(document.documentElement).getPropertyValue(selectedOption.colorVar.match(/--[\w-]+/)[0]);
+                elements.sortDropdownBtn.style.backgroundColor = color;
+                elements.sortDropdownBtn.style.borderColor = color;
+            } else {
+                elements.sortDropdownBtn.style.backgroundColor = ''; 
+                elements.sortDropdownBtn.style.borderColor = '';
+            }
+
+            // Botones de Móvil
             elements.subjectFilterButtonsPanel.querySelectorAll('.subject-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.sortKey === sortKey);
+                const btnOption = filterOptions.find(opt => opt.key === btn.dataset.sortKey);
+                if (btn.dataset.sortKey === sortKey) {
+                    btn.classList.add('active');
+                    if (btnOption && btnOption.colorVar) {
+                         const color = getComputedStyle(document.documentElement).getPropertyValue(btnOption.colorVar.match(/--[\w-]+/)[0]);
+                        btn.style.backgroundColor = color;
+                    } else {
+                        btn.style.backgroundColor = '#F97316'; // Color primario para 'Puntaje Global'
+                    }
+                } else {
+                    btn.classList.remove('active');
+                    btn.style.backgroundColor = '';
+                }
             });
             
             if (shouldUpdateDisplay) {
