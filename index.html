@@ -270,39 +270,7 @@
             <section>
                 <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Podio de Honor</h2>
                 <div id="top-performers" class="flex flex-col md:flex-row justify-center items-center md:items-end gap-4 md:gap-2 pt-5 md:pt-10">
-                    <!-- Vista Previa del Podio - Plata -->
-                    <div class="podium-card-wrapper podium-2 w-full max-w-sm md:w-1/3 order-2 md:order-1">
-                        <div class="podium-card-content p-6 text-center animate-pulse bg-gray-200 h-64 flex flex-col justify-around">
-                           <div class="w-16 h-16 mx-auto rounded-full bg-gray-300"></div>
-                            <div>
-                                <div class="h-5 bg-gray-300 rounded-md w-3/4 mx-auto"></div>
-                                <div class="h-4 bg-gray-300 rounded-md w-1/2 mx-auto mt-2"></div>
-                            </div>
-                            <div class="h-10 bg-gray-300 rounded-md w-1/3 mx-auto"></div>
-                        </div>
-                    </div>
-                     <!-- Vista Previa del Podio - Oro -->
-                    <div class="podium-card-wrapper podium-1 w-full max-w-sm md:w-1/3 order-1 md:order-2">
-                        <div class="podium-card-content p-6 text-center animate-pulse bg-gray-200 h-72 flex flex-col justify-around">
-                            <div class="w-16 h-16 mx-auto rounded-full bg-gray-300"></div>
-                            <div>
-                                <div class="h-6 bg-gray-300 rounded-md w-3/4 mx-auto"></div>
-                                <div class="h-4 bg-gray-300 rounded-md w-1/2 mx-auto mt-2"></div>
-                            </div>
-                            <div class="h-12 bg-gray-300 rounded-md w-1/3 mx-auto"></div>
-                        </div>
-                    </div>
-                     <!-- Vista Previa del Podio - Bronce -->
-                    <div class="podium-card-wrapper podium-3 w-full max-w-sm md:w-1/3 order-3 md:order-3">
-                        <div class="podium-card-content p-6 text-center animate-pulse bg-gray-200 h-56 flex flex-col justify-around">
-                            <div class="w-16 h-16 mx-auto rounded-full bg-gray-300"></div>
-                            <div>
-                                <div class="h-5 bg-gray-300 rounded-md w-3/4 mx-auto"></div>
-                                <div class="h-4 bg-gray-300 rounded-md w-1/2 mx-auto mt-2"></div>
-                            </div>
-                            <div class="h-10 bg-gray-300 rounded-md w-1/3 mx-auto"></div>
-                        </div>
-                    </div>
+                    <!-- El contenido del podio se generará dinámicamente con JavaScript -->
                 </div>
             </section>
             
@@ -802,8 +770,11 @@
                 
                 let areaScoreHtml = '';
                 if (state.currentSort.key.includes('puntajesDetallados')) {
-                    const [obj, prop] = state.currentSort.key.split('.');
-                    areaScoreHtml = `<td class="p-6 text-center font-bold text-brand-secondary area-score-col">${student[obj][prop]}</td>`;
+                    const subjectInfo = filterOptions.find(opt => opt.key === state.currentSort.key);
+                    const subjectKey = subjectInfo.key.split('.')[1];
+                    const areaScore = student.puntajesDetallados[subjectKey];
+                    const areaColor = subjectInfo ? getComputedStyle(document.documentElement).getPropertyValue(subjectInfo.colorVar.match(/--[\w-]+/)[0]) : 'inherit';
+                    areaScoreHtml = `<td class="p-6 text-center font-bold text-lg area-score-col" style="color: ${areaColor};">${areaScore}</td>`;
                 } else {
                     areaScoreHtml = `<td class="p-6 text-center font-bold text-brand-secondary area-score-col"></td>`;
                 }
@@ -827,21 +798,66 @@
             elements.mobileList.innerHTML = '';
             const start = (state.currentPage - 1) * state.rowsPerPage;
             const end = start + state.rowsPerPage;
-            const paginatedItems = [...state.filteredData].sort((a,b) => a.globalRank - b.globalRank).slice(start, end);
+            const paginatedItems = state.filteredData.slice(start, end);
+            
             if (paginatedItems.length === 0) {
                 elements.mobileList.innerHTML = `<div class="text-center p-8 text-gray-500">No se encontraron estudiantes.</div>`;
                 return;
             }
-            paginatedItems.forEach((student) => {
-                let rankHtml = `<div class="font-semibold text-xl w-10 h-10 flex items-center justify-center">${student.globalRank}</div>`;
-                if (student.globalRank <= 3) rankHtml = `<span class="text-3xl">${['🥇', '🥈', '🥉'][student.globalRank-1]}</span>`;
-                else if (student.globalRank <= 5) rankHtml = `<div class="rank-badge rank-${student.globalRank} !w-10 !h-10 text-lg">${student.globalRank}</div>`;
+
+            paginatedItems.forEach((student, index) => {
+                const rankIndex = state.currentSort.key === 'globalRank' ? student.globalRank : (start + index + 1);
+                let rankHtml = `<div class="font-semibold text-xl w-10 h-10 flex items-center justify-center">${rankIndex}</div>`;
+
+                if (state.currentSort.key === 'globalRank') {
+                    if (rankIndex <= 3) rankHtml = `<span class="text-3xl">${['🥇', '🥈', '🥉'][rankIndex-1]}</span>`;
+                    else if (rankIndex <= 5) rankHtml = `<div class="rank-badge rank-${rankIndex} !w-10 !h-10 text-lg">${rankIndex}</div>`;
+                }
+
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-xl shadow-md p-4 flex items-center gap-4';
-                card.innerHTML = `<div class="w-12 text-center flex-shrink-0">${rankHtml}</div><div class="flex-grow"><p class="font-bold text-brand-text">${student.nombre}</p><p class="text-sm text-gray-500">${student.municipio}</p><p class="font-bold text-brand-primary mt-1">${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span></p></div><button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors">Ver más</button>`;
+                
+                let scoreHtml = '';
+                const isAreaSort = state.currentSort.key.includes('puntajesDetallados');
+
+                if (isAreaSort) {
+                    const subjectInfo = filterOptions.find(opt => opt.key === state.currentSort.key);
+                    const subjectKey = subjectInfo.key.split('.')[1];
+                    const areaScore = student.puntajesDetallados[subjectKey];
+                    const areaColor = subjectInfo ? getComputedStyle(document.documentElement).getPropertyValue(subjectInfo.colorVar.match(/--[\w-]+/)[0]) : 'inherit';
+                    
+                    scoreHtml = `
+                        <div class="flex-grow">
+                            <p class="font-bold text-brand-text">${student.nombre}</p>
+                            <p class="text-sm text-gray-500">${student.municipio}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-xs" style="color: ${areaColor};">${subjectInfo.label}</p>
+                            <p class="font-bold text-2xl" style="color: ${areaColor};">${areaScore}<span class="text-sm font-normal text-gray-400">/100</span></p>
+                        </div>
+                    `;
+                } else {
+                    scoreHtml = `
+                        <div class="flex-grow">
+                            <p class="font-bold text-brand-text">${student.nombre}</p>
+                            <p class="text-sm text-gray-500">${student.municipio}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-xs text-brand-primary">Puntaje Global</p>
+                            <p class="font-bold text-2xl text-brand-primary">${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span></p>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="w-12 text-center flex-shrink-0">${rankHtml}</div>
+                    <div class="flex-grow flex justify-between items-center">${scoreHtml}</div>
+                    <button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors">Ver más</button>`;
+                
                 elements.mobileList.appendChild(card);
             });
         }
+
 
         function renderPaginationControls() {
             elements.paginationControls.innerHTML = '';
@@ -859,34 +875,43 @@
         function renderPodium() {
             const top3 = [...studentData].sort((a, b) => b.puntajeGlobal - a.puntajeGlobal).slice(0, 3);
             
-            elements.topPerformersContainer.innerHTML = top3.map((student, index) => {
-                const rank = student.globalRank;
-                const podiumClass = { 1: 'podium-1 order-1 md:order-2', 2: 'podium-2 order-2 md:order-1', 3: 'podium-3 order-3 md:order-3' };
-                const rankColors = {
-                    1: { bg: 'bg-yellow-400', shadow: 'shadow-yellow-500/50' },
-                    2: { bg: 'bg-gray-300', shadow: 'shadow-gray-400/50' },
-                    3: { bg: 'bg-orange-400', shadow: 'shadow-orange-500/50' }
-                };
-                const textColor = rank === 3 ? 'text-white' : 'text-gray-800';
+            let podiumHTML = '';
+            // Asegurarse de que haya al menos 3 estudiantes para el podio completo
+            if (top3.length >= 3) {
+                 const podiumOrder = [top3[1], top3[0], top3[2]]; // 2do, 1ro, 3ro
+                 podiumHTML = podiumOrder.map((student) => {
+                    const rank = student.globalRank;
+                    const podiumClass = { 1: 'podium-1 order-1 md:order-2', 2: 'podium-2 order-2 md:order-1', 3: 'podium-3 order-3 md:order-3' };
+                    const rankColors = {
+                        1: { bg: 'bg-yellow-400', shadow: 'shadow-yellow-500/50' },
+                        2: { bg: 'bg-gray-300', shadow: 'shadow-gray-400/50' },
+                        3: { bg: 'bg-amber-600', shadow: 'shadow-amber-700/50' }
+                    };
+                    const textColor = rank === 3 ? 'text-white' : 'text-gray-800';
 
-                return `
-                <div class="podium-card-wrapper w-full max-w-sm md:w-1/3 ${podiumClass[rank]}">
-                    <div class="podium-card-content p-6 text-center flex flex-col justify-between h-full ${textColor}">
-                        <div class="flex-shrink-0">
-                            <div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl font-extrabold shadow-lg ${rankColors[rank].bg} ${rankColors[rank].shadow}">
-                                ${['🥇', '🥈', '🥉'][rank-1]}
+                    return `
+                    <div class="podium-card-wrapper w-full max-w-sm md:w-1/3 ${podiumClass[rank]}">
+                        <div class="podium-card-content p-6 text-center flex flex-col justify-between h-full ${textColor}">
+                            <div class="flex-shrink-0">
+                                <div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl font-extrabold shadow-lg ${rankColors[rank].bg} ${rankColors[rank].shadow}">
+                                    ${['🥇', '🥈', '🥉'][rank-1]}
+                                </div>
+                            </div>
+                            <div class="flex-grow flex flex-col justify-center py-4">
+                                <h3 class="text-xl font-bold">${student.nombre}</h3>
+                                <p class="opacity-80 text-sm">${student.municipio}</p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <p class="text-4xl font-extrabold">${student.puntajeGlobal}<span class="text-2xl font-medium opacity-70">/500</span></p>
                             </div>
                         </div>
-                        <div class="flex-grow flex flex-col justify-center py-4">
-                            <h3 class="text-xl font-bold">${student.nombre}</h3>
-                            <p class="opacity-80 text-sm">${student.municipio}</p>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <p class="text-4xl font-extrabold">${student.puntajeGlobal}<span class="text-2xl font-medium opacity-70">/500</span></p>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
+                    </div>`;
+                }).join('');
+            } else {
+                // Fallback si no hay suficientes estudiantes para el podio
+                podiumHTML = `<div class="text-center text-gray-500">No hay suficientes datos para mostrar el podio.</div>`;
+            }
+            elements.topPerformersContainer.innerHTML = podiumHTML;
         }
         
         function showAlertModal() { 
