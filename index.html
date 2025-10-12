@@ -805,19 +805,20 @@
                 return;
             }
 
-            paginatedItems.forEach((student, index) => {
-                const rankIndex = state.currentSort.key === 'globalRank' ? student.globalRank : (start + index + 1);
-                let rankHtml = `<div class="font-semibold text-xl w-10 h-10 flex items-center justify-center">${rankIndex}</div>`;
-
-                if (state.currentSort.key === 'globalRank') {
-                    if (rankIndex <= 3) rankHtml = `<span class="text-3xl">${['🥇', '🥈', '🥉'][rankIndex-1]}</span>`;
-                    else if (rankIndex <= 5) rankHtml = `<div class="rank-badge rank-${rankIndex} !w-10 !h-10 text-lg">${rankIndex}</div>`;
+            paginatedItems.forEach((student) => {
+                let rankHtml;
+                if (student.globalRank <= 3) {
+                    rankHtml = `<span class="text-3xl">${['🥇', '🥈', '🥉'][student.globalRank - 1]}</span>`;
+                } else if (student.globalRank <= 5) {
+                    rankHtml = `<div class="rank-badge rank-${student.globalRank} !w-10 !h-10 text-lg">${student.globalRank}</div>`;
+                } else {
+                    rankHtml = `<div class="font-semibold text-xl w-10 h-10 flex items-center justify-center">${student.globalRank}</div>`;
                 }
 
                 const card = document.createElement('div');
-                card.className = 'bg-white rounded-xl shadow-md p-4 flex items-center gap-4';
+                card.className = 'bg-white rounded-xl shadow-md p-4 flex items-center gap-3';
                 
-                let scoreHtml = '';
+                let scoreDisplayHtml = '';
                 const isAreaSort = state.currentSort.key.includes('puntajesDetallados');
 
                 if (isAreaSort) {
@@ -826,23 +827,15 @@
                     const areaScore = student.puntajesDetallados[subjectKey];
                     const areaColor = subjectInfo ? getComputedStyle(document.documentElement).getPropertyValue(subjectInfo.colorVar.match(/--[\w-]+/)[0]) : 'inherit';
                     
-                    scoreHtml = `
-                        <div class="flex-grow">
-                            <p class="font-bold text-brand-text">${student.nombre}</p>
-                            <p class="text-sm text-gray-500">${student.municipio}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-semibold text-xs" style="color: ${areaColor};">${subjectInfo.label}</p>
+                    scoreDisplayHtml = `
+                        <div class="text-right flex-shrink-0 pl-2 w-24">
+                            <p class="font-semibold text-xs truncate" style="color: ${areaColor};">${subjectInfo.label}</p>
                             <p class="font-bold text-2xl" style="color: ${areaColor};">${areaScore}<span class="text-sm font-normal text-gray-400">/100</span></p>
                         </div>
                     `;
                 } else {
-                    scoreHtml = `
-                        <div class="flex-grow">
-                            <p class="font-bold text-brand-text">${student.nombre}</p>
-                            <p class="text-sm text-gray-500">${student.municipio}</p>
-                        </div>
-                        <div class="text-right">
+                    scoreDisplayHtml = `
+                        <div class="text-right flex-shrink-0 pl-2 w-24">
                             <p class="font-semibold text-xs text-brand-primary">Puntaje Global</p>
                             <p class="font-bold text-2xl text-brand-primary">${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span></p>
                         </div>
@@ -850,9 +843,13 @@
                 }
 
                 card.innerHTML = `
-                    <div class="w-12 text-center flex-shrink-0">${rankHtml}</div>
-                    <div class="flex-grow flex justify-between items-center">${scoreHtml}</div>
-                    <button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors">Ver más</button>`;
+                    <div class="w-10 text-center flex-shrink-0">${rankHtml}</div>
+                    <div class="flex-grow min-w-0">
+                        <p class="font-bold text-brand-text truncate">${student.nombre}</p>
+                        <p class="text-sm text-gray-500 truncate">${student.municipio}</p>
+                    </div>
+                    ${scoreDisplayHtml}
+                    <button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors ml-2 flex-shrink-0">Ver</button>`;
                 
                 elements.mobileList.appendChild(card);
             });
@@ -1208,4 +1205,5 @@
     </script>
 </body>
 </html>
+" and the user is asking the following query: "EN LA VISTA MOVIL, QUIERO QUE SE VEA EL PUESTO GLOBAL, Y AL LADO EL PUESTO DEL AREA, ES DECIR EN VEZ DE LA INSIGNIA DEL PUESTO, EL NUMERO GLOBAL, Y LUEGO AL LADO EL NUMERO DEL AREA Y LUEGO EL RESTO DE LA INFORMACIÓN"
 
