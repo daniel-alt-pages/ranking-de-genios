@@ -669,21 +669,41 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                             grid: { color: '#e5e7eb' },
-                             ticks: { font: { family: "'Inter', sans-serif" } },
+                            grid: { color: '#e5e7eb' },
+                            ticks: { 
+                                font: { 
+                                    size: 12, 
+                                    family: "'Inter', sans-serif" 
+                                } 
+                            },
                             title: {
                                 display: true,
                                 text: 'Ranking Global (1 = Mejor Puntaje)',
-                                font: { size: 14, family: "'Inter', sans-serif" }
+                                font: { 
+                                    size: 16, 
+                                    weight: 'bold', 
+                                    family: "'Inter', sans-serif" 
+                                },
+                                padding: { top: 10 }
                             }
                         },
                         y: {
                             grid: { color: '#e5e7eb' },
-                            ticks: { font: { family: "'Inter', sans-serif" } },
+                            ticks: { 
+                                font: { 
+                                    size: 12, 
+                                    family: "'Inter', sans-serif" 
+                                } 
+                            },
                             title: {
                                 display: true,
                                 text: 'Puntaje Global Individual',
-                                font: { size: 14, family: "'Inter', sans-serif" }
+                                font: { 
+                                    size: 16, 
+                                    weight: 'bold', 
+                                    family: "'Inter', sans-serif" 
+                                },
+                                padding: { bottom: 10 }
                             }
                         }
                     },
