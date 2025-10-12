@@ -469,11 +469,7 @@
 
     <!-- Modal de Alerta -->
     <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 sm:p-8 relative transform modal-enter text-center">
-            <h3 class="text-xl font-bold text-brand-secondary mb-4">¡Próximamente!</h3>
-            <p>Estamos diseñando y subiendo los reportes individuales. ¡Vuelve pronto!</p>
-            <button id="close-alert-btn" class="mt-6 bg-brand-primary text-white font-bold py-2 px-6 rounded-lg w-full hover:bg-orange-600 transition-colors">Entendido</button>
-        </div>
+        <!-- Contenido se genera dinámicamente -->
     </div>
 
 
@@ -514,7 +510,6 @@
             topPerformersContainer: document.getElementById('top-performers'),
             studentModal: document.getElementById('student-modal'),
             alertModal: document.getElementById('alert-modal'),
-            closeAlertBtn: document.getElementById('close-alert-btn'),
             thead: document.querySelector('thead'),
             paginationControls: document.getElementById('pagination-controls'),
             subjectFilterButtonsPanel: document.getElementById('subject-filter-buttons-panel'),
@@ -620,23 +615,19 @@
         function renderScatterPlot() {
             if (!studentData || studentData.length === 0) return;
 
-            // 1. Preparar los datos para Chart.js
-            //    Eje X: Rango global del estudiante
-            //    Eje Y: Puntaje global del estudiante
+            // 1. Preparar los datos con un ligero "jitter" (vibración) para separar puntos
             const chartData = studentData.map(student => {
                 return {
-                    x: student.globalRank,
+                    x: student.globalRank + (Math.random() - 0.5) * 0.5, // Jitter
                     y: student.puntajeGlobal,
-                    studentInfo: student // Adjuntamos toda la info del estudiante
+                    studentInfo: student
                 };
             });
 
-            // 2. Destruir el gráfico anterior si existe para evitar duplicados
             if (scatterChartInstance) {
                 scatterChartInstance.destroy();
             }
             
-            // 3. Crear el gráfico
             const ctx = elements.scatterPlotCanvas.getContext('2d');
             scatterChartInstance = new Chart(ctx, {
                 type: 'scatter',
@@ -644,10 +635,10 @@
                     datasets: [{
                         label: 'Puntaje de Estudiante',
                         data: chartData,
-                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)',
                         borderColor: 'rgba(59, 130, 246, 1)',
-                        pointRadius: 5,
-                        pointHoverRadius: 8
+                        pointRadius: 4, // Puntos más pequeños
+                        pointHoverRadius: 7 // Hover un poco más grande
                     }]
                 },
                 options: {
@@ -655,7 +646,7 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            type: 'linear', // Cambiado de 'category' a 'linear'
+                            type: 'linear',
                             title: {
                                 display: true,
                                 text: 'Ranking Global (1 = Mejor Puntaje)',
@@ -676,12 +667,13 @@
                         },
                         tooltip: {
                             enabled: true,
+                            mode: 'index', // Modo de tooltip mejorado
+                            intersect: false, // para que sea más fácil de activar
                             backgroundColor: '#333',
                             titleFont: { size: 14 },
                             bodyFont: { size: 12 },
                             padding: 10,
                             callbacks: {
-                                // El callback para el tooltip sigue siendo válido
                                 label: function(context) {
                                     const student = context.raw.studentInfo;
                                     if (!student) return '';
@@ -835,23 +827,79 @@
             }).join('');
         }
         
-        function showAlertModal() { elements.body.classList.add('overflow-hidden'); elements.alertModal.classList.remove('hidden'); }
-        function closeAlertModal() { elements.body.classList.remove('overflow-hidden'); elements.alertModal.classList.add('hidden'); }
+        function showAlertModal() { 
+            elements.body.classList.add('overflow-hidden'); 
+            elements.alertModal.innerHTML = `
+                <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 sm:p-8 relative transform modal-enter text-center">
+                     <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
+                        <svg class="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                     </div>
+                     <h3 class="text-xl font-bold text-brand-secondary mt-4 mb-2">¡Próximamente!</h3>
+                     <p>Estamos diseñando y subiendo los reportes individuales. ¡Vuelve pronto!</p>
+                     <button id="close-alert-btn" class="mt-6 bg-brand-primary text-white font-bold py-2 px-6 rounded-lg w-full hover:bg-orange-600 transition-colors">Entendido</button>
+                 </div>`;
+            elements.alertModal.classList.remove('hidden'); 
+            document.getElementById('close-alert-btn').addEventListener('click', closeAlertModal);
+        }
+
+        function closeAlertModal() { 
+            elements.body.classList.remove('overflow-hidden');
+            const modalContent = elements.alertModal.querySelector('.modal-enter');
+            if (modalContent) {
+                modalContent.classList.remove('modal-enter');
+                modalContent.classList.add('modal-leave');
+                setTimeout(() => { elements.alertModal.classList.add('hidden'); }, 300);
+            } else {
+                 elements.alertModal.classList.add('hidden');
+            }
+        }
 
         function showDetailsModal(studentId) {
             const student = studentData.find(s => s.id === studentId); if (!student) return;
             elements.body.classList.add('overflow-hidden');
             
-            const subjectsHtml = filterOptions.slice(1).map(subjectInfo => { // Use filterOptions to ensure correct color mapping
+            const subjectsHtml = filterOptions.slice(1).map(subjectInfo => {
                 const subjectKey = subjectInfo.key.split('.')[1];
                 const subjectColor = subjectInfo.colorVar;
                 const subjectName = subjectInfo.label;
                 const score = student.puntajesDetallados[subjectKey];
                 const percentile = student.puntajesDetallados[`${subjectKey}Percentil`];
-                return `<div class="bg-gray-50 p-3 rounded-lg"><div class="flex justify-between items-center mb-1"><span class="font-semibold">${subjectName}</span><span class="font-bold" style="color: ${subjectColor};">${score}<span class="text-sm font-normal text-gray-400">/100</span></span></div><div class="progress-bar-bg"><div class="progress-bar" style="width: ${score}%; background-color: ${subjectColor};"></div></div><div class="flex justify-between items-center mt-1 text-xs text-gray-500"><span>Percentil (Grupo)</span><span>${percentile}%</span></div></div>`;
+                return `<div class="bg-gray-50 p-3 rounded-lg"><div class="flex justify-between items-center mb-1"><span class="font-semibold text-gray-700">${subjectName}</span><span class="font-bold text-lg" style="color: ${subjectColor};">${score}<span class="text-sm font-normal text-gray-400">/100</span></span></div><div class="progress-bar-bg"><div class="progress-bar" style="width: ${score}%; background-color: ${subjectColor};"></div></div><div class="flex justify-between items-center mt-1 text-xs text-gray-500"><span>Percentil (Grupo)</span><span>${percentile}%</span></div></div>`;
             }).join('');
 
-            elements.studentModal.innerHTML = `<div id="modal-content" class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 sm:p-8 relative transform modal-enter my-8"><button id="close-student-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><div class="flex flex-col md:flex-row md:items-start gap-8"><div class="w-full md:w-1/3 text-center"><h2 class="text-2xl font-bold text-brand-secondary">${student.nombre}</h2><p class="text-gray-600 mt-1">${student.municipio}</p><p class="text-xs text-gray-400 mt-2">Registro: ${maskRegistrationNumber(student.registro)}</p><div class="mt-4 bg-brand-primary text-white p-4 rounded-lg text-center"><p class="font-semibold uppercase text-sm">Puntaje Global</p><div class="text-5xl font-bold flex items-baseline justify-center whitespace-nowrap"><span>${student.puntajeGlobal}</span><span class="text-2xl font-medium text-orange-200">/500</span></div></div><div class="mt-2 bg-gray-100 text-gray-700 p-3 rounded-lg text-center"><p class="font-semibold uppercase text-sm">Percentil (Grupo)</p><p class="text-3xl font-bold">${student.percentil}%</p></div><div class="mt-4"><button id="comprobar-resultado-btn" class="bg-brand-secondary text-white font-bold py-2 px-4 rounded-lg w-full inline-block hover:bg-blue-700 transition-colors">Comprobar Resultado</button></div></div><div class="w-full md:w-2/3 space-y-3"><h3 class="text-lg font-semibold text-center mb-2">Desempeño por Materia</h3>${subjectsHtml}</div></div></div>`;
+            elements.studentModal.innerHTML = `
+                <div id="modal-content" class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl relative transform modal-enter my-8 overflow-hidden">
+                    <button id="close-student-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors z-10">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                    <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 sm:p-8">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-brand-secondary">${student.nombre}</h2>
+                        <p class="text-gray-600 mt-1">${student.municipio}</p>
+                        <p class="text-xs text-gray-400 mt-2">Registro: ${maskRegistrationNumber(student.registro)}</p>
+                    </div>
+                    <div class="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1 space-y-4">
+                             <div class="bg-brand-primary/10 text-brand-primary p-4 rounded-lg text-center">
+                                 <p class="font-semibold uppercase text-sm">Puntaje Global</p>
+                                 <div class="text-5xl font-bold flex items-baseline justify-center whitespace-nowrap">
+                                     <span>${student.puntajeGlobal}</span><span class="text-2xl font-medium opacity-70">/500</span>
+                                 </div>
+                             </div>
+                             <div class="bg-gray-100 text-gray-700 p-4 rounded-lg text-center">
+                                 <p class="font-semibold uppercase text-sm">Percentil (Grupo)</p>
+                                 <p class="text-3xl font-bold">${student.percentil}%</p>
+                             </div>
+                             <button id="comprobar-resultado-btn" class="bg-brand-secondary text-white font-bold py-3 px-4 rounded-lg w-full inline-flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                Comprobar Resultado
+                             </button>
+                        </div>
+                        <div class="md:col-span-2 space-y-3">
+                            <h3 class="text-lg font-semibold text-center text-gray-700 mb-2">Desempeño por Materia</h3>
+                            ${subjectsHtml}
+                        </div>
+                    </div>
+                </div>`;
             elements.studentModal.classList.remove('hidden');
             document.getElementById('close-student-modal-btn').addEventListener('click', closeDetailsModal);
             document.getElementById('comprobar-resultado-btn').addEventListener('click', showAlertModal);
@@ -935,7 +983,6 @@
             elements.clearSearchBtn.addEventListener('click', clearSearch);
             elements.clearSearchBtnMobile.addEventListener('click', clearSearch);
             
-            elements.closeAlertBtn.addEventListener('click', closeAlertModal);
             elements.alertModal.addEventListener('click', (e) => { if (e.target === elements.alertModal) closeAlertModal(); });
             
             elements.thead.addEventListener('click', e => {
