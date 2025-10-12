@@ -624,14 +624,25 @@
         function renderScatterPlot() {
             if (!studentData || studentData.length === 0) return;
 
-            // 1. Preparar los datos con un ligero "jitter" (vibración) para separar puntos
-            const chartData = studentData.map(student => {
-                return {
-                    x: student.globalRank + (Math.random() - 0.5) * 0.5, // Jitter
-                    y: student.puntajeGlobal,
-                    studentInfo: student
-                };
-            });
+            // Encontrar puntajes mínimos y máximos para el gradiente
+            const scores = studentData.map(s => s.puntajeGlobal);
+            const minScore = Math.min(...scores);
+            const maxScore = Math.max(...scores);
+            
+            // Función para obtener el color basado en el puntaje
+            const getPointColor = (score) => {
+                const ratio = (score - minScore) / (maxScore - minScore);
+                // Gradiente de rojo -> amarillo -> verde
+                const hue = (ratio * 120).toString(10);
+                return `hsl(${hue}, 90%, 55%)`;
+            };
+
+            // Preparar los datos con un ligero "jitter" (vibración) para separar puntos
+            const chartData = studentData.map(student => ({
+                x: student.globalRank + (Math.random() - 0.5) * 0.6, // Un poco más de jitter
+                y: student.puntajeGlobal,
+                studentInfo: student
+            }));
 
             if (scatterChartInstance) {
                 scatterChartInstance.destroy();
@@ -644,10 +655,13 @@
                     datasets: [{
                         label: 'Puntaje de Estudiante',
                         data: chartData,
-                        backgroundColor: 'rgba(59, 130, 246, 0.6)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        pointRadius: 4, // Puntos más pequeños
-                        pointHoverRadius: 7 // Hover un poco más grande
+                        pointBackgroundColor: studentData.map(s => getPointColor(s.puntajeGlobal)),
+                        pointBorderColor: '#fff',
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        pointBorderWidth: 1,
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2,
                     }]
                 },
                 options: {
@@ -655,49 +669,56 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            type: 'linear',
+                             grid: { color: '#e5e7eb' },
+                             ticks: { font: { family: "'Inter', sans-serif" } },
                             title: {
                                 display: true,
                                 text: 'Ranking Global (1 = Mejor Puntaje)',
-                                font: { size: 14 }
+                                font: { size: 14, family: "'Inter', sans-serif" }
                             }
                         },
                         y: {
+                            grid: { color: '#e5e7eb' },
+                            ticks: { font: { family: "'Inter', sans-serif" } },
                             title: {
                                 display: true,
                                 text: 'Puntaje Global Individual',
-                                font: { size: 14 }
+                                font: { size: 14, family: "'Inter', sans-serif" }
                             }
                         }
                     },
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             enabled: true,
-                            mode: 'index', // Modo de tooltip mejorado
-                            intersect: false, // para que sea más fácil de activar
-                            backgroundColor: '#333',
-                            titleFont: { size: 14 },
-                            bodyFont: { size: 12 },
-                            padding: 10,
+                            mode: 'nearest',
+                            intersect: true,
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#3B82F6',
+                            titleFont: { weight: 'bold', size: 16, family: "'Inter', sans-serif" },
+                            bodyColor: '#5c5d5c',
+                            bodyFont: { size: 12, family: "'Inter', sans-serif" },
+                            borderColor: '#d1d5db',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
                             callbacks: {
-                                label: function(context) {
+                                title: (tooltipItems) => {
+                                    const student = tooltipItems[0].raw.studentInfo;
+                                    return student ? student.nombre : '';
+                                },
+                                label: (context) => {
                                     const student = context.raw.studentInfo;
                                     if (!student) return '';
-                                    
-                                    const lines = [
-                                        `Nombre: ${student.nombre}`,
+                                    return [
                                         `Puntaje Global: ${student.puntajeGlobal}`,
-                                        '--- Puntajes por Área ---',
-                                        `Lectura Crítica: ${student.puntajesDetallados.lectura}`,
+                                        ``,
+                                        `Lectura: ${student.puntajesDetallados.lectura}`,
                                         `Matemáticas: ${student.puntajesDetallados.matematicas}`,
-                                        `Sociales y Ciudadanas: ${student.puntajesDetallados.sociales}`,
-                                        `Ciencias Naturales: ${student.puntajesDetallados.ciencias}`,
+                                        `Sociales: ${student.puntajesDetallados.sociales}`,
+                                        `Ciencias: ${student.puntajesDetallados.ciencias}`,
                                         `Inglés: ${student.puntajesDetallados.ingles}`
                                     ];
-                                    return lines;
                                 }
                             }
                         }
