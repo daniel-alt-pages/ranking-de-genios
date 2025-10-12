@@ -337,8 +337,8 @@
 
             <!-- Nueva Sección: Gráfica de Dispersión -->
             <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                 <h2 class="text-2xl font-bold text-brand-secondary text-center">Distribución de Puntajes Individuales de Egresados Seamos Genios (2025-3)</h2>
-                 <p class="text-sm text-gray-500 mt-1 text-center mb-6">Pasa el cursor sobre un punto para ver el detalle del estudiante.</p>
+                 <h2 class="text-2xl font-bold text-brand-secondary text-center">Distribución de Puntajes por Ranking Global</h2>
+                 <p class="text-sm text-gray-500 mt-1 text-center mb-6">Cada punto representa un estudiante. Pasa el cursor para ver el detalle.</p>
                  <div class="relative h-96 w-full">
                      <canvas id="scatter-plot-chart"></canvas>
                  </div>
@@ -616,43 +616,27 @@
             setupEventListeners();
         }
         
-        // --- Nueva Función para la Gráfica de Dispersión ---
+        // --- Nueva Función para la Gráfica de Dispersión (Modificada) ---
         function renderScatterPlot() {
             if (!studentData || studentData.length === 0) return;
 
-            // 1. Definir los intervalos para el eje X
-            const intervalSize = 30;
-            const minScore = Math.min(...studentData.map(s => s.puntajeGlobal));
-            const maxScore = Math.max(...studentData.map(s => s.puntajeGlobal));
-            
-            const startInterval = Math.floor(minScore / intervalSize) * intervalSize;
-            const endInterval = Math.ceil(maxScore / intervalSize) * intervalSize;
-            
-            const intervals = [];
-            for (let i = startInterval; i < endInterval; i += intervalSize) {
-                intervals.push({
-                    min: i,
-                    max: i + intervalSize - 1,
-                    label: `${i}-${i + intervalSize - 1}`
-                });
-            }
-
-            // 2. Preparar los datos para Chart.js
+            // 1. Preparar los datos para Chart.js
+            //    Eje X: Rango global del estudiante
+            //    Eje Y: Puntaje global del estudiante
             const chartData = studentData.map(student => {
-                const interval = intervals.find(iv => student.puntajeGlobal >= iv.min && student.puntajeGlobal <= iv.max);
                 return {
-                    x: interval ? interval.label : 'N/A',
+                    x: student.globalRank,
                     y: student.puntajeGlobal,
                     studentInfo: student // Adjuntamos toda la info del estudiante
                 };
             });
 
-            // 3. Destruir el gráfico anterior si existe para evitar duplicados
+            // 2. Destruir el gráfico anterior si existe para evitar duplicados
             if (scatterChartInstance) {
                 scatterChartInstance.destroy();
             }
             
-            // 4. Crear el gráfico
+            // 3. Crear el gráfico
             const ctx = elements.scatterPlotCanvas.getContext('2d');
             scatterChartInstance = new Chart(ctx, {
                 type: 'scatter',
@@ -671,17 +655,14 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            type: 'category',
-                            labels: intervals.map(iv => iv.label),
+                            type: 'linear', // Cambiado de 'category' a 'linear'
                             title: {
                                 display: true,
-                                text: 'Grupos de Intervalos de Puntaje Global',
+                                text: 'Ranking Global (1 = Mejor Puntaje)',
                                 font: { size: 14 }
                             }
                         },
                         y: {
-                            beginAtZero: false,
-                            min: minScore - 20, // Dar un poco de espacio
                             title: {
                                 display: true,
                                 text: 'Puntaje Global Individual',
@@ -691,7 +672,7 @@
                     },
                     plugins: {
                         legend: {
-                            display: false // Ocultamos la leyenda ya que solo hay una serie
+                            display: false
                         },
                         tooltip: {
                             enabled: true,
@@ -700,7 +681,7 @@
                             bodyFont: { size: 12 },
                             padding: 10,
                             callbacks: {
-                                // Personalizamos el tooltip para mostrar la info completa
+                                // El callback para el tooltip sigue siendo válido
                                 label: function(context) {
                                     const student = context.raw.studentInfo;
                                     if (!student) return '';
