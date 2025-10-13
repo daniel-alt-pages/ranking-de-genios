@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <script>
-        // Configuración de Tailwind para la nueva paleta de colores (más vivos)
+        // Paleta de colores original (light mode)
         tailwind.config = {
             theme: {
                 extend: {
@@ -34,7 +34,6 @@
 
     <style>
         /* --- COLORES POR ASIGNATURA (Placeholder) --- */
-        /* En el futuro, solo necesitarás cambiar estos colores */
         :root {
             --color-lectura: #0284c7; /* sky-600 */
             --color-matematicas: #dc2626; /* red-600 */
@@ -46,8 +45,8 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f1f1eb;
-            color: #5c5d5c;
+            background-color: #f1f1eb; /* Fondo claro */
+            color: #5c5d5c; /* Texto oscuro */
         }
         body.overflow-hidden {
             overflow: hidden;
@@ -60,14 +59,12 @@
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
         
-        /* Estilos para el panel de filtros deslizable */
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
         @keyframes slideOutRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
 
         .panel-enter-active { animation: slideInRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
         .panel-leave-active { animation: slideOutRight 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
 
-        /* --- NUEVOS ESTILOS PARA EL PODIO --- */
         .podium-card-wrapper { 
             border-radius: 1.25rem; 
             transition: all 0.3s ease; 
@@ -82,22 +79,13 @@
         }
 
         .podium-card-content {
-            border-radius: 1.25rem; /* Match wrapper */
+            border-radius: 1.25rem;
             height: 100%;
         }
 
-        /* Gradients for podium cards */
-        .podium-1 .podium-card-content {
-            background: linear-gradient(145deg, #fefce8, #fde047, #eab308);
-        }
-        .podium-2 .podium-card-content {
-            background: linear-gradient(145deg, #f9fafb, #e5e7eb, #d1d5db);
-        }
-        .podium-3 .podium-card-content {
-            background: linear-gradient(145deg, #fde68a, #d97706, #b45309);
-        }
-        /* --- FIN DE NUEVOS ESTILOS --- */
-
+        .podium-1 .podium-card-content { background: linear-gradient(145deg, #fefce8, #fde047, #eab308); color: #422006; }
+        .podium-2 .podium-card-content { background: linear-gradient(145deg, #f9fafb, #e5e7eb, #d1d5db); color: #1f2937; }
+        .podium-3 .podium-card-content { background: linear-gradient(145deg, #fde68a, #d97706, #b45309); color: #ffffff; }
 
         .sortable-header { cursor: pointer; user-select: none; }
         .sort-icon { display: inline-block; width: 1em; height: 1em; margin-left: 0.5rem; opacity: 0.5; transition: opacity 0.2s; }
@@ -133,8 +121,8 @@
             background-color: #e5e7eb;
             color: #5c5d5c;
             transition: all 0.2s ease;
-            width: 100%; /* Para el panel móvil */
-            text-align: left; /* Para el panel móvil */
+            width: 100%;
+            text-align: left;
         }
         .subject-btn:hover {
             background-color: #d1d5db;
@@ -153,30 +141,18 @@
         .progress-bar {
             height: 100%;
             border-radius: 9999px;
-            /* El color de fondo se asignará dinámicamente */
             transition: width 0.5s ease-in-out;
         }
         
-        .area-score-col {
-            display: none;
-        }
-        body.show-area-score .area-score-col {
-            display: table-cell;
-        }
+        .area-score-col { display: none; }
+        body.show-area-score .area-score-col { display: table-cell; }
 
-        @keyframes rowFadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .table-row-animate {
-            animation: rowFadeIn 0.3s ease-out forwards;
-        }
+        @keyframes rowFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .table-row-animate { animation: rowFadeIn 0.3s ease-out forwards; }
 
-        #ranking-table-body tr:hover {
-            background-color: #e5e7eb; 
-        }
+        #ranking-table-body tr { border-color: #e5e7eb; }
+        #ranking-table-body tr:hover { background-color: #f9fafb; }
 
-        /* Estilos para las insignias del Top 5 */
         .rank-badge {
             width: 32px;
             height: 32px;
@@ -187,10 +163,9 @@
             font-weight: 700;
             color: white;
         }
-        .rank-4 { background-color: #60A5FA; } /* Azul más claro */
-        .rank-5 { background-color: #93C5FD; } /* Azul aún más claro */
+        .rank-4 { background-color: #60A5FA; }
+        .rank-5 { background-color: #93C5FD; }
         
-        /* Estilos para las tarjetas de promedio por área */
         .subject-average-card {
             position: relative;
             overflow: hidden;
@@ -205,48 +180,21 @@
             padding: 0.75rem;
             text-align: center;
         }
-        .subject-average-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%);
-            transform: scale(0);
-            transition: transform 0.5s ease;
-        }
-        .subject-average-card:hover::before {
-            transform: scale(2);
-        }
-        .subject-average-card:hover {
-            transform: scale(1.05) translateY(-5px);
-        }
+        .subject-average-card:hover { transform: scale(1.05) translateY(-5px); }
         
-        /* Centrar último elemento en la grid de promedios para móvil */
-        @media (max-width: 639px) { /* Corresponde al breakpoint 'sm' de Tailwind */
+        @media (max-width: 639px) { 
           #subject-averages-container > :last-child:nth-child(odd) {
             grid-column: span 2 / span 2;
           }
         }
-
-        /* Aplica el levantamiento del podio solo en pantallas de escritorio */
+        
         @media (min-width: 768px) {
-            .podium-1 {
-                transform: translateY(-30px);
-            }
-            .podium-2 {
-                transform: translateY(-15px);
-            }
-            .podium-1:hover {
-                transform: translateY(-40px) scale(1.03);
-            }
-            .podium-2:hover {
-                transform: translateY(-25px) scale(1.03);
-            }
+            .podium-1 { transform: translateY(-30px); }
+            .podium-2 { transform: translateY(-15px); }
+            .podium-1:hover { transform: translateY(-40px) scale(1.03); }
+            .podium-2:hover { transform: translateY(-25px) scale(1.03); }
         }
 
-        /* Animaciones para el modal de alerta */
         @keyframes blob {
           0% { transform: translate(0px, 0px) scale(1); }
           33% { transform: translate(30px, -50px) scale(1.1); }
@@ -254,21 +202,71 @@
           100% { transform: translate(0px, 0px) scale(1); }
         }
         .animation-delay-2000 { animation-delay: 2s; }
+        
+        /* Estilos para el botón de WhatsApp */
+        .whatsapp-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background-color: #25D366;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .whatsapp-button:hover {
+            transform: scale(1.1);
+            animation: none; /* Detiene la animación en hover */
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(37, 211, 102, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
+        }
     </style>
 </head>
 <body class="bg-brand-bg text-brand-text">
 
     <div id="app-container" class="main-container mx-auto p-4 sm:p-6 lg:p-8">
         
-        <header class="text-center mb-12">
-            <h1 class="text-3xl sm:text-5xl font-extrabold text-brand-text tracking-tight">Ranking de Resultados Saber 11</h1>
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-brand-header tracking-tight">Ranking de Resultados Saber 11</h1>
             <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Explora y compara los resultados de nuestros estudiantes de una forma interactiva.</p>
         </header>
 
         <main class="space-y-8">
+             <!-- Banner de Publicidad Principal -->
+            <section class="bg-gradient-to-r from-brand-primary to-orange-500 text-white p-6 rounded-xl shadow-lg text-center my-8">
+                <h3 class="text-2xl font-bold">¿Quieres Ser el Próximo Puntaje Perfecto?</h3>
+                <p class="mt-2">Nuestro Pre-Icfes Seamos Genios te da las herramientas para alcanzar la excelencia. ¡Inscripciones abiertas!</p>
+                <button class="mt-4 bg-white text-brand-primary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Más Información</button>
+            </section>
+            
+            <!-- Banner de Inscripción al Ranking -->
+            <section class="bg-gradient-to-r from-brand-secondary to-blue-500 text-white p-6 rounded-xl shadow-lg text-center my-8">
+                <h3 class="text-2xl font-bold">¿Quieres aparecer en este Ranking?</h3>
+                <p class="mt-2">Inscribe tus resultados del ICFES Saber 11 y compite para ser el mejor.</p>
+                <a href="https://docs.google.com/forms/d/1-oOUf_1Al53G-nKgstr3UZh2heAkwAzap5pb77Y-vRI/edit#responses" target="_blank" class="mt-4 inline-block bg-white text-brand-secondary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Quiero Inscribirme en el Ranking</a>
+            </section>
+
             <!-- Podio de Honor -->
             <section>
-                <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Podio de Honor</h2>
+                <h2 class="text-3xl font-bold text-center mb-8 text-brand-header">Podio de Honor</h2>
                 <div id="top-performers" class="flex flex-col md:flex-row justify-center items-center md:items-end gap-4 md:gap-2 pt-5 md:pt-10">
                     <!-- El contenido del podio se generará dinámicamente con JavaScript -->
                 </div>
@@ -276,7 +274,7 @@
             
             <!-- Estadísticas Generales -->
             <section>
-                <h2 class="text-3xl font-bold text-center mb-8 text-brand-text">Estadísticas del Grupo</h2>
+                <h2 class="text-3xl font-bold text-center mb-8 text-brand-header">Estadísticas del Grupo</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-md text-center">
                         <p class="text-sm font-semibold text-brand-text">Puntaje Máximo</p>
@@ -294,7 +292,7 @@
 
                 <!-- Promedios por Área -->
                 <div class="bg-white p-6 rounded-xl shadow-md mt-6">
-                    <h3 class="text-lg font-bold text-center mb-4">Promedios por Área</h3>
+                    <h3 class="text-lg font-bold text-center mb-4 text-brand-header">Promedios por Área</h3>
                     <div id="subject-averages-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                         <!-- Generado dinámicamente -->
                     </div>
@@ -437,6 +435,13 @@
     <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
         <!-- Contenido se genera dinámicamente -->
     </div>
+
+    <!-- Botón de WhatsApp -->
+    <a href="https://wa.me/573042359048" target="_blank" class="whatsapp-button" aria-label="Contactar por WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
+            <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+        </svg>
+    </a>
 
 
     <script>
@@ -763,7 +768,26 @@
                 return;
             }
 
-            paginatedItems.forEach((student, index) => {
+            if (start + 5 < end) {
+                const adRow = document.createElement('tr');
+                adRow.innerHTML = `
+                    <td colspan="6" class="p-0">
+                        <div class="bg-blue-100 border-t border-b border-brand-secondary/20 p-4 text-center">
+                            <p class="font-bold text-brand-secondary">¡Prepárate para el éxito! Conoce nuestro Pre-Icfes y asegura tu futuro.</p>
+                            <button class="mt-2 bg-brand-secondary text-white font-semibold py-1 px-4 rounded-full text-sm hover:bg-blue-700">Ver Cursos</button>
+                        </div>
+                    </td>
+                `;
+                paginatedItems.splice(5, 0, { ad: true, element: adRow });
+            }
+
+            paginatedItems.forEach((item, index) => {
+                if (item.ad) {
+                    elements.tableBody.appendChild(item.element);
+                    return;
+                }
+                const student = item;
+
                 const row = document.createElement('tr');
                 row.className = `table-row-animate`;
                 row.style.animationDelay = `${index * 50}ms`;
@@ -804,23 +828,56 @@
                 elements.mobileList.innerHTML = `<div class="text-center p-8 text-gray-500">No se encontraron estudiantes.</div>`;
                 return;
             }
+            
+            if (paginatedItems.length > 5) {
+                const adCard = document.createElement('div');
+                adCard.className = 'bg-blue-100 rounded-xl shadow-md p-4 text-center my-3';
+                adCard.innerHTML = `
+                    <p class="font-bold text-brand-secondary">¡Prepárate para el éxito! Conoce nuestro Pre-Icfes y asegura tu futuro.</p>
+                    <button class="mt-2 bg-brand-secondary text-white font-semibold py-1 px-4 rounded-full text-sm hover:bg-blue-700">Ver Cursos</button>
+                `;
+                paginatedItems.splice(5, 0, { ad: true, element: adCard });
+            }
 
-            paginatedItems.forEach((student) => {
-                let rankHtml;
-                if (student.globalRank <= 3) {
-                    rankHtml = `<span class="text-3xl">${['🥇', '🥈', '🥉'][student.globalRank - 1]}</span>`;
-                } else if (student.globalRank <= 5) {
-                    rankHtml = `<div class="rank-badge rank-${student.globalRank} !w-10 !h-10 text-lg">${student.globalRank}</div>`;
-                } else {
-                    rankHtml = `<div class="font-semibold text-xl w-10 h-10 flex items-center justify-center">${student.globalRank}</div>`;
+            paginatedItems.forEach((item, index) => {
+                 if (item.ad) {
+                    elements.mobileList.appendChild(item.element);
+                    return;
                 }
-
+                const student = item;
                 const card = document.createElement('div');
-                card.className = 'bg-white rounded-xl shadow-md p-4 flex items-center gap-3';
+                card.className = 'bg-white rounded-xl shadow-md p-4 flex flex-col gap-2';
+                
+                const isAreaSort = state.currentSort.key.includes('puntajesDetallados');
+                let rankHtml;
+
+                if (isAreaSort) {
+                    const areaRank = start + index + 1;
+                    const subjectInfo = filterOptions.find(opt => opt.key === state.currentSort.key);
+                    const areaColor = subjectInfo ? getComputedStyle(document.documentElement).getPropertyValue(subjectInfo.colorVar.match(/--[\w-]+/)[0]) : 'inherit';
+                    rankHtml = `
+                        <div class="text-center flex-shrink-0">
+                            <div>
+                                <span class="text-xs text-gray-500">Global</span>
+                                <p class="font-bold text-lg leading-tight">${student.globalRank}°</p>
+                            </div>
+                            <div class="mt-1">
+                                <span class="text-xs font-semibold" style="color: ${areaColor};">Área</span>
+                                <p class="font-bold text-lg leading-tight" style="color: ${areaColor};">${areaRank}°</p>
+                            </div>
+                        </div>`;
+                } else {
+                    if (student.globalRank <= 3) {
+                        rankHtml = `<span class="text-3xl">${['🥇', '🥈', '🥉'][student.globalRank - 1]}</span>`;
+                    } else if (student.globalRank <= 5) {
+                        rankHtml = `<div class="rank-badge rank-${student.globalRank} !w-10 !h-10 text-lg mx-auto">${student.globalRank}</div>`;
+                    } else {
+                        rankHtml = `<div class="font-semibold text-2xl text-gray-500">${student.globalRank}°</div>`;
+                    }
+                    rankHtml = `<div class="w-12 text-center flex-shrink-0 flex items-center justify-center">${rankHtml}</div>`;
+                }
                 
                 let scoreDisplayHtml = '';
-                const isAreaSort = state.currentSort.key.includes('puntajesDetallados');
-
                 if (isAreaSort) {
                     const subjectInfo = filterOptions.find(opt => opt.key === state.currentSort.key);
                     const subjectKey = subjectInfo.key.split('.')[1];
@@ -828,28 +885,33 @@
                     const areaColor = subjectInfo ? getComputedStyle(document.documentElement).getPropertyValue(subjectInfo.colorVar.match(/--[\w-]+/)[0]) : 'inherit';
                     
                     scoreDisplayHtml = `
-                        <div class="text-right flex-shrink-0 pl-2 w-24">
+                        <div class="text-right">
                             <p class="font-semibold text-xs truncate" style="color: ${areaColor};">${subjectInfo.label}</p>
-                            <p class="font-bold text-2xl" style="color: ${areaColor};">${areaScore}<span class="text-sm font-normal text-gray-400">/100</span></p>
+                            <p class="font-bold text-xl" style="color: ${areaColor};">${areaScore}<span class="text-sm font-normal text-gray-400">/100</span></p>
                         </div>
                     `;
                 } else {
                     scoreDisplayHtml = `
-                        <div class="text-right flex-shrink-0 pl-2 w-24">
+                        <div class="text-right">
                             <p class="font-semibold text-xs text-brand-primary">Puntaje Global</p>
-                            <p class="font-bold text-2xl text-brand-primary">${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span></p>
+                            <p class="font-bold text-xl text-brand-primary">${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span></p>
                         </div>
                     `;
                 }
 
                 card.innerHTML = `
-                    <div class="w-10 text-center flex-shrink-0">${rankHtml}</div>
-                    <div class="flex-grow min-w-0">
-                        <p class="font-bold text-brand-text truncate">${student.nombre}</p>
-                        <p class="text-sm text-gray-500 truncate">${student.municipio}</p>
+                    <div class="flex items-center justify-between gap-3">
+                        ${rankHtml}
+                        <div class="flex-grow min-w-0">
+                            <p class="font-bold text-brand-text truncate">${student.nombre}</p>
+                        </div>
+                        <button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors ml-2 flex-shrink-0">Ver</button>
                     </div>
-                    ${scoreDisplayHtml}
-                    <button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors ml-2 flex-shrink-0">Ver</button>`;
+                    <div class="flex items-end justify-between text-sm pl-16">
+                         <p class="text-gray-500 truncate">${student.municipio}</p>
+                         ${scoreDisplayHtml}
+                    </div>
+                `;
                 
                 elements.mobileList.appendChild(card);
             });
@@ -1012,6 +1074,10 @@
                         <h3 class="text-2xl font-bold text-center text-gray-800 mb-6">Desempeño por Materia</h3>
                         <div class="space-y-4">
                             ${subjectsHtml}
+                            <div class="mt-6 p-4 bg-orange-100 border-l-4 border-brand-primary rounded-r-lg">
+                                <p class="font-bold text-orange-800">¿Quieres mejorar tus puntajes?</p>
+                                <p class="text-sm text-orange-700 mt-1">Nuestro Pre-Icfes personalizado te ayuda a fortalecer tus áreas débiles. <a href="#" class="font-bold underline">¡Empieza hoy!</a></p>
+                            </div>
                         </div>
                     </div>
                 </div>`;
@@ -1205,5 +1271,4 @@
     </script>
 </body>
 </html>
-" and the user is asking the following query: "EN LA VISTA MOVIL, QUIERO QUE SE VEA EL PUESTO GLOBAL, Y AL LADO EL PUESTO DEL AREA, ES DECIR EN VEZ DE LA INSIGNIA DEL PUESTO, EL NUMERO GLOBAL, Y LUEGO AL LADO EL NUMERO DEL AREA Y LUEGO EL RESTO DE LA INFORMACIÓN"
 
