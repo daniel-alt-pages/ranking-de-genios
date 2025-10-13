@@ -212,48 +212,105 @@
             .podium-2:hover { transform: translateY(-25px) scale(1.03); }
         }
 
-        /* --- Estilos para el Informe Virtual --- */
+        /* --- Estilos para el Informe Virtual (Nuevos) --- */
+        .report-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .report-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom-width: 4px;
+        }
+
+        .report-card-body {
+            padding: 1.5rem;
+        }
+
+        .performance-bar-container {
+            position: relative;
+            padding-top: 2rem;
+            margin-top: 1rem;
+        }
+
         .performance-level-bar {
             display: flex;
-            height: 2rem;
-            border-radius: 0.5rem;
+            height: 1.25rem;
+            border-radius: 9999px;
             overflow: hidden;
-            background: linear-gradient(to right, #ef4444, #f97316, #eab308, #84cc16, #22c55e);
-            position: relative;
-            border: 1px solid rgba(0,0,0,0.1);
+            background-color: #e5e7eb;
         }
+
         .level-segment {
-            flex-grow: 1;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
             font-size: 0.75rem;
             font-weight: 600;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-            position: relative;
-            z-index: 5;
         }
-         .level-highlight {
+        /* Colores distintos para cada nivel */
+        .level-segment[data-level='1'] { background-color: #ef4444; } /* red-500 */
+        .level-segment[data-level='2'] { background-color: #f59e0b; } /* amber-500 */
+        .level-segment[data-level='3'] { background-color: #84cc16; } /* lime-500 */
+        .level-segment[data-level='4'] { background-color: #22c55e; } /* green-500 */
+        .level-segment[data-level='B+'] { background-color: #10b981; } /* emerald-500 */
+
+        /* Estilo para el nivel del estudiante (más brillante) */
+        .level-segment.active {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+
+        .your-level-pointer {
             position: absolute;
-            top: -2px;
-            bottom: -2px;
-            background-color: transparent; /* Eliminado el fondo azul */
-            border: 3px solid white;
-            border-radius: 0.5rem;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.5); /* Sombra y borde para resaltar */
-            transition: left 0.5s ease-in-out, width 0.5s ease-in-out;
+            top: -0.25rem;
+            transform: translateX(-50%);
+            transition: left 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-weight: 700;
+            color: #3B82F6;
             z-index: 10;
         }
+
+        .your-level-pointer span {
+            background-color: #3B82F6;
+            color: white;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+        }
+
+        .your-level-pointer::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #3B82F6;
+            margin-top: 2px;
+        }
+
         .skills-container {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
+            transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease, margin-top 0.5s ease;
             opacity: 0;
+            margin-top: 0;
         }
         .skills-container.expanded {
-            max-height: 1000px; /* Suficientemente grande */
+            max-height: 1000px;
             opacity: 1;
+            margin-top: 1.5rem;
         }
         .toggle-skills-btn svg {
              transition: transform 0.3s ease;
@@ -1173,9 +1230,14 @@
                  const levels = performanceLevels[subjectKey];
                  let studentLevelIndex = levels.findIndex(level => score >= level.min && score <= level.max);
                  
-                 const totalSegments = levels.length;
-                 const highlightWidth = 100 / totalSegments;
-                 const highlightLeft = studentLevelIndex * highlightWidth;
+                 const totalRange = 100;
+                 let pointerLeft = (score / totalRange) * 100;
+                 
+                 const segmentsHtml = levels.map((level, i) => {
+                    const width = (level.max - level.min + 1);
+                    const isActive = i === studentLevelIndex;
+                    return `<div class="level-segment ${isActive ? 'active' : ''}" style="flex-grow: ${width}" data-level="${level.label || (i+1)}"></div>`;
+                 }).join('');
 
                  let skillsHtml = '';
                  if (subjectSkills && subjectSkills.categories) {
@@ -1188,28 +1250,37 @@
                         </div>
                     `).join('');
                  }
+                const levelLabelsHtml = levels.map(level => `<div class="flex-1 text-center text-xs text-gray-500">${level.label || `Nvl ${levels.indexOf(level)+1}`} (${level.min}-${level.max})</div>`).join('');
 
                 return `
-                    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                        <div class="flex items-center gap-4 mb-4">
-                            <span class="text-2xl font-bold" style="color: ${subjectInfo.colorVar};">${subjectInfo.label}</span>
-                            <span class="ml-auto text-3xl font-bold text-gray-800">${score}<span class="text-xl text-gray-400">/100</span></span>
+                    <div class="report-card">
+                        <div class="report-card-header" style="border-color: ${subjectInfo.colorVar};">
+                            <h3 class="text-2xl font-bold" style="color: ${subjectInfo.colorVar};">${subjectInfo.label}</h3>
+                            <span class="text-4xl font-bold text-gray-800">${score}<span class="text-2xl text-gray-400">/100</span></span>
                         </div>
+                        <div class="report-card-body">
+                            <p class="text-sm font-semibold mb-2 text-gray-600">Nivel de Desempeño</p>
+                            <div class="performance-bar-container">
+                                <div class="your-level-pointer" style="left: ${pointerLeft}%;">
+                                    <span>Tu Nivel</span>
+                                </div>
+                                <div class="performance-level-bar">
+                                     ${segmentsHtml}
+                                </div>
+                                <div class="flex mt-1">
+                                    ${levelLabelsHtml}
+                                </div>
+                            </div>
 
-                        <p class="text-sm font-semibold mb-2 text-gray-600">Nivel de Desempeño</p>
-                        <div class="performance-level-bar">
-                             ${levels.map((level, i) => `<div class="level-segment">${level.label || `Nvl ${i+1}`}</div>`).join('')}
-                             <div class="level-highlight" style="left: ${highlightLeft}%; width: ${highlightWidth}%;"></div>
-                        </div>
-
-                        <div class="text-center mt-6">
-                             <button class="toggle-skills-btn text-brand-secondary font-semibold inline-flex items-center gap-2" data-target="skills-${subjectKey}">
-                                <span>Ver Habilidades del Nivel ${levels[studentLevelIndex].label || (studentLevelIndex+1)}</span>
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                             </button>
-                        </div>
-                        <div id="skills-${subjectKey}" class="skills-container mt-4 border-t pt-4">
-                           ${skillsHtml}
+                            <div class="text-center mt-8">
+                                 <button class="toggle-skills-btn bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-full inline-flex items-center gap-2 hover:bg-gray-200 transition-colors" data-target="skills-${subjectKey}">
+                                    <span>Ver Habilidades del Nivel ${levels[studentLevelIndex].label || (studentLevelIndex+1)}</span>
+                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                 </button>
+                            </div>
+                            <div id="skills-${subjectKey}" class="skills-container bg-gray-50 p-4 rounded-lg">
+                               ${skillsHtml}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1463,4 +1534,6 @@
 </html>
 
 
+
+" to add a banner that says: "Conviértete en un Genio: Descubre Nuestros Planes de Estudio" and a button that says "Ver Planes"
 
