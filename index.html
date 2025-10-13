@@ -22,8 +22,8 @@
                     colors: {
                         'brand-primary': '#F97316',   // Naranja más vivo
                         'brand-secondary': '#3B82F6', // Azul más vivo
-                        'brand-text': '#5c5d5c',      // Dark Gray
-                        'brand-bg': '#f1f1eb',        // Off-white
+                        'brand-text': '#5c5d5c',     // Dark Gray
+                        'brand-bg': '#f1f1eb',       // Off-white
                         'brand-header': '#5c5d5c',   // Dark Gray for table header
                         'brand-red': '#ac3236',
                     }
@@ -33,13 +33,13 @@
     </script>
 
     <style>
-        /* --- COLORES POR ASIGNATURA (Placeholder) --- */
+        /* --- COLORES POR ASIGNATURA --- */
         :root {
             --color-lectura: #0284c7; /* sky-600 */
             --color-matematicas: #dc2626; /* red-600 */
             --color-sociales: #ca8a04; /* yellow-600 */
             --color-ciencias: #16a34a; /* green-600 */
-            --color-ingles: #9333ea;    /* purple-600 */
+            --color-ingles: #9333ea;   /* purple-600 */
         }
         /* ------------------------------------------- */
 
@@ -47,6 +47,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #f1f1eb; /* Fondo claro */
             color: #5c5d5c; /* Texto oscuro */
+            overflow-x: hidden;
         }
         body.overflow-hidden {
             overflow: hidden;
@@ -59,12 +60,28 @@
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
         
-        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
-        @keyframes slideOutRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOutLeft { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-50px); } }
 
-        .panel-enter-active { animation: slideInRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-        .panel-leave-active { animation: slideOutRight 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
+        #ranking-view, #report-view {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
 
+        #ranking-view.leaving {
+             animation: slideOutLeft 0.4s forwards;
+        }
+        #report-view.entering {
+            animation: slideInRight 0.4s forwards;
+        }
+
+        #report-view.leaving {
+             animation: slideOutLeft 0.4s forwards;
+        }
+
+        #ranking-view.entering {
+            animation: slideInRight 0.4s forwards;
+        }
+        
         .podium-card-wrapper { 
             border-radius: 1.25rem; 
             transition: all 0.3s ease; 
@@ -195,13 +212,55 @@
             .podium-2:hover { transform: translateY(-25px) scale(1.03); }
         }
 
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
+        /* --- Estilos para el Informe Virtual --- */
+        .performance-level-bar {
+            display: flex;
+            height: 2rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background: linear-gradient(to right, #ef4444, #f97316, #eab308, #84cc16, #22c55e);
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.1);
         }
-        .animation-delay-2000 { animation-delay: 2s; }
+        .level-segment {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+            position: relative;
+            z-index: 5;
+        }
+         .level-highlight {
+            position: absolute;
+            top: -2px;
+            bottom: -2px;
+            background-color: #3b82f6; /* Azul intenso */
+            border: 3px solid white;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+            transition: left 0.5s ease-in-out, width 0.5s ease-in-out;
+            z-index: 10;
+        }
+        .skills-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
+            opacity: 0;
+        }
+        .skills-container.expanded {
+            max-height: 1000px; /* Suficientemente grande */
+            opacity: 1;
+        }
+        .toggle-skills-btn svg {
+             transition: transform 0.3s ease;
+        }
+        .toggle-skills-btn.expanded svg {
+            transform: rotate(180deg);
+        }
         
     </style>
 </head>
@@ -209,189 +268,191 @@
 
     <div id="app-container" class="main-container mx-auto p-4 sm:p-6 lg:p-8">
         
-        <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-5xl font-extrabold text-brand-header tracking-tight">Ranking de Resultados Saber 11</h1>
-            <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Explora y compara los resultados de nuestros estudiantes de una forma interactiva.</p>
-        </header>
+        <!-- Vista del Ranking -->
+        <div id="ranking-view">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-brand-header tracking-tight">Ranking de Resultados Saber 11</h1>
+                <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Explora y compara los resultados de nuestros estudiantes de una forma interactiva.</p>
+            </header>
 
-        <main class="space-y-8">
-            
-            <!-- Podio de Honor -->
-            <section>
-                <h2 class="text-3xl font-bold text-center mb-8 text-brand-header">Podio de Honor</h2>
-                <div id="top-performers" class="flex flex-col md:flex-row justify-center items-center md:items-end gap-4 md:gap-2 pt-5 md:pt-10">
-                    <!-- El contenido del podio se generará dinámicamente con JavaScript -->
-                </div>
-            </section>
-            
-            <!-- Banners de Publicidad -->
-            <section class="space-y-4 my-8">
-                <div class="bg-gradient-to-r from-brand-primary to-orange-500 text-white p-6 rounded-xl shadow-lg text-center">
-                    <h3 class="text-2xl font-bold">¿Quieres Ser el Próximo Puntaje Perfecto?</h3>
-                    <p class="mt-2">Nuestro Pre-Icfes Seamos Genios te da las herramientas para alcanzar la excelencia. ¡Inscripciones abiertas!</p>
-                    <button class="mt-4 bg-white text-brand-primary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Más Información</button>
-                </div>
-                <div class="bg-gradient-to-r from-brand-secondary to-blue-500 text-white p-6 rounded-xl shadow-lg text-center">
-                    <h3 class="text-2xl font-bold">¿Quieres aparecer en este Ranking?</h3>
-                    <p class="mt-2">Inscribe tus resultados del ICFES Saber 11 y compite para ser el mejor.</p>
-                    <a href="https://docs.google.com/forms/d/1-oOUf_1Al53G-nKgstr3UZh2heAkwAzap5pb77Y-vRI/edit#responses" target="_blank" class="mt-4 inline-block bg-white text-brand-secondary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Quiero Inscribirme en el Ranking</a>
-                </div>
-            </section>
-            
-            <!-- Estadísticas Generales -->
-            <section>
-                <h2 class="text-3xl font-bold text-center mb-8 text-brand-header">Estadísticas del Grupo</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                        <p class="text-sm font-semibold text-brand-text">Puntaje Máximo</p>
-                        <p id="max-score" class="text-4xl sm:text-5xl font-bold text-brand-secondary mt-2">0</p>
+            <main class="space-y-8">
+                
+                <!-- Podio de Honor -->
+                <section>
+                    <h2 class="text-3xl font-bold text-center mb-8 text-brand-header">Podio de Honor</h2>
+                    <div id="top-performers" class="flex flex-col md:flex-row justify-center items-center md:items-end gap-4 md:gap-2 pt-5 md:pt-10">
+                        <!-- El contenido del podio se generará dinámicamente con JavaScript -->
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                        <p class="text-sm font-semibold text-brand-text">Estudiantes con más de 350 Puntos</p>
-                        <p id="high-scorers-count" class="text-4xl sm:text-5xl font-bold text-brand-primary mt-2">0</p>
+                </section>
+                
+                <!-- Banners de Publicidad -->
+                <section class="space-y-4 my-8">
+                    <div class="bg-gradient-to-r from-brand-primary to-orange-500 text-white p-6 rounded-xl shadow-lg text-center">
+                        <h3 class="text-2xl font-bold">¿Quieres Ser el Próximo Puntaje Perfecto?</h3>
+                        <p class="mt-2">Nuestro Pre-Icfes Seamos Genios te da las herramientas para alcanzar la excelencia. ¡Inscripciones abiertas!</p>
+                        <button class="mt-4 bg-white text-brand-primary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Más Información</button>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                        <p class="text-sm font-semibold text-brand-text">Puntaje Mínimo</p>
-                        <p id="min-score" class="text-4xl sm:text-5xl font-bold text-brand-red mt-2">0</p>
+                    <div class="bg-gradient-to-r from-brand-secondary to-blue-500 text-white p-6 rounded-xl shadow-lg text-center">
+                        <h3 class="text-2xl font-bold">¿Quieres aparecer en este Ranking?</h3>
+                        <p class="mt-2">Inscribe tus resultados del ICFES Saber 11 y compite para ser el mejor.</p>
+                        <a href="https://docs.google.com/forms/d/1-oOUf_1Al53G-nKgstr3UZh2heAkwAzap5pb77Y-vRI/edit#responses" target="_blank" class="mt-4 inline-block bg-white text-brand-secondary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Quiero Inscribirme en el Ranking</a>
                     </div>
-                </div>
+                </section>
+                
+                <!-- Estadísticas Generales -->
+                <section>
+                    <h2 class="text-3xl font-bold text-center mb-8 text-brand-header">Estadísticas del Grupo</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                            <p class="text-sm font-semibold text-brand-text">Puntaje Máximo</p>
+                            <p id="max-score" class="text-4xl sm:text-5xl font-bold text-brand-secondary mt-2">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                            <p class="text-sm font-semibold text-brand-text">Estudiantes con más de 350 Puntos</p>
+                            <p id="high-scorers-count" class="text-4xl sm:text-5xl font-bold text-brand-primary mt-2">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                            <p class="text-sm font-semibold text-brand-text">Puntaje Mínimo</p>
+                            <p id="min-score" class="text-4xl sm:text-5xl font-bold text-brand-red mt-2">0</p>
+                        </div>
+                    </div>
 
-                <!-- Promedios por Área -->
-                <div class="bg-white p-6 rounded-xl shadow-md mt-6">
-                    <h3 class="text-lg font-bold text-center mb-4 text-brand-header">Promedios por Área</h3>
-                    <div id="subject-averages-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                    <!-- Promedios por Área -->
+                    <div class="bg-white p-6 rounded-xl shadow-md mt-6">
+                        <h3 class="text-lg font-bold text-center mb-4 text-brand-header">Promedios por Área</h3>
+                        <div id="subject-averages-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                            <!-- Generado dinámicamente -->
+                        </div>
+                    </div>
+                </section>
+
+                 <!-- Banner Canal de WhatsApp -->
+                <section class="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6 rounded-xl shadow-lg my-8 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-6 text-center sm:text-left">
+                    <div class="flex items-center gap-4">
+                       <div class="flex-shrink-0">
+                            <svg class="w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                            </svg>
+                       </div>
+                        <div class="flex-grow">
+                             <h3 class="text-xl sm:text-2xl font-bold">Únete a Nuestro Canal de Estudio</h3>
+                             <p class="mt-1 text-sm sm:text-base">Recibe consejos, materiales y notificaciones directamente en tu WhatsApp.</p>
+                        </div>
+                    </div>
+                    <a href="https://whatsapp.com/channel/0029Va4PUxRFHWpywWL6Tw3F" target="_blank" class="mt-4 sm:mt-0 bg-white text-green-600 font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105 whitespace-nowrap flex-shrink-0">
+                        Unirme al Canal
+                    </a>
+                </section>
+
+                <!-- Gráfica de Dispersión -->
+                <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                     <h2 class="text-2xl font-bold text-brand-secondary text-center">Distribución de Puntajes por Ranking Global</h2>
+                     <p class="text-sm text-gray-500 mt-1 text-center mb-6">Cada punto representa un estudiante. Pasa el cursor para ver el detalle.</p>
+                     <div class="relative h-72 sm:h-96 w-full">
+                         <canvas id="scatter-plot-chart"></canvas>
+                     </div>
+                </section>
+
+
+                <!-- Tabla de Ranking y Paginación -->
+                <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                         <div class="text-center md:text-left">
+                             <h2 class="text-2xl font-bold text-brand-secondary">Ranking General</h2>
+                             <p id="ranking-subtitle" class="text-sm text-gray-500 mt-1">Ordenado por Puntaje Global</p>
+                         </div>
+                        <div class="flex flex-col sm:flex-row items-stretch gap-4">
+                             <div class="bg-blue-50 border border-brand-secondary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+                                  <p class="text-sm font-semibold text-brand-text">Total Estudiantes</p>
+                                  <p id="total-students" class="text-4xl font-bold text-brand-secondary">0</p>
+                             </div>
+                             <div class="bg-orange-50 border border-brand-primary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+                                 <p class="text-sm font-semibold text-brand-text">Promedio</p>
+                                 <p id="average-score" class="text-4xl font-bold text-brand-primary">0</p>
+                             </div>
+                              <div class="bg-green-50 border border-green-500/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+                                 <p class="text-sm font-semibold text-green-800">Mediana</p>
+                                 <p id="median-score" class="text-4xl font-bold text-green-600">0</p>
+                              </div>
+                        </div>
+                     </div>
+
+                    <div class="max-w-5xl mx-auto my-8">
+                        <div class="md:hidden mb-4 space-y-4">
+                            <button id="open-filter-menu-btn" class="w-full bg-brand-primary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center justify-center gap-2 shadow-md hover:bg-orange-600 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
+                                Menú de Filtros
+                            </button>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                     <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                                </div>
+                                <input type="text" id="searchInputMobile" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                <button id="clearSearchBtnMobile" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
+                                     <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="desktop-filters" class="hidden md:flex bg-gray-50 p-4 rounded-xl border flex-col md:flex-row items-center gap-4 md:gap-6">
+                            <div class="w-full md:flex-1">
+                                <div class="relative">
+                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                         <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                                     </div>
+                                     <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                     <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
+                                         <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                                     </button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                 <span class="text-sm font-medium text-gray-600">Ordenar por:</span>
+                                 <div class="relative w-full md:w-auto">
+                                    <button id="sort-dropdown-btn" class="w-full md:w-56 bg-brand-secondary text-white font-semibold rounded-full py-2 px-4 text-left flex justify-between items-center transition-shadow hover:shadow-md">
+                                         <span id="sort-dropdown-label" class="truncate">Puntaje Global</span>
+                                         <svg class="h-5 w-5 transform transition-transform" id="sort-dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                     <div id="sort-dropdown-options" class="hidden absolute right-0 mt-2 w-full bg-white rounded-lg shadow-xl z-20 border">
+                                         <!-- Opciones generadas por JS -->
+                                     </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto border rounded-lg md:block hidden"> <!-- Oculto en móvil -->
+                        <table class="w-full text-left">
+                            <thead class="bg-brand-header text-white">
+                                <tr>
+                                    <th class="p-4 w-16 text-center sortable-header">#</th>
+                                    <th class="p-4 w-2/5 text-left sortable-header" data-sort-key="nombre">Nombre Completo</th>
+                                    <th class="p-4 w-1/5 text-center sortable-header" data-sort-key="puntajeGlobal">Puntaje Global</th>
+                                    <th id="area-score-header" class="p-4 w-1/5 text-center area-score-col">Puntaje de Área</th>
+                                    <th class="p-4 w-1/5 text-left">Municipio</th>
+                                    <th class="p-4 w-28 text-center">Detalles</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ranking-table-body" class="divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                    <div id="mobile-ranking-list" class="space-y-3 md:hidden"></div> <!-- Visible solo en móvil -->
+
+                     <!-- Controles de Paginación -->
+                    <div id="pagination-controls" class="pt-4 flex items-center justify-center gap-2 flex-wrap">
                         <!-- Generado dinámicamente -->
                     </div>
-                </div>
-            </section>
+                </section>
+            </main>
+            
+            <footer class="text-center mt-12 text-gray-500"><p>&copy; 2025 SeamosGenios. Todos los derechos reservados.</p></footer>
+        </div>
 
-             <!-- Banner Canal de WhatsApp -->
-            <section class="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6 rounded-xl shadow-lg my-8 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-6 text-center sm:text-left">
-                <div class="flex items-center gap-4">
-                     <div class="flex-shrink-0">
-                        <svg class="w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                        </svg>
-                     </div>
-                    <div class="flex-grow">
-                         <h3 class="text-xl sm:text-2xl font-bold">Únete a Nuestro Canal de Estudio</h3>
-                         <p class="mt-1 text-sm sm:text-base">Recibe consejos, materiales y notificaciones directamente en tu WhatsApp.</p>
-                    </div>
-                </div>
-                <a href="https://whatsapp.com/channel/0029Va4PUxRFHWpywWL6Tw3F" target="_blank" class="mt-4 sm:mt-0 bg-white text-green-600 font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105 whitespace-nowrap flex-shrink-0">
-                    Unirme al Canal
-                </a>
-            </section>
-
-            <!-- Nueva Sección: Gráfica de Dispersión -->
-            <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                 <h2 class="text-2xl font-bold text-brand-secondary text-center">Distribución de Puntajes por Ranking Global</h2>
-                 <p class="text-sm text-gray-500 mt-1 text-center mb-6">Cada punto representa un estudiante. Pasa el cursor para ver el detalle.</p>
-                 <div class="relative h-72 sm:h-96 w-full">
-                     <canvas id="scatter-plot-chart"></canvas>
-                 </div>
-            </section>
-
-
-            <!-- Tabla de Ranking y Paginación -->
-            <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-                     <div class="text-center md:text-left">
-                         <h2 class="text-2xl font-bold text-brand-secondary">Ranking General</h2>
-                         <p id="ranking-subtitle" class="text-sm text-gray-500 mt-1">Ordenado por Puntaje Global</p>
-                     </div>
-                     <!-- Wrapper para las tarjetas de estadísticas -->
-                     <div class="flex flex-col sm:flex-row items-stretch gap-4">
-                         <div class="bg-blue-50 border border-brand-secondary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-                              <p class="text-sm font-semibold text-brand-text">Total Estudiantes</p>
-                              <p id="total-students" class="text-4xl font-bold text-brand-secondary">0</p>
-                         </div>
-                         <div class="bg-orange-50 border border-brand-primary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-                             <p class="text-sm font-semibold text-brand-text">Promedio</p>
-                             <p id="average-score" class="text-4xl font-bold text-brand-primary">0</p>
-                         </div>
-                          <div class="bg-green-50 border border-green-500/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-                             <p class="text-sm font-semibold text-green-800">Mediana</p>
-                             <p id="median-score" class="text-4xl font-bold text-green-600">0</p>
-                         </div>
-                     </div>
-                 </div>
-
-                 <!-- Contenedor de herramientas de análisis -->
-                 <div class="max-w-5xl mx-auto my-8">
-                     <!-- Controles para móvil -->
-                     <div class="md:hidden mb-4 space-y-4">
-                         <button id="open-filter-menu-btn" class="w-full bg-brand-primary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center justify-center gap-2 shadow-md hover:bg-orange-600 transition-colors">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
-                             Menú de Filtros
-                         </button>
-                         <div class="relative">
-                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
-                             </div>
-                             <input type="text" id="searchInputMobile" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                             <button id="clearSearchBtnMobile" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
-                                <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
-                             </button>
-                         </div>
-                     </div>
-
-                     <!-- Herramientas de Análisis para Escritorio -->
-                     <div id="desktop-filters" class="hidden md:flex bg-gray-50 p-4 rounded-xl border flex-col md:flex-row items-center gap-4 md:gap-6">
-                         <!-- Search Input (Izquierda) -->
-                         <div class="w-full md:flex-1">
-                             <div class="relative">
-                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                     <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
-                                 </div>
-                                 <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                                 <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
-                                     <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
-                                 </button>
-                             </div>
-                         </div>
-
-                         <!-- Filtros con Dropdown (Derecha) -->
-                         <div class="flex items-center gap-2">
-                              <span class="text-sm font-medium text-gray-600">Ordenar por:</span>
-                              <div class="relative w-full md:w-auto">
-                                 <button id="sort-dropdown-btn" class="w-full md:w-56 bg-brand-secondary text-white font-semibold rounded-full py-2 px-4 text-left flex justify-between items-center transition-shadow hover:shadow-md">
-                                     <span id="sort-dropdown-label" class="truncate">Puntaje Global</span>
-                                     <svg class="h-5 w-5 transform transition-transform" id="sort-dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                 </button>
-                                 <div id="sort-dropdown-options" class="hidden absolute right-0 mt-2 w-full bg-white rounded-lg shadow-xl z-20 border">
-                                     <!-- Opciones generadas por JS -->
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-
-                 <div class="overflow-x-auto border rounded-lg md:block hidden"> <!-- Oculto en móvil -->
-                     <table class="w-full text-left">
-                         <thead class="bg-brand-header text-white">
-                             <tr>
-                                 <th class="p-4 w-16 text-center sortable-header">#</th>
-                                 <th class="p-4 w-2/5 text-left sortable-header" data-sort-key="nombre">Nombre Completo</th>
-                                 <th class="p-4 w-1/5 text-center sortable-header" data-sort-key="puntajeGlobal">Puntaje Global</th>
-                                 <th id="area-score-header" class="p-4 w-1/5 text-center area-score-col">Puntaje de Área</th>
-                                 <th class="p-4 w-1/5 text-left">Municipio</th>
-                                 <th class="p-4 w-28 text-center">Detalles</th>
-                             </tr>
-                         </thead>
-                         <tbody id="ranking-table-body" class="divide-y divide-gray-200"></tbody>
-                     </table>
-                 </div>
-                 <div id="mobile-ranking-list" class="space-y-3 md:hidden"></div> <!-- Visible solo en móvil -->
-
-                  <!-- Controles de Paginación -->
-                 <div id="pagination-controls" class="pt-4 flex items-center justify-center gap-2 flex-wrap">
-                     <!-- Generado dinámicamente -->
-                 </div>
-            </section>
-        </main>
-        
-        <footer class="text-center mt-12 text-gray-500"><p>&copy; 2025 SeamosGenios. Todos los derechos reservados.</p></footer>
+        <!-- Vista del Informe Virtual -->
+        <div id="report-view" class="hidden">
+            <!-- El contenido se generará dinámicamente -->
+        </div>
     </div>
     
     <!-- Panel de Filtros para Móvil -->
@@ -431,6 +492,99 @@
         const suffix = reg.substring(reg.length - 4);
         return `${prefix}*****${suffix}`;
     }
+    
+    // --- BASE DE DATOS DE HABILIDADES ---
+    const skillsData = {
+        "lectura": {
+            level: 4,
+            categories: {
+                "Análisis Crítico y Argumentación": [
+                    "Evalúa contenidos, estrategias discursivas y argumentativas presentes en un texto.",
+                    "Selecciona elementos locales y construye argumentos que sustentan una tesis con base en textos relacionados.",
+                    "Asume una postura crítica frente a los planteamientos de un texto."
+                ],
+                "Interpretación y Relación de Textos": [
+                    "Propone soluciones a problemas de interpretación que subyacen en un texto.",
+                    "Relaciona información de dos o más textos o fragmentos de texto para llegar a una conclusión.",
+                    "Reconoce los contextos como elementos importantes en la valoración de un texto.",
+                    "Plantea hipótesis de lectura a partir de las ideas presentes en un texto."
+                ],
+                "Aplicación de Conceptos Literarios": [
+                    "Aplica conceptos de análisis literario para caracterizar diferentes elementos en un texto."
+                ]
+            }
+        },
+        "matematicas": {
+            level: 4,
+            categories: {
+                "Resolución de Problemas y Modelado": [
+                    "Resuelve problemas que requieren construir una representación auxiliar (gráficas y fórmulas) como paso intermedio para su solución.",
+                    "Modela usando lenguaje algebraico información dada en lenguaje natural, tablas o representaciones geométricas.",
+                    "Modela fenómenos variacionales no explícitos haciendo uso de lenguaje simbólico o gráficas."
+                ],
+                "Análisis Algebraico y Aritmético": [
+                    "Realiza transformaciones de subconjuntos de información que pueden requerir el uso de operaciones complejas (cálculos de porcentajes).",
+                    "Manipula expresiones algebraicas o aritméticas haciendo uso de las propiedades de las operaciones."
+                ],
+                "Estadística, Probabilidad y Toma de Decisiones": [
+                    "Resuelve problemas que requieren interpretar información de eventos dependientes.",
+                    "Reconoce en diferentes formatos el espacio muestral de un experimento aleatorio.",
+                    "Resuelve problemas de conteo que requieren el uso de permutaciones.",
+                    "Justifica si hay falta de información en una situación problema para tomar una decisión.",
+                    "Toma decisiones sobre la veracidad o falsedad de una afirmación cuando requiere el uso de varias propiedades o conceptualizaciones formales."
+                ]
+            }
+        },
+        "sociales": {
+            level: 4,
+            categories: {
+                "Conocimiento Constitucional y Cívico": [
+                    "Conoce los procedimientos de reforma a la Constitución Política de Colombia, los mecanismos de participación ciudadana y las funciones de los organismos de control."
+                ],
+                "Análisis de Contextos y Argumentos": [
+                    "Compara enunciados o argumentos, así como intereses y posiciones de actores en contextos en los que se discuten situaciones problemáticas o sus alternativas de solución.",
+                    "Analiza fuentes (primarias y secundarias) para valorar inferencias o identificar intenciones, características de los actores involucrados y contextos en los que se ubican dichas fuentes."
+                ],
+                "Pensamiento Social y Multidimensional": [
+                    "Relaciona propuestas de solución a un problema con su contexto de implementación, o con sus posibles impactos en ciertas dimensiones (económicas, políticas, culturales, ambientales, etc.).",
+                    "Entiende problemáticas, eventos o procesos sociales a partir del uso de conceptos básicos de las ciencias sociales o a partir de contextos históricos y/o geográficos.",
+                    "Establece relaciones entre modelos conceptuales y fuentes que los abordan o decisiones sociales que los aplican."
+                ]
+            }
+        },
+        "ciencias": {
+            level: 4,
+            categories: {
+                "Metodología de la Investigación Científica": [
+                    "Plantea preguntas de investigación desde las ciencias naturales a partir de un contexto determinado.",
+                    "Establece conclusiones derivadas de una investigación.",
+                    "Analiza fenómenos naturales con base en los procedimientos propios de la investigación científica."
+                ],
+                "Análisis y Aplicación de Conceptos Científicos": [
+                    "Contrasta modelos de las ciencias naturales con fenómenos cotidianos.",
+                    "Resuelve situaciones problema haciendo uso de conceptos, leyes y teorías de las ciencias naturales."
+                ],
+                "Comunicación Científica": [
+                    "Comunica resultados de procesos de investigación científica."
+                ]
+            }
+        },
+        "ingles": {
+            level: 'B1',
+            categories: {
+                "Comprensión Comunicativa": [
+                    "Es capaz de comprender los puntos principales de textos claros y en lengua estándar si tratan sobre cuestiones que le son conocidas, ya sea en situaciones de trabajo, de estudio o de ocio."
+                ],
+                "Desenvolvimiento Práctico e Interacción": [
+                    "Sabe desenvolverse en la mayor parte de las situaciones que pueden surgir durante un viaje por zonas donde se utiliza la lengua."
+                ],
+                "Producción y Expresión Personal": [
+                    "Es capaz de producir textos sencillos y coherentes sobre temas que le son familiares o en los que tiene un interés personal.",
+                    "Puede describir experiencias, acontecimientos, deseos y aspiraciones, así como justificar brevemente sus opiniones o explicar sus planes."
+                ]
+            }
+        }
+    };
 
     document.addEventListener('DOMContentLoaded', () => {
         let studentData = [];
@@ -444,6 +598,9 @@
         
         const elements = {
             body: document.body,
+            appContainer: document.getElementById('app-container'),
+            rankingView: document.getElementById('ranking-view'),
+            reportView: document.getElementById('report-view'),
             tableBody: document.getElementById('ranking-table-body'),
             mobileList: document.getElementById('mobile-ranking-list'),
             searchInput: document.getElementById('searchInput'),
@@ -477,16 +634,16 @@
         };
 
         const filterOptions = [
-            { key: 'puntajeGlobal', label: 'Puntaje Global' },
-            { key: 'puntajesDetallados.lectura', label: 'Lectura Crítica', colorVar: 'var(--color-lectura)' },
-            { key: 'puntajesDetallados.matematicas', label: 'Matemáticas', colorVar: 'var(--color-matematicas)' },
-            { key: 'puntajesDetallados.sociales', label: 'Sociales', colorVar: 'var(--color-sociales)' },
-            { key: 'puntajesDetallados.ciencias', label: 'Ciencias', colorVar: 'var(--color-ciencias)' },
-            { key: 'puntajesDetallados.ingles', label: 'Inglés', colorVar: 'var(--color-ingles)' },
+            { key: 'puntajeGlobal', label: 'Puntaje Global', subjectKey: 'global' },
+            { key: 'puntajesDetallados.lectura', label: 'Lectura Crítica', colorVar: 'var(--color-lectura)', subjectKey: 'lectura' },
+            { key: 'puntajesDetallados.matematicas', label: 'Matemáticas', colorVar: 'var(--color-matematicas)', subjectKey: 'matematicas' },
+            { key: 'puntajesDetallados.sociales', label: 'Sociales', colorVar: 'var(--color-sociales)', subjectKey: 'sociales' },
+            { key: 'puntajesDetallados.ciencias', label: 'Ciencias', colorVar: 'var(--color-ciencias)', subjectKey: 'ciencias' },
+            { key: 'puntajesDetallados.ingles', label: 'Inglés', colorVar: 'var(--color-ingles)', subjectKey: 'ingles' },
         ];
         
         function loadInitialData() {
-            const csvFilePath = 'BD - Hoja 1.csv';
+            const csvFilePath = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfl94b33vj53n1tq5MYp320p-2-rVAtTlo3jVvGvB3GQN0wdF9xl0Fm48QXEPMlT19mPL-2rd-i2V_/pub?gid=0&single=true&output=csv';
             Papa.parse(csvFilePath, {
                 download: true, header: true, skipEmptyLines: true,
                 complete: (results) => {
@@ -494,7 +651,7 @@
                     initializeDashboard();
                 },
                 error: (error) => {
-                    alert(`Ocurrió un error al cargar el archivo de datos CSV. Asegúrate de que el archivo '${csvFilePath}' se encuentra en la misma carpeta que este archivo HTML.`);
+                    alert(`Ocurrió un error al cargar el archivo de datos. Por favor, revisa la consola para más detalles.`);
                     console.error("Error al cargar CSV:", error);
                 }
             });
@@ -503,19 +660,19 @@
         function processCSVData(data) {
              const processed = data.map((row, index) => {
                  const s = {
-                     nombre: row['NOMBRE'], registro: row['NÚMERO DE REGISTRO'],
-                     lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0,
-                     matematicas: parseInt(row['MATEMÁTICAS'], 10) || 0,
-                     sociales: parseInt(row['SOCIALES'], 10) || 0,
-                     ciencias: parseInt(row['CIENCIAS'], 10) || 0,
-                     ingles: parseInt(row['INGLÉS'], 10) || 0,
-                     puntaje: row['PUNTAJE'], municipio: row['MUNICIPIO']
+                    nombre: row['NOMBRE'], registro: row['NÚMERO DE REGISTRO'],
+                    lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0,
+                    matematicas: parseInt(row['MATEMÁTICAS'], 10) || 0,
+                    sociales: parseInt(row['SOCIALES'], 10) || 0,
+                    ciencias: parseInt(row['CIENCIAS'], 10) || 0,
+                    ingles: parseInt(row['INGLÉS'], 10) || 0,
+                    puntaje: row['PUNTAJE'], municipio: row['MUNICIPIO']
                  };
                  return {
-                     id: `${s.registro}-${s.nombre}`, puesto: index + 1, nombre: s.nombre,
-                     registro: s.registro, municipio: s.municipio, colegio: "Seamos Genios", año: 2025,
-                     puntajeGlobal: parseInt(s.puntaje.split('/')[0], 10),
-                     puntajesDetallados: { lectura: s.lectura, matematicas: s.matematicas, sociales: s.sociales, ciencias: s.ciencias, ingles: s.ingles }
+                    id: `${s.registro}-${s.nombre}`, puesto: index + 1, nombre: s.nombre,
+                    registro: s.registro, municipio: s.municipio, colegio: "Seamos Genios", año: 2025,
+                    puntajeGlobal: parseInt(s.puntaje.split('/')[0], 10),
+                    puntajesDetallados: { lectura: s.lectura, matematicas: s.matematicas, sociales: s.sociales, ciencias: s.ciencias, ingles: s.ingles }
                  };
              });
             
@@ -555,13 +712,12 @@
             populateFilterOptions();
             calculateAndDisplayStats();
             renderPodium();
-            renderScatterPlot(); // Llamar a la nueva función
+            renderScatterPlot();
             handleFilterSelection(filterOptions[0].key, filterOptions[0].label, false); 
             updateDisplay();
             setupEventListeners();
         }
         
-        // --- Nueva Función para la Gráfica de Dispersión (Modificada) ---
         function renderScatterPlot() {
             if (!studentData || studentData.length === 0) return;
 
@@ -619,7 +775,7 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Puesto en el Ranking Global', // ETIQUETA DEL EJE X CORREGIDA
+                                text: 'Puesto en el Ranking Global',
                                 font: { 
                                     size: titleFontSize, 
                                     weight: 'bold', 
@@ -694,7 +850,7 @@
             ).join('');
             
             elements.subjectFilterButtonsPanel.innerHTML = filterOptions.map(opt =>
-                 `<button class="subject-btn" data-sort-key="${opt.key}">${opt.label}</button>`
+                `<button class="subject-btn" data-sort-key="${opt.key}">${opt.label}</button>`
             ).join('');
         }
 
@@ -747,26 +903,7 @@
                 return;
             }
 
-            if (start + 5 < end) {
-                const adRow = document.createElement('tr');
-                adRow.innerHTML = `
-                    <td colspan="6" class="p-0">
-                        <div class="bg-blue-100 border-t border-b border-brand-secondary/20 p-4 text-center">
-                            <p class="font-bold text-brand-secondary">¡Prepárate para el éxito! Conoce nuestro Pre-Icfes y asegura tu futuro.</p>
-                            <button class="mt-2 bg-brand-secondary text-white font-semibold py-1 px-4 rounded-full text-sm hover:bg-blue-700">Ver Cursos</button>
-                        </div>
-                    </td>
-                `;
-                paginatedItems.splice(5, 0, { ad: true, element: adRow });
-            }
-
-            paginatedItems.forEach((item, index) => {
-                if (item.ad) {
-                    elements.tableBody.appendChild(item.element);
-                    return;
-                }
-                const student = item;
-
+            paginatedItems.forEach((student, index) => {
                 const row = document.createElement('tr');
                 row.className = `table-row-animate`;
                 row.style.animationDelay = `${index * 50}ms`;
@@ -807,23 +944,8 @@
                 elements.mobileList.innerHTML = `<div class="text-center p-8 text-gray-500">No se encontraron estudiantes.</div>`;
                 return;
             }
-            
-            if (paginatedItems.length > 5) {
-                const adCard = document.createElement('div');
-                adCard.className = 'bg-blue-100 rounded-xl shadow-md p-4 text-center my-3';
-                adCard.innerHTML = `
-                    <p class="font-bold text-brand-secondary">¡Prepárate para el éxito! Conoce nuestro Pre-Icfes y asegura tu futuro.</p>
-                    <button class="mt-2 bg-brand-secondary text-white font-semibold py-1 px-4 rounded-full text-sm hover:bg-blue-700">Ver Cursos</button>
-                `;
-                paginatedItems.splice(5, 0, { ad: true, element: adCard });
-            }
 
-            paginatedItems.forEach((item, index) => {
-                 if (item.ad) {
-                    elements.mobileList.appendChild(item.element);
-                    return;
-                }
-                const student = item;
+            paginatedItems.forEach((student, index) => {
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-xl shadow-md p-4 flex flex-col gap-2';
                 
@@ -914,10 +1036,9 @@
             const top3 = [...studentData].sort((a, b) => b.puntajeGlobal - a.puntajeGlobal).slice(0, 3);
             
             let podiumHTML = '';
-            // Asegurarse de que haya al menos 3 estudiantes para el podio completo
             if (top3.length >= 3) {
-                 const podiumOrder = [top3[1], top3[0], top3[2]]; // 2do, 1ro, 3ro
-                 podiumHTML = podiumOrder.map((student) => {
+                const podiumOrder = [top3[1], top3[0], top3[2]]; // 2do, 1ro, 3ro
+                podiumHTML = podiumOrder.map((student) => {
                     const rank = student.globalRank;
                     const podiumClass = { 1: 'podium-1 order-1 md:order-2', 2: 'podium-2 order-2 md:order-1', 3: 'podium-3 order-3 md:order-3' };
                     const rankColors = {
@@ -946,43 +1067,11 @@
                     </div>`;
                 }).join('');
             } else {
-                // Fallback si no hay suficientes estudiantes para el podio
                 podiumHTML = `<div class="text-center text-gray-500">No hay suficientes datos para mostrar el podio.</div>`;
             }
             elements.topPerformersContainer.innerHTML = podiumHTML;
         }
         
-        function showAlertModal() { 
-            elements.body.classList.add('overflow-hidden'); 
-            elements.alertModal.innerHTML = `
-                <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 relative transform modal-enter text-center overflow-hidden">
-                     <div class="absolute top-0 -left-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-                     <div class="absolute top-0 -right-4 w-72 h-72 bg-orange-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-                     <div class="relative">
-                         <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-yellow-100 border-4 border-white shadow-lg">
-                            <svg class="h-10 w-10 text-yellow-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                         </div>
-                         <h3 class="text-2xl font-bold text-gray-800 mt-6 mb-2">¡Función en Desarrollo!</h3>
-                         <p class="text-gray-600">Estamos trabajando para traer los reportes individuales completos. ¡Gracias por tu paciencia!</p>
-                         <button id="close-alert-btn" class="mt-8 bg-brand-primary text-white font-bold py-3 px-8 rounded-full w-full hover:bg-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg">Entendido</button>
-                     </div>
-                 </div>`;
-            elements.alertModal.classList.remove('hidden'); 
-            document.getElementById('close-alert-btn').addEventListener('click', closeAlertModal);
-        }
-
-        function closeAlertModal() { 
-            elements.body.classList.remove('overflow-hidden');
-            const modalContent = elements.alertModal.querySelector('.modal-enter');
-            if (modalContent) {
-                modalContent.classList.remove('modal-enter');
-                modalContent.classList.add('modal-leave');
-                setTimeout(() => { elements.alertModal.classList.add('hidden'); }, 300);
-            } else {
-                 elements.alertModal.classList.add('hidden');
-            }
-        }
-
         function showDetailsModal(studentId) {
             const student = studentData.find(s => s.id === studentId); if (!student) return;
             elements.body.classList.add('overflow-hidden');
@@ -1038,31 +1127,29 @@
                                  <p class="text-3xl md:text-4xl font-bold">${student.percentil}%</p>
                              </div>
                         </div>
-                         <button id="comprobar-resultado-btn" class="bg-white text-brand-secondary font-bold py-3 px-6 rounded-full w-full inline-flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors transform hover:scale-105">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Comprobar Resultado
-                         </button>
-                         <p class="text-xs opacity-60 mt-4">Registro: ${maskRegistrationNumber(student.registro)}</p>
+                         <!-- NUEVO BOTÓN INFORME VIRTUAL -->
+                         <button data-id="${student.id}" id="show-report-btn" class="bg-brand-primary text-white font-bold py-3 px-6 rounded-full w-full inline-flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors transform hover:scale-105 shadow-lg">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.5a.75.75 0 001.5 0v-8.5z" />
+                                <path d="M10 2a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM10 12a5 5 0 100 10 5 5 0 000-10zM10 12a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5z" />
+                            </svg>
+                            Obtener Informe Virtual
+                        </button>
+                        <p class="text-xs opacity-60 mt-4">Registro: ${maskRegistrationNumber(student.registro)}</p>
                     </div>
 
                     <!-- Columna Derecha (Detalles) -->
                     <div class="w-full md:w-2/3 p-6 md:p-8 overflow-y-auto">
                          <button id="close-student-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors z-10">
-                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
+                             <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                         </button>
                         <h3 class="text-2xl font-bold text-center text-gray-800 mb-6">Desempeño por Materia</h3>
                         <div class="space-y-4">
                             ${subjectsHtml}
-                            <div class="mt-6 p-4 bg-orange-100 border-l-4 border-brand-primary rounded-r-lg">
-                                <p class="font-bold text-orange-800">¿Quieres mejorar tus puntajes?</p>
-                                <p class="text-sm text-orange-700 mt-1">Nuestro Pre-Icfes personalizado te ayuda a fortalecer tus áreas débiles. <a href="#" class="font-bold underline">¡Empieza hoy!</a></p>
-                            </div>
                         </div>
                     </div>
                 </div>`;
             elements.studentModal.classList.remove('hidden');
-            document.getElementById('close-student-modal-btn').addEventListener('click', closeDetailsModal);
-            document.getElementById('comprobar-resultado-btn').addEventListener('click', showAlertModal);
         }
         
         function closeDetailsModal() {
@@ -1072,6 +1159,110 @@
             modalContent.classList.remove('modal-enter'); modalContent.classList.add('modal-leave');
             setTimeout(() => { elements.studentModal.classList.add('hidden'); }, 300);
         }
+
+        // --- FUNCIONES PARA EL INFORME VIRTUAL ---
+        
+        function showReportView(studentId) {
+            const student = studentData.find(s => s.id === studentId);
+            if (!student) return;
+
+            const subjectCardsHtml = filterOptions.slice(1).map(subjectInfo => {
+                 const subjectKey = subjectInfo.subjectKey;
+                 const score = student.puntajesDetallados[subjectKey];
+                 const subjectSkills = skillsData[subjectKey];
+
+                 const performanceLevels = {
+                    lectura: [{min: 0, max:35}, {min:36, max:50}, {min:51, max:65}, {min:66, max:100}],
+                    matematicas: [{min: 0, max:35}, {min:36, max:50}, {min:51, max:70}, {min:71, max:100}],
+                    sociales: [{min: 0, max:40}, {min:41, max:55}, {min:56, max:70}, {min:71, max:100}],
+                    ciencias: [{min: 0, max:40}, {min:41, max:55}, {min:56, max:70}, {min:71, max:100}],
+                    ingles: [{min:0,max:36, label: 'A-'}, {min:37,max:47, label: 'A1'}, {min:48,max:58, label: 'A2'}, {min:59,max:78, label: 'B1'}, {min:79,max:100, label: 'B+'}]
+                 };
+                
+                 const levels = performanceLevels[subjectKey];
+                 let studentLevelIndex = levels.findIndex(level => score >= level.min && score <= level.max);
+                 
+                 const totalSegments = levels.length;
+                 const highlightWidth = 100 / totalSegments;
+                 const highlightLeft = studentLevelIndex * highlightWidth;
+
+                 let skillsHtml = '';
+                 if (subjectSkills && subjectSkills.categories) {
+                    skillsHtml = Object.entries(subjectSkills.categories).map(([category, skills]) => `
+                        <div class="mt-4">
+                            <h4 class="font-bold text-gray-700">${category}</h4>
+                            <ul class="mt-2 list-disc list-inside space-y-1 text-gray-600">
+                                ${skills.map(skill => `<li>${skill}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `).join('');
+                 }
+
+                return `
+                    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="text-2xl font-bold" style="color: ${subjectInfo.colorVar};">${subjectInfo.label}</span>
+                            <span class="ml-auto text-3xl font-bold text-gray-800">${score}<span class="text-xl text-gray-400">/100</span></span>
+                        </div>
+
+                        <p class="text-sm font-semibold mb-2 text-gray-600">Nivel de Desempeño</p>
+                        <div class="performance-level-bar">
+                             ${levels.map((level, i) => `<div class="level-segment">${level.label || `Nvl ${i+1}`}</div>`).join('')}
+                             <div class="level-highlight" style="left: ${highlightLeft}%; width: ${highlightWidth}%;"></div>
+                        </div>
+
+                        <div class="text-center mt-6">
+                             <button class="toggle-skills-btn text-brand-secondary font-semibold inline-flex items-center gap-2" data-target="skills-${subjectKey}">
+                                <span>Ver Habilidades del Nivel ${levels[studentLevelIndex].label || (studentLevelIndex+1)}</span>
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                             </button>
+                        </div>
+                        <div id="skills-${subjectKey}" class="skills-container mt-4 border-t pt-4">
+                           ${skillsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            elements.reportView.innerHTML = `
+                <header class="flex items-center justify-between mb-8">
+                     <div>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-brand-header tracking-tight">Informe Virtual Detallado</h1>
+                        <p class="mt-1 text-lg text-gray-600">${student.nombre}</p>
+                     </div>
+                     <button id="back-to-ranking-btn" class="bg-brand-secondary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center gap-2 shadow-md hover:bg-blue-700 transition-colors">
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>
+                        Volver al Ranking
+                     </button>
+                </header>
+                <main>
+                    ${subjectCardsHtml}
+                </main>
+            `;
+            
+            elements.rankingView.classList.add('leaving');
+            setTimeout(() => {
+                 elements.rankingView.classList.add('hidden');
+                 elements.rankingView.classList.remove('leaving');
+                 elements.reportView.classList.remove('hidden');
+                 elements.reportView.classList.add('entering');
+                 window.scrollTo(0, 0);
+            }, 400);
+
+        }
+
+        function hideReportView() {
+            elements.reportView.classList.add('leaving');
+            setTimeout(() => {
+                 elements.reportView.classList.add('hidden');
+                 elements.reportView.classList.remove('leaving');
+                 elements.rankingView.classList.remove('hidden');
+                 elements.rankingView.classList.add('entering');
+                 window.scrollTo(0, 0);
+                 setTimeout(() => elements.rankingView.classList.remove('entering'), 400);
+            }, 400);
+        }
+
 
         function updateAverageAndMedian(students) {
             if (students.length === 0) {
@@ -1099,8 +1290,8 @@
             }
         }
 
-        function openFilterMenu() { elements.filterMenuPanel.classList.remove('hidden'); elements.filterMenuContent.classList.add('panel-enter-active'); elements.filterMenuContent.classList.remove('panel-leave-active'); elements.body.classList.add('overflow-hidden'); }
-        function closeFilterMenu() { elements.filterMenuContent.classList.remove('panel-enter-active'); elements.filterMenuContent.classList.add('panel-leave-active'); setTimeout(() => { elements.filterMenuPanel.classList.add('hidden'); }, 300); elements.body.classList.remove('overflow-hidden'); }
+        function openFilterMenu() { elements.filterMenuPanel.classList.remove('hidden'); }
+        function closeFilterMenu() { elements.filterMenuPanel.classList.add('hidden'); }
         
         function handleFilterSelection(sortKey, label, shouldUpdateDisplay = true) {
             state.currentSort = (sortKey === 'puntajeGlobal')
@@ -1115,10 +1306,7 @@
                 elements.areaScoreHeader.textContent = `Puntaje ${label}`;
             }
 
-            // Lógica para colorear los filtros
             const selectedOption = filterOptions.find(opt => opt.key === sortKey);
-
-            // Botón de Escritorio
             if (selectedOption && selectedOption.colorVar) {
                 const color = getComputedStyle(document.documentElement).getPropertyValue(selectedOption.colorVar.match(/--[\w-]+/)[0]);
                 elements.sortDropdownBtn.style.backgroundColor = color;
@@ -1128,7 +1316,6 @@
                 elements.sortDropdownBtn.style.borderColor = '';
             }
 
-            // Botones de Móvil
             elements.subjectFilterButtonsPanel.querySelectorAll('.subject-btn').forEach(btn => {
                 const btnOption = filterOptions.find(opt => opt.key === btn.dataset.sortKey);
                 if (btn.dataset.sortKey === sortKey) {
@@ -1137,7 +1324,7 @@
                          const color = getComputedStyle(document.documentElement).getPropertyValue(btnOption.colorVar.match(/--[\w-]+/)[0]);
                         btn.style.backgroundColor = color;
                     } else {
-                        btn.style.backgroundColor = '#F97316'; // Color primario para 'Puntaje Global'
+                        btn.style.backgroundColor = '#F97316';
                     }
                 } else {
                     btn.classList.remove('active');
@@ -1170,8 +1357,6 @@
             elements.clearSearchBtn.addEventListener('click', clearSearch);
             elements.clearSearchBtnMobile.addEventListener('click', clearSearch);
             
-            elements.alertModal.addEventListener('click', (e) => { if (e.target === elements.alertModal) closeAlertModal(); });
-            
             elements.thead.addEventListener('click', e => {
                 const header = e.target.closest('.sortable-header'); if (!header) return;
                 const key = header.dataset.sortKey;
@@ -1187,8 +1372,34 @@
                     updateDisplay();
                 }
             });
-
-            document.getElementById('app-container').addEventListener('click', e => { if (e.target.closest('.ver-mas-btn')) { showDetailsModal(e.target.closest('.ver-mas-btn').dataset.id); } });
+            
+            // Event delegation for dynamically created content
+            elements.appContainer.addEventListener('click', e => {
+                if (e.target.closest('.ver-mas-btn')) { 
+                    showDetailsModal(e.target.closest('.ver-mas-btn').dataset.id); 
+                }
+                if (e.target.closest('#show-report-btn')) {
+                    const studentId = e.target.closest('#show-report-btn').dataset.id;
+                    closeDetailsModal();
+                    // Timeout to allow modal to close before page transition
+                    setTimeout(() => showReportView(studentId), 300);
+                }
+                if (e.target.closest('#close-student-modal-btn')) {
+                    closeDetailsModal();
+                }
+                if (e.target.closest('#back-to-ranking-btn')) {
+                    hideReportView();
+                }
+                if (e.target.closest('.toggle-skills-btn')) {
+                    const button = e.target.closest('.toggle-skills-btn');
+                    const targetId = button.dataset.target;
+                    const targetContainer = document.getElementById(targetId);
+                    if (targetContainer) {
+                        targetContainer.classList.toggle('expanded');
+                        button.classList.toggle('expanded');
+                    }
+                }
+            });
             
             elements.sortDropdownBtn.addEventListener('click', () => {
                 elements.sortDropdownOptions.classList.toggle('hidden');
@@ -1229,7 +1440,7 @@
             elements.highScorersCount.textContent = studentData.filter(s => s.puntajeGlobal > 350).length;
 
             elements.subjectAveragesContainer.innerHTML = '';
-            filterOptions.slice(1).forEach(subjectInfo => { // Slice(1) para omitir 'Puntaje Global'
+            filterOptions.slice(1).forEach(subjectInfo => { // Slice(1) to skip 'Puntaje Global'
                 const subjectKey = subjectInfo.key.split('.')[1];
                 const total = studentData.reduce((sum, s) => sum + (s.puntajesDetallados[subjectKey] || 0), 0);
                 const average = (total / studentData.length).toFixed(1);
@@ -1250,4 +1461,3 @@
     </script>
 </body>
 </html>
-
