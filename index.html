@@ -212,12 +212,12 @@
                 </section>
                 
                 <section style="animation-delay: 200ms;" class="fade-in-up grid md:grid-cols-2 gap-6 my-8">
-                    <div class="bg-gradient-to-r from-brand-primary to-orange-500 text-white p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-center h-full">
+                    <div class="bg-gradient-to-r from-brand-primary to-orange-500 text-white p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-center">
                         <h3 class="text-2xl font-bold">¿Quieres Ser el Próximo Genio?</h3>
                         <p class="mt-2 max-w-sm">Nuestro Pre-Icfes te da las herramientas para alcanzar la excelencia. ¡Inscripciones abiertas!</p>
                         <button class="mt-4 bg-white text-brand-primary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Ver Planes</button>
                     </div>
-                    <div class="bg-gradient-to-r from-brand-secondary to-blue-500 text-white p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-center h-full">
+                    <div class="bg-gradient-to-r from-brand-secondary to-blue-500 text-white p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-center">
                         <h3 class="text-2xl font-bold">¿Quieres aparecer en este Ranking?</h3>
                         <p class="mt-2 max-w-sm">Inscribe tus resultados del ICFES Saber 11 y compite para ser el mejor.</p>
                         <a href="https://docs.google.com/forms/d/1-oOUf_1Al53G-nKgstr3UZh2heAkwAzap5pb77Y-vRI/edit#responses" target="_blank" class="mt-4 inline-block bg-white text-brand-secondary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Inscribirme Ahora</a>
@@ -347,22 +347,14 @@
     </div>
     
     <div id="filter-menu-panel" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40">
-        <!-- Contenido del panel de filtros -->
+        <!-- ... -->
     </div>
 
     <div id="student-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto hidden z-50">
-        <!-- Contenido del modal de detalles -->
+        <!-- Contenido se genera dinámicamente -->
     </div>
 
     <script>
-    // --- FUNCIÓN PARA ENMASCARAR REGISTRO ---
-    function maskRegistrationNumber(reg) {
-        if (typeof reg !== 'string' || reg.length < 8) return reg;
-        const prefix = reg.substring(0, 4);
-        const suffix = reg.substring(reg.length - 4);
-        return `${prefix}*****${suffix}`;
-    }
-    
     const skillsData = {
         "lectura": {
             level: 4,
@@ -400,12 +392,10 @@
             categories: { "Habilidades Superiores": ["El estudiante promedio clasificado en este nivel supera las preguntas de mayor complejidad de la prueba."] }
         }
     };
-    
     document.addEventListener('DOMContentLoaded', () => {
         let studentData = [];
         let scatterChartInstance = null;
         let state = { currentSort: { key: 'globalRank', direction: 'asc' }, filteredData: [], currentPage: 1, rowsPerPage: 10, };
-        
         const elements = {
             body: document.body, appContainer: document.getElementById('app-container'), rankingView: document.getElementById('ranking-view'), reportView: document.getElementById('report-view'),
             tableBody: document.getElementById('ranking-table-body'), mobileList: document.getElementById('mobile-ranking-list'), searchInput: document.getElementById('searchInput'),
@@ -419,7 +409,6 @@
             sortDropdownBtn: document.getElementById('sort-dropdown-btn'), sortDropdownLabel: document.getElementById('sort-dropdown-label'), sortDropdownArrow: document.getElementById('sort-dropdown-arrow'),
             sortDropdownOptions: document.getElementById('sort-dropdown-options'), scatterPlotCanvas: document.getElementById('scatter-plot-chart'),
         };
-
         const filterOptions = [
             { key: 'puntajeGlobal', label: 'Puntaje Global', subjectKey: 'global' },
             { key: 'puntajesDetallados.lectura', label: 'Lectura Crítica', colorVar: 'var(--color-lectura-end)', subjectKey: 'lectura' },
@@ -433,34 +422,15 @@
             const csvFilePath = 'BD - Hoja 1.csv';
             Papa.parse(csvFilePath, {
                 download: true, header: true, skipEmptyLines: true,
-                complete: (results) => {
-                    if (!results.data || results.data.length === 0) {
-                        alert("No se encontraron datos en el archivo CSV o el archivo no se pudo cargar. Asegúrate de que 'BD - Hoja 1.csv' esté en la misma carpeta que este archivo HTML y que no esté vacío.");
-                        return;
-                    }
-                    processCSVData(results.data);
-                    initializeDashboard();
-                },
-                error: (error) => {
-                    alert(`Error al cargar los datos. Asegúrate de que '${csvFilePath}' está en la misma carpeta.`);
-                    console.error("Error CSV:", error);
-                }
+                complete: (results) => { processCSVData(results.data); initializeDashboard(); },
+                error: (error) => { alert(`Error al cargar los datos. Asegúrate de que '${csvFilePath}' está en la misma carpeta.`); console.error("Error CSV:", error); }
             });
         }
         
         function processCSVData(data) {
-             if (data.length > 0) {
-                const firstRow = data[0];
-                const requiredHeaders = ['NOMBRE', 'NÚMERO DE REGISTRO', 'MUNICIPIO', 'PUNTAJE', 'LECTURA CRÍTICA', 'MATEMÁTICAS', 'SOCIALES', 'CIENCIAS', 'INGLÉS'];
-                const missingHeaders = requiredHeaders.filter(header => !firstRow.hasOwnProperty(header));
-                if (missingHeaders.length > 0) {
-                    alert(`Error en el archivo CSV. Faltan o no coinciden las columnas: ${missingHeaders.join(', ')}. Revisa acentos y mayúsculas.`);
-                    return;
-                }
-            }
              const processed = data.map((row, index) => ({
                 id: `${row['NÚMERO DE REGISTRO']}-${row['NOMBRE']}`, nombre: row['NOMBRE'], registro: row['NÚMERO DE REGISTRO'], municipio: row['MUNICIPIO'],
-                puntajeGlobal: parseInt(row['PUNTAJE'].split('/')[0], 10) || 0,
+                puntajeGlobal: parseInt(row['PUNTAJE'].split('/')[0], 10),
                 puntajesDetallados: { lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0, matematicas: parseInt(row['MATEMÁTICAS'], 10) || 0, sociales: parseInt(row['SOCIALES'], 10) || 0, ciencias: parseInt(row['CIENCIAS'], 10) || 0, ingles: parseInt(row['INGLÉS'], 10) || 0 }
              }));
              processed.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
@@ -477,11 +447,10 @@
                 const allSubjectScores = processed.map(s => s.puntajesDetallados[subjectKey]);
                 processed.forEach(student => { student.puntajesDetallados[`${subjectKey}Percentil`] = calculatePercentile(allSubjectScores, student.puntajesDetallados[subjectKey]); });
              });
-             studentData = processed.filter(s => s.nombre && s.puntajeGlobal > 0);
+             studentData = [...processed];
         }
 
         function initializeDashboard() {
-            if (studentData.length === 0) { return; }
             populateFilterOptions(); calculateAndDisplayStats(); renderPodium(); renderScatterPlot();
             handleFilterSelection(filterOptions[0].key, filterOptions[0].label, false); 
             updateDisplay(); setupEventListeners();
@@ -504,7 +473,13 @@
                 return primaryDiff !== 0 ? primaryDiff : b.puntajeGlobal - a.puntajeGlobal;
             });
         }
-        
+        function renderPaginatedTable() { /* ... */ }
+        function renderMobileList() { /* ... */ }
+        function renderPaginationControls() { /* ... */ }
+        function renderPodium() { /* ... */ }
+        function showDetailsModal(studentId) { /* ... */ }
+        function closeDetailsModal() { /* ... */ }
+
         function showReportView(studentId) {
             const student = studentData.find(s => s.id === studentId); if (!student) return;
             const subjectCardsHtml = filterOptions.slice(1).map(subjectInfo => {
@@ -539,27 +514,13 @@
                  window.scrollTo(0, 0);
             }, 400);
         }
-        
-        function setupEventListeners() {
-            // ... (el resto del código de los event listeners)
-        }
+        function hideReportView() { /* ... */ }
+        function setupEventListeners() { /* ... */ }
+        function calculateAndDisplayStats() { /* ... */ }
 
-        // Llama a todas las demás funciones de renderizado y cálculo aquí
-        function renderPaginatedTable() { /* Tu código aquí */ }
-        function renderMobileList() { /* Tu código aquí */ }
-        function renderPaginationControls() { /* Tu código aquí */ }
-        function renderPodium() { /* Tu código aquí */ }
-        function showDetailsModal(id) { /* Tu código aquí */ }
-        function closeDetailsModal() { /* Tu código aquí */ }
-        function hideReportView() { /* Tu código aquí */ }
-        function populateFilterOptions() { /* Tu código aquí */ }
-        function calculateAndDisplayStats() { /* Tu código aquí */ }
-        function renderScatterPlot() { /* Tu código aquí */ }
-        function handleFilterSelection() { /* Tu código aquí */ }
-        
+        // Initialize
         loadInitialData();
     });
     </script>
 </body>
 </html>
-
