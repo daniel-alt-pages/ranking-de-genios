@@ -6,23 +6,26 @@
     <title>Ranking de Estudiantes - Saber 11</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Agregamos la biblioteca Papa Parse para leer archivos CSV -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- Agregamos Chart.js para la gráfica de dispersión -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <script>
+        // Paleta de colores original (light mode)
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'brand-primary': '#F97316',
-                        'brand-secondary': '#3B82F6',
-                        'brand-text': '#374151',
-                        'brand-bg': '#F9FAFB', 
-                        'brand-header': '#1F2937',
-                        'brand-red': '#EF4444',
+                        'brand-primary': '#F97316',   // Naranja más vivo
+                        'brand-secondary': '#3B82F6', // Azul más vivo
+                        'brand-text': '#5c5d5c',     // Dark Gray
+                        'brand-bg': '#f1f1eb',       // Off-white
+                        'brand-header': '#5c5d5c',   // Dark Gray for table header
+                        'brand-red': '#ac3236',
                     }
                 }
             }
@@ -30,248 +33,351 @@
     </script>
 
     <style>
+        /* --- COLORES POR ASIGNATURA --- */
         :root {
-            --color-lectura-start: #0ea5e9; --color-lectura-end: #3b82f6;
-            --color-matematicas-start: #ef4444; --color-matematicas-end: #dc2626;
-            --color-sociales-start: #f59e0b; --color-sociales-end: #eab308;
-            --color-ciencias-start: #22c55e; --color-ciencias-end: #16a34a;
-            --color-ingles-start: #a855f7; --color-ingles-end: #9333ea;
+            --color-lectura: #0284c7; /* sky-600 */
+            --color-matematicas: #dc2626; /* red-600 */
+            --color-sociales: #ca8a04; /* yellow-600 */
+            --color-ciencias: #16a34a; /* green-600 */
+            --color-ingles: #9333ea;   /* purple-600 */
         }
+        /* ------------------------------------------- */
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--brand-bg);
-            color: var(--brand-text);
+            background-color: #f1f1eb; /* Fondo claro */
+            color: #5c5d5c; /* Texto oscuro */
             overflow-x: hidden;
         }
-        body.overflow-hidden { overflow: hidden; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in-up { animation: fadeIn 0.5s ease-out forwards; }
-
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes slideOutLeft { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-30px); } }
-
-        #ranking-view, #report-view { transition: opacity 0.4s ease, transform 0.4s ease; }
-        #ranking-view.leaving { animation: slideOutLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        #report-view.entering { animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        #report-view.leaving { animation: slideOutLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        #ranking-view.entering { animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        
-        /* --- Estilos Informe Virtual Reimaginados --- */
-        .report-card {
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            margin-bottom: 2rem;
+        body.overflow-hidden {
             overflow: hidden;
-            border: 1px solid #e5e7eb;
         }
-        .report-card-header {
-            color: white;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        .main-container {
+            max-width: 1280px;
         }
-        @media (min-width: 640px) {
-            .report-card-header {
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-            }
-        }
+        .modal-enter { animation: fadeIn 0.3s ease-out forwards; }
+        .modal-leave { animation: fadeOut 0.3s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
         
-        .report-card-body { padding: 1.5rem; }
-        
-        .performance-bar-container {
-            position: relative;
-            padding-top: 2.5rem;
-            margin-top: 1rem;
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOutLeft { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-50px); } }
+
+        #ranking-view, #report-view {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
         }
 
-        .performance-level-bar {
-            display: flex;
-            height: 1rem;
-            border-radius: 9999px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.08);
+        #ranking-view.leaving {
+             animation: slideOutLeft 0.4s forwards;
         }
-        .level-segment {
-            transition: all 0.3s ease-in-out;
-            cursor: pointer;
+        #report-view.entering {
+            animation: slideInRight 0.4s forwards;
         }
-        .level-segment:hover {
-            transform: scaleY(1.2);
-            filter: brightness(1.1);
-        }
-        .level-segment[data-level='1'] { background-color: #fca5a5; } /* red-300 */
-        .level-segment[data-level='2'] { background-color: #fdba74; } /* orange-300 */
-        .level-segment[data-level='3'] { background-color: #bef264; } /* lime-300 */
-        .level-segment[data-level='4'] { background-color: #86efac; } /* green-300 */
-        .level-segment[data-level='A-'], .level-segment[data-level='A1'] { background-color: #fca5a5; }
-        .level-segment[data-level='A2'] { background-color: #fdba74; }
-        .level-segment[data-level='B1'] { background-color: #bef264; }
-        .level-segment[data-level='B+'] { background-color: #86efac; }
 
-        .your-level-pointer {
-            position: absolute;
-            top: 0;
-            transform: translateX(-50%);
-            transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
+        #report-view.leaving {
+             animation: slideOutLeft 0.4s forwards;
         }
-        .pointer-box {
-            background-color: #3B82F6;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            white-space: nowrap;
-        }
-        .pointer-arrow {
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 8px solid #3B82F6;
-            margin: 0 auto;
+
+        #ranking-view.entering {
+            animation: slideInRight 0.4s forwards;
         }
         
-        .skills-container {
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0;
-            margin-top: 0;
-        }
-        .skills-container.expanded {
-            max-height: 1000px;
-            opacity: 1;
-            margin-top: 1.5rem;
-        }
-        .toggle-skills-btn svg { transition: transform 0.3s ease; }
-        .toggle-skills-btn.expanded svg { transform: rotate(180deg); }
-
-        /* --- Mejoras de Responsividad General --- */
         .podium-card-wrapper { 
             border-radius: 1.25rem; 
             transition: all 0.3s ease; 
             position: relative;
             width: 100%;
             max-width: 320px;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -2px rgb(0 0 0 / 0.05);
-            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
         }
         .podium-card-wrapper:hover { 
             transform: translateY(-10px) scale(1.03); 
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
         }
 
-        .general-stats-card {
-            background-color: white;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.06);
-            border: 1px solid #e5e7eb;
+        .podium-card-content {
+            border-radius: 1.25rem;
+            height: 100%;
         }
 
-        .ranking-section-card {
-             background-color: white;
-             border-radius: 1rem;
-             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.06);
-             border: 1px solid #e5e7eb;
-             padding: 1.5rem;
+        .podium-1 .podium-card-content { background: linear-gradient(145deg, #fefce8, #fde047, #eab308); color: #422006; }
+        .podium-2 .podium-card-content { background: linear-gradient(145deg, #f9fafb, #e5e7eb, #d1d5db); color: #1f2937; }
+        .podium-3 .podium-card-content { background: linear-gradient(145deg, #fde68a, #d97706, #b45309); color: #ffffff; }
+
+        .sortable-header { cursor: pointer; user-select: none; }
+        .sort-icon { display: inline-block; width: 1em; height: 1em; margin-left: 0.5rem; opacity: 0.5; transition: opacity 0.2s; }
+        .sortable-header:hover .sort-icon { opacity: 1; }
+        
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+        }
+        .pagination-btn.active {
+            background-color: #F97316;
+            color: white;
+            transform: scale(1.05);
+        }
+        .pagination-btn:not(.active) {
+             background-color: #ffffff;
+             color: #5c5d5c;
+        }
+         .pagination-btn:not(.active):hover {
+            background-color: #e5e7eb;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .subject-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            background-color: #e5e7eb;
+            color: #5c5d5c;
+            transition: all 0.2s ease;
+            width: 100%;
+            text-align: left;
+        }
+        .subject-btn:hover {
+            background-color: #d1d5db;
+        }
+        .subject-btn.active {
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
         
-        #mobile-ranking-list .bg-white {
-             border: 1px solid #e5e7eb;
+        .progress-bar-bg {
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 10px;
+            overflow: hidden;
         }
+        .progress-bar {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .area-score-col { display: none; }
+        body.show-area-score .area-score-col { display: table-cell; }
+
+        @keyframes rowFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .table-row-animate { animation: rowFadeIn 0.3s ease-out forwards; }
+
+        #ranking-table-body tr { border-color: #e5e7eb; }
+        #ranking-table-body tr:hover { background-color: #f9fafb; }
+
+        .rank-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+        .rank-4 { background-color: #60A5FA; }
+        .rank-5 { background-color: #93C5FD; }
+        
+        .subject-average-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            color: white;
+            background: var(--subject-color);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        .subject-average-card:hover { transform: scale(1.05) translateY(-5px); }
+        
+        @media (max-width: 639px) { 
+          #subject-averages-container > :last-child:nth-child(odd) {
+            grid-column: span 2 / span 2;
+          }
+        }
+        
+        @media (min-width: 768px) {
+            .podium-1 { transform: translateY(-30px); }
+            .podium-2 { transform: translateY(-15px); }
+            .podium-1:hover { transform: translateY(-40px) scale(1.03); }
+            .podium-2:hover { transform: translateY(-25px) scale(1.03); }
+        }
+
+        /* --- Estilos para el Informe Virtual --- */
+        .performance-level-bar {
+            display: flex;
+            height: 2rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background: linear-gradient(to right, #ef4444, #f97316, #eab308, #84cc16, #22c55e);
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .level-segment {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+            position: relative;
+            z-index: 5;
+        }
+         .level-highlight {
+            position: absolute;
+            top: -2px;
+            bottom: -2px;
+            background-color: transparent; /* Eliminado el fondo azul */
+            border: 3px solid white;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.5); /* Sombra y borde para resaltar */
+            transition: left 0.5s ease-in-out, width 0.5s ease-in-out;
+            z-index: 10;
+        }
+        .skills-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
+            opacity: 0;
+        }
+        .skills-container.expanded {
+            max-height: 1000px; /* Suficientemente grande */
+            opacity: 1;
+        }
+        .toggle-skills-btn svg {
+             transition: transform 0.3s ease;
+        }
+        .toggle-skills-btn.expanded svg {
+            transform: rotate(180deg);
+        }
+        
     </style>
 </head>
 <body class="bg-brand-bg text-brand-text">
 
     <div id="app-container" class="main-container mx-auto p-4 sm:p-6 lg:p-8">
         
+        <!-- Vista del Ranking -->
         <div id="ranking-view">
-            <header class="text-center mb-8 md:mb-12 fade-in-up">
+            <header class="text-center mb-8">
                 <h1 class="text-3xl sm:text-5xl font-extrabold text-brand-header tracking-tight">Ranking de Resultados Saber 11</h1>
-                <p class="mt-3 text-lg text-gray-500 max-w-3xl mx-auto">Explora, compara y analiza de forma interactiva los resultados de nuestros estudiantes.</p>
+                <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Explora y compara los resultados de nuestros estudiantes de una forma interactiva.</p>
             </header>
 
-            <main class="space-y-8 md:space-y-12">
+            <main class="space-y-8">
                 
-                <section style="animation-delay: 100ms;" class="fade-in-up">
+                <!-- Podio de Honor -->
+                <section>
                     <h2 class="text-3xl font-bold text-center mb-8 text-brand-header">Podio de Honor</h2>
                     <div id="top-performers" class="flex flex-col md:flex-row justify-center items-center md:items-end gap-4 md:gap-2 pt-5 md:pt-10">
-                        <!-- Podium content will be generated by JS -->
+                        <!-- El contenido del podio se generará dinámicamente con JavaScript -->
                     </div>
                 </section>
                 
-                <section style="animation-delay: 200ms;" class="fade-in-up grid md:grid-cols-2 gap-6 my-8">
-                    <div class="bg-gradient-to-r from-brand-primary to-orange-500 text-white p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-center">
-                        <h3 class="text-2xl font-bold">¿Quieres Ser el Próximo Genio?</h3>
-                        <p class="mt-2 max-w-sm">Nuestro Pre-Icfes te da las herramientas para alcanzar la excelencia. ¡Inscripciones abiertas!</p>
-                        <button class="mt-4 bg-white text-brand-primary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Ver Planes</button>
+                <!-- Banners de Publicidad -->
+                <section class="space-y-4 my-8">
+                    <div class="bg-gradient-to-r from-brand-primary to-orange-500 text-white p-6 rounded-xl shadow-lg text-center">
+                        <h3 class="text-2xl font-bold">¿Quieres Ser el Próximo Puntaje Perfecto?</h3>
+                        <p class="mt-2">Nuestro Pre-Icfes Seamos Genios te da las herramientas para alcanzar la excelencia. ¡Inscripciones abiertas!</p>
+                        <button class="mt-4 bg-white text-brand-primary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Más Información</button>
                     </div>
-                    <div class="bg-gradient-to-r from-brand-secondary to-blue-500 text-white p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-center">
+                    <div class="bg-gradient-to-r from-brand-secondary to-blue-500 text-white p-6 rounded-xl shadow-lg text-center">
                         <h3 class="text-2xl font-bold">¿Quieres aparecer en este Ranking?</h3>
-                        <p class="mt-2 max-w-sm">Inscribe tus resultados del ICFES Saber 11 y compite para ser el mejor.</p>
-                        <a href="https://docs.google.com/forms/d/1-oOUf_1Al53G-nKgstr3UZh2heAkwAzap5pb77Y-vRI/edit#responses" target="_blank" class="mt-4 inline-block bg-white text-brand-secondary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Inscribirme Ahora</a>
+                        <p class="mt-2">Inscribe tus resultados del ICFES Saber 11 y compite para ser el mejor.</p>
+                        <a href="https://docs.google.com/forms/d/1-oOUf_1Al53G-nKgstr3UZh2heAkwAzap5pb77Y-vRI/edit#responses" target="_blank" class="mt-4 inline-block bg-white text-brand-secondary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Quiero Inscribirme en el Ranking</a>
                     </div>
                 </section>
                 
-                <section style="animation-delay: 300ms;" class="fade-in-up">
+                <!-- Estadísticas Generales -->
+                <section>
                     <h2 class="text-3xl font-bold text-center mb-8 text-brand-header">Estadísticas del Grupo</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        <div class="general-stats-card">
-                            <p class="text-sm font-semibold text-gray-500">Puntaje Máximo</p>
+                        <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                            <p class="text-sm font-semibold text-brand-text">Puntaje Máximo</p>
                             <p id="max-score" class="text-4xl sm:text-5xl font-bold text-brand-secondary mt-2">0</p>
                         </div>
-                        <div class="general-stats-card">
-                            <p class="text-sm font-semibold text-gray-500">Puntajes > 350</p>
+                        <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                            <p class="text-sm font-semibold text-brand-text">Estudiantes con más de 350 Puntos</p>
                             <p id="high-scorers-count" class="text-4xl sm:text-5xl font-bold text-brand-primary mt-2">0</p>
                         </div>
-                        <div class="general-stats-card">
-                            <p class="text-sm font-semibold text-gray-500">Puntaje Mínimo</p>
+                        <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                            <p class="text-sm font-semibold text-brand-text">Puntaje Mínimo</p>
                             <p id="min-score" class="text-4xl sm:text-5xl font-bold text-brand-red mt-2">0</p>
                         </div>
                     </div>
-                </section>
 
-                <section style="animation-delay: 400ms;" class="fade-in-up ranking-section-card">
-                    <h3 class="text-xl font-bold text-center mb-4 text-brand-header">Promedios por Área</h3>
-                    <div id="subject-averages-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                        <!-- Generated dynamically -->
+                    <!-- Promedios por Área -->
+                    <div class="bg-white p-6 rounded-xl shadow-md mt-6">
+                        <h3 class="text-lg font-bold text-center mb-4 text-brand-header">Promedios por Área</h3>
+                        <div id="subject-averages-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                            <!-- Generado dinámicamente -->
+                        </div>
                     </div>
                 </section>
 
-                <section style="animation-delay: 500ms;" class="fade-in-up ranking-section-card">
+                 <!-- Banner Canal de WhatsApp -->
+                <section class="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6 rounded-xl shadow-lg my-8 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-6 text-center sm:text-left">
+                    <div class="flex items-center gap-4">
+                       <div class="flex-shrink-0">
+                            <svg class="w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                            </svg>
+                       </div>
+                        <div class="flex-grow">
+                             <h3 class="text-xl sm:text-2xl font-bold">Únete a Nuestro Canal de Estudio</h3>
+                             <p class="mt-1 text-sm sm:text-base">Recibe consejos, materiales y notificaciones directamente en tu WhatsApp.</p>
+                        </div>
+                    </div>
+                    <a href="https://whatsapp.com/channel/0029Va4PUxRFHWpywWL6Tw3F" target="_blank" class="mt-4 sm:mt-0 bg-white text-green-600 font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105 whitespace-nowrap flex-shrink-0">
+                        Unirme al Canal
+                    </a>
+                </section>
+
+                <!-- Gráfica de Dispersión -->
+                <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                     <h2 class="text-2xl font-bold text-brand-secondary text-center">Distribución de Puntajes por Ranking Global</h2>
+                     <p class="text-sm text-gray-500 mt-1 text-center mb-6">Cada punto representa un estudiante. Pasa el cursor para ver el detalle.</p>
+                     <div class="relative h-72 sm:h-96 w-full">
+                         <canvas id="scatter-plot-chart"></canvas>
+                     </div>
+                </section>
+
+
+                <!-- Tabla de Ranking y Paginación -->
+                <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
                      <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
                          <div class="text-center md:text-left">
-                             <h2 class="text-2xl font-bold text-brand-header">Ranking General</h2>
+                             <h2 class="text-2xl font-bold text-brand-secondary">Ranking General</h2>
                              <p id="ranking-subtitle" class="text-sm text-gray-500 mt-1">Ordenado por Puntaje Global</p>
                          </div>
                         <div class="flex flex-col sm:flex-row items-stretch gap-4">
-                             <div class="bg-gray-50 p-4 rounded-lg flex flex-col justify-center items-center text-center border">
-                                  <p class="text-sm font-semibold text-gray-500">Total Estudiantes</p>
-                                  <p id="total-students" class="text-3xl font-bold text-brand-secondary">0</p>
+                             <div class="bg-blue-50 border border-brand-secondary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+                                  <p class="text-sm font-semibold text-brand-text">Total Estudiantes</p>
+                                  <p id="total-students" class="text-4xl font-bold text-brand-secondary">0</p>
                              </div>
-                             <div class="bg-gray-50 p-4 rounded-lg flex flex-col justify-center items-center text-center border">
-                                 <p class="text-sm font-semibold text-gray-500">Promedio</p>
-                                 <p id="average-score" class="text-3xl font-bold text-brand-primary">0</p>
+                             <div class="bg-orange-50 border border-brand-primary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+                                 <p class="text-sm font-semibold text-brand-text">Promedio</p>
+                                 <p id="average-score" class="text-4xl font-bold text-brand-primary">0</p>
                              </div>
-                              <div class="bg-gray-50 p-4 rounded-lg flex flex-col justify-center items-center text-center border">
-                                 <p class="text-sm font-semibold text-gray-500">Mediana</p>
-                                 <p id="median-score" class="text-3xl font-bold text-green-600">0</p>
+                              <div class="bg-green-50 border border-green-500/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+                                 <p class="text-sm font-semibold text-green-800">Mediana</p>
+                                 <p id="median-score" class="text-4xl font-bold text-green-600">0</p>
                               </div>
                         </div>
                      </div>
 
-                    <div class="my-8">
+                    <div class="max-w-5xl mx-auto my-8">
                         <div class="md:hidden mb-4 space-y-4">
                             <button id="open-filter-menu-btn" class="w-full bg-brand-primary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center justify-center gap-2 shadow-md hover:bg-orange-600 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
@@ -304,9 +410,9 @@
                             <div class="flex items-center gap-2">
                                  <span class="text-sm font-medium text-gray-600">Ordenar por:</span>
                                  <div class="relative w-full md:w-auto">
-                                    <button id="sort-dropdown-btn" class="w-full md:w-56 bg-white border border-gray-300 text-gray-700 font-semibold rounded-full py-2 px-4 text-left flex justify-between items-center transition-shadow hover:shadow-md">
+                                    <button id="sort-dropdown-btn" class="w-full md:w-56 bg-brand-secondary text-white font-semibold rounded-full py-2 px-4 text-left flex justify-between items-center transition-shadow hover:shadow-md">
                                          <span id="sort-dropdown-label" class="truncate">Puntaje Global</span>
-                                         <svg class="h-5 w-5 transform transition-transform text-gray-400" id="sort-dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                         <svg class="h-5 w-5 transform transition-transform" id="sort-dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                                     </button>
                                      <div id="sort-dropdown-options" class="hidden absolute right-0 mt-2 w-full bg-white rounded-lg shadow-xl z-20 border">
                                          <!-- Opciones generadas por JS -->
@@ -316,13 +422,13 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto md:block hidden">
+                    <div class="overflow-x-auto border rounded-lg md:block hidden"> <!-- Oculto en móvil -->
                         <table class="w-full text-left">
-                            <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+                            <thead class="bg-brand-header text-white">
                                 <tr>
-                                    <th class="p-4 w-16 text-center">#</th>
-                                    <th class="p-4 w-2/5 text-left">Nombre Completo</th>
-                                    <th class="p-4 w-1/5 text-center">Puntaje Global</th>
+                                    <th class="p-4 w-16 text-center sortable-header">#</th>
+                                    <th class="p-4 w-2/5 text-left sortable-header" data-sort-key="nombre">Nombre Completo</th>
+                                    <th class="p-4 w-1/5 text-center sortable-header" data-sort-key="puntajeGlobal">Puntaje Global</th>
                                     <th id="area-score-header" class="p-4 w-1/5 text-center area-score-col">Puntaje de Área</th>
                                     <th class="p-4 w-1/5 text-left">Municipio</th>
                                     <th class="p-4 w-28 text-center">Detalles</th>
@@ -331,159 +437,731 @@
                             <tbody id="ranking-table-body" class="divide-y divide-gray-200"></tbody>
                         </table>
                     </div>
-                    <div id="mobile-ranking-list" class="space-y-3 md:hidden"></div>
+                    <div id="mobile-ranking-list" class="space-y-3 md:hidden"></div> <!-- Visible solo en móvil -->
 
+                     <!-- Controles de Paginación -->
                     <div id="pagination-controls" class="pt-4 flex items-center justify-center gap-2 flex-wrap">
                         <!-- Generado dinámicamente -->
                     </div>
                 </section>
-                 <footer class="text-center mt-12 text-gray-500"><p>&copy; 2025 SeamosGenios. Todos los derechos reservados.</p></footer>
             </main>
+            
+            <footer class="text-center mt-12 text-gray-500"><p>&copy; 2025 SeamosGenios. Todos los derechos reservados.</p></footer>
         </div>
 
+        <!-- Vista del Informe Virtual -->
         <div id="report-view" class="hidden">
             <!-- El contenido se generará dinámicamente -->
         </div>
     </div>
     
+    <!-- Panel de Filtros para Móvil -->
     <div id="filter-menu-panel" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40">
-        <!-- ... -->
+        <div id="filter-menu-content" class="absolute top-0 right-0 h-full w-full max-w-xs bg-white shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-brand-secondary">Ordenar Por</h3>
+                <button id="close-filter-menu-btn">
+                    <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <div id="subject-filter-buttons-panel" class="flex flex-col gap-2 items-stretch">
+                <!-- Botones generados por JS -->
+            </div>
+        </div>
     </div>
 
-    <div id="student-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto hidden z-50">
+
+    <!-- Modal de Detalles -->
+    <div id="student-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-start justify-center p-4 overflow-y-auto hidden z-50">
         <!-- Contenido se genera dinámicamente -->
     </div>
 
+    <!-- Modal de Alerta -->
+    <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+        <!-- Contenido se genera dinámicamente -->
+    </div>
+
+
+
+
     <script>
+    // --- FUNCIÓN PARA ENMASCARAR REGISTRO ---
+    function maskRegistrationNumber(reg) {
+        if (typeof reg !== 'string' || reg.length < 8) return reg;
+        const prefix = reg.substring(0, 4);
+        const suffix = reg.substring(reg.length - 4);
+        return `${prefix}*****${suffix}`;
+    }
+    
+    // --- BASE DE DATOS DE HABILIDADES (ACTUALIZADO DESDE EL PDF) ---
     const skillsData = {
         "lectura": {
             level: 4,
             categories: {
-                "Análisis Crítico y Argumentación": ["Evalúa contenidos, estrategias discursivas y argumentativas presentes en un texto.","Selecciona elementos locales y construye argumentos que sustentan una tesis con base en textos relacionados.","Asume una postura crítica frente a los planteamientos de un texto."],
-                "Interpretación y Relación de Textos": ["Propone soluciones a problemas de interpretación que subyacen en un texto.","Relaciona información de dos o más textos o fragmentos de texto para llegar a una conclusión.","Reconoce los contextos como elementos importantes en la valoración de un texto.","Plantea hipótesis de lectura a partir de las ideas presentes en un texto."],
-                "Aplicación de Conceptos Literarios": ["Aplica conceptos de análisis literario para caracterizar diferentes elementos en un texto."]
+                "Análisis Crítico y Argumentación": [
+                    "Evalúa contenidos, estrategias discursivas y argumentativas presentes en un texto.",
+                    "Selecciona elementos locales y construye argumentos que sustentan una tesis con base en textos relacionados.",
+                    "Asume una postura crítica frente a los planteamientos de un texto."
+                ],
+                "Interpretación y Relación de Textos": [
+                    "Propone soluciones a problemas de interpretación que subyacen en un texto.",
+                    "Relaciona información de dos o más textos o fragmentos de texto para llegar a una conclusión.",
+                    "Reconoce los contextos como elementos importantes en la valoración de un texto.",
+                    "Plantea hipótesis de lectura a partir de las ideas presentes en un texto."
+                ],
+                "Aplicación de Conceptos Literarios": [
+                    "Aplica conceptos de análisis literario para caracterizar diferentes elementos en un texto."
+                ]
             }
         },
         "matematicas": {
             level: 4,
             categories: {
-                "Estadística, Probabilidad y Toma de Decisiones": ["Resuelve problemas que requieren interpretar información de eventos dependientes.","Reconoce en diferentes formatos el espacio muestral de un experimento aleatorio.","Resuelve problemas de conteo que requieren el uso de permutaciones.","Justifica si hay falta de información en una situación problema para tomar una decisión.","Toma decisiones sobre la veracidad o falsedad de una afirmación cuando requiere el uso de varias propiedades o conceptualizaciones formales."],
-                "Análisis Algebraico y Aritmético": ["Realiza transformaciones de subconjuntos de información que pueden requerir el uso de operaciones complejas (cálculos de porcentajes).","Manipula expresiones algebraicas o aritméticas haciendo uso de las propiedades de las operaciones."],
-                "Resolución de Problemas y Modelado": ["Resuelve problemas que requieren construir una representación auxiliar (gráficas y fórmulas) como paso intermedio para su solución.","Modela usando lenguaje algebraico información dada en lenguaje natural, tablas o representaciones geométricas.","Modela fenómenos variacionales no explícitos haciendo uso de lenguaje simbólico o gráficas."]
+                "Estadística, Probabilidad y Toma de Decisiones": [
+                    "Resuelve problemas que requieren interpretar información de eventos dependientes.",
+                    "Reconoce en diferentes formatos el espacio muestral de un experimento aleatorio.",
+                    "Resuelve problemas de conteo que requieren el uso de permutaciones.",
+                    "Justifica si hay falta de información en una situación problema para tomar una decisión.",
+                    "Toma decisiones sobre la veracidad o falsedad de una afirmación cuando requiere el uso de varias propiedades o conceptualizaciones formales."
+                ],
+                "Análisis Algebraico y Aritmético": [
+                    "Realiza transformaciones de subconjuntos de información que pueden requerir el uso de operaciones complejas (cálculos de porcentajes).",
+                    "Manipula expresiones algebraicas o aritméticas haciendo uso de las propiedades de las operaciones."
+                ],
+                "Resolución de Problemas y Modelado": [
+                    "Resuelve problemas que requieren construir una representación auxiliar (gráficas y fórmulas) como paso intermedio para su solución.",
+                    "Modela usando lenguaje algebraico información dada en lenguaje natural, tablas o representaciones geométricas.",
+                    "Modela fenómenos variacionales no explícitos haciendo uso de lenguaje simbólico o gráficas."
+                ]
             }
         },
         "sociales": {
             level: 4,
             categories: {
-                "Conocimiento Constitucional y Cívico": ["Conoce los procedimientos de reforma a la Constitución Política de Colombia, los mecanismos de participación ciudadana y las funciones de los organismos de control."],
-                "Análisis de Contextos y Argumentos": ["Compara enunciados o argumentos, así como intereses y posiciones de actores en contextos en los que se discuten situaciones problemáticas o sus alternativas de solución.","Analiza fuentes (primarias y secundarias) para valorar inferencias o identificar intenciones, características de los actores involucrados y contextos en los que se ubican dichas fuentes."],
-                "Pensamiento Social y Multidimensional": ["Relaciona propuestas de solución a un problema con su contexto de implementación, o con sus posibles impactos en ciertas dimensiones (económicas, políticas, culturales, ambientales, etc.).","Entiende problemáticas, eventos o procesos sociales a partir del uso de conceptos básicos de las ciencias sociales o a partir de contextos históricos y/o geográficos.","Establece relaciones entre modelos conceptuales y fuentes que los abordan o decisiones sociales que los aplican."]
+                "Conocimiento Constitucional y Cívico": [
+                    "Conoce los procedimientos de reforma a la Constitución Política de Colombia, los mecanismos de participación ciudadana y las funciones de los organismos de control."
+                ],
+                "Análisis de Contextos y Argumentos": [
+                    "Compara enunciados o argumentos, así como intereses y posiciones de actores en contextos en los que se discuten situaciones problemáticas o sus alternativas de solución.",
+                    "Analiza fuentes (primarias y secundarias) para valorar inferencias o identificar intenciones, características de los actores involucrados y contextos en los que se ubican dichas fuentes."
+                ],
+                "Pensamiento Social y Multidimensional": [
+                    "Relaciona propuestas de solución a un problema con su contexto de implementación, o con sus posibles impactos en ciertas dimensiones (económicas, políticas, culturales, ambientales, etc.).",
+                    "Entiende problemáticas, eventos o procesos sociales a partir del uso de conceptos básicos de las ciencias sociales o a partir de contextos históricos y/o geográficos.",
+                    "Establece relaciones entre modelos conceptuales y fuentes que los abordan o decisiones sociales que los aplican."
+                ]
             }
         },
         "ciencias": {
             level: 4,
             categories: {
-                "Investigación y Comunicación Científica": ["Plantea preguntas de investigación desde las ciencias naturales a partir de un contexto determinado.","Establece conclusiones derivadas de una investigación.","Comunica resultados de procesos de investigación científica.","Analiza fenómenos naturales con base en los procedimientos propios de la investigación científica."],
-                "Análisis y Aplicación de Conceptos": ["Contrasta modelos de las ciencias naturales con fenómenos cotidianos.","Resuelve situaciones problema haciendo uso de conceptos, leyes y teorías de las ciencias naturales."]
+                "Investigación y Comunicación Científica": [
+                    "Plantea preguntas de investigación desde las ciencias naturales a partir de un contexto determinado.",
+                    "Establece conclusiones derivadas de una investigación.",
+                    "Comunica resultados de procesos de investigación científica.",
+                    "Analiza fenómenos naturales con base en los procedimientos propios de la investigación científica."
+                ],
+                "Análisis y Aplicación de Conceptos": [
+                    "Contrasta modelos de las ciencias naturales con fenómenos cotidianos.",
+                    "Resuelve situaciones problema haciendo uso de conceptos, leyes y teorías de las ciencias naturales."
+                ]
             }
         },
         "ingles": {
             level: 'B+',
-            categories: { "Habilidades Superiores": ["El estudiante promedio clasificado en este nivel supera las preguntas de mayor complejidad de la prueba."] }
+            categories: {
+                "Habilidades Superiores": [
+                    "El estudiante promedio clasificado en este nivel supera las preguntas de mayor complejidad de la prueba."
+                ]
+            }
         }
     };
+
     document.addEventListener('DOMContentLoaded', () => {
         let studentData = [];
-        let scatterChartInstance = null;
-        let state = { currentSort: { key: 'globalRank', direction: 'asc' }, filteredData: [], currentPage: 1, rowsPerPage: 10, };
-        const elements = {
-            body: document.body, appContainer: document.getElementById('app-container'), rankingView: document.getElementById('ranking-view'), reportView: document.getElementById('report-view'),
-            tableBody: document.getElementById('ranking-table-body'), mobileList: document.getElementById('mobile-ranking-list'), searchInput: document.getElementById('searchInput'),
-            searchInputMobile: document.getElementById('searchInputMobile'), clearSearchBtn: document.getElementById('clearSearchBtn'), clearSearchBtnMobile: document.getElementById('clearSearchBtnMobile'),
-            averageScoreEl: document.getElementById('average-score'), medianScoreEl: document.getElementById('median-score'), totalStudentsEl: document.getElementById('total-students'),
-            maxScoreEl: document.getElementById('max-score'), minScoreEl: document.getElementById('min-score'), highScorersCount: document.getElementById('high-scorers-count'),
-            subjectAveragesContainer: document.getElementById('subject-averages-container'), topPerformersContainer: document.getElementById('top-performers'),
-            studentModal: document.getElementById('student-modal'), paginationControls: document.getElementById('pagination-controls'),
-            subjectFilterButtonsPanel: document.getElementById('subject-filter-buttons-panel'), rankingSubtitle: document.getElementById('ranking-subtitle'), areaScoreHeader: document.getElementById('area-score-header'),
-            openFilterMenuBtn: document.getElementById('open-filter-menu-btn'), closeFilterMenuBtn: document.getElementById('close-filter-menu-btn'), filterMenuPanel: document.getElementById('filter-menu-panel'),
-            sortDropdownBtn: document.getElementById('sort-dropdown-btn'), sortDropdownLabel: document.getElementById('sort-dropdown-label'), sortDropdownArrow: document.getElementById('sort-dropdown-arrow'),
-            sortDropdownOptions: document.getElementById('sort-dropdown-options'), scatterPlotCanvas: document.getElementById('scatter-plot-chart'),
+        let scatterChartInstance = null; // Variable para mantener la instancia del gráfico
+        let state = {
+            currentSort: { key: 'globalRank', direction: 'asc' },
+            filteredData: [],
+            currentPage: 1,
+            rowsPerPage: 10,
         };
+        
+        const elements = {
+            body: document.body,
+            appContainer: document.getElementById('app-container'),
+            rankingView: document.getElementById('ranking-view'),
+            reportView: document.getElementById('report-view'),
+            tableBody: document.getElementById('ranking-table-body'),
+            mobileList: document.getElementById('mobile-ranking-list'),
+            searchInput: document.getElementById('searchInput'),
+            searchInputMobile: document.getElementById('searchInputMobile'),
+            clearSearchBtn: document.getElementById('clearSearchBtn'),
+            clearSearchBtnMobile: document.getElementById('clearSearchBtnMobile'),
+            averageScoreEl: document.getElementById('average-score'),
+            medianScoreEl: document.getElementById('median-score'),
+            totalStudentsEl: document.getElementById('total-students'),
+            maxScoreEl: document.getElementById('max-score'),
+            minScoreEl: document.getElementById('min-score'),
+            highScorersCount: document.getElementById('high-scorers-count'),
+            subjectAveragesContainer: document.getElementById('subject-averages-container'),
+            topPerformersContainer: document.getElementById('top-performers'),
+            studentModal: document.getElementById('student-modal'),
+            alertModal: document.getElementById('alert-modal'),
+            thead: document.querySelector('thead'),
+            paginationControls: document.getElementById('pagination-controls'),
+            subjectFilterButtonsPanel: document.getElementById('subject-filter-buttons-panel'),
+            rankingSubtitle: document.getElementById('ranking-subtitle'),
+            areaScoreHeader: document.getElementById('area-score-header'),
+            openFilterMenuBtn: document.getElementById('open-filter-menu-btn'),
+            closeFilterMenuBtn: document.getElementById('close-filter-menu-btn'),
+            filterMenuPanel: document.getElementById('filter-menu-panel'),
+            filterMenuContent: document.getElementById('filter-menu-content'),
+            sortDropdownBtn: document.getElementById('sort-dropdown-btn'),
+            sortDropdownLabel: document.getElementById('sort-dropdown-label'),
+            sortDropdownArrow: document.getElementById('sort-dropdown-arrow'),
+            sortDropdownOptions: document.getElementById('sort-dropdown-options'),
+            scatterPlotCanvas: document.getElementById('scatter-plot-chart'),
+        };
+
         const filterOptions = [
             { key: 'puntajeGlobal', label: 'Puntaje Global', subjectKey: 'global' },
-            { key: 'puntajesDetallados.lectura', label: 'Lectura Crítica', colorVar: 'var(--color-lectura-end)', subjectKey: 'lectura' },
-            { key: 'puntajesDetallados.matematicas', label: 'Matemáticas', colorVar: 'var(--color-matematicas-end)', subjectKey: 'matematicas' },
-            { key: 'puntajesDetallados.sociales', label: 'Sociales', colorVar: 'var(--color-sociales-end)', subjectKey: 'sociales' },
-            { key: 'puntajesDetallados.ciencias', label: 'Ciencias', colorVar: 'var(--color-ciencias-end)', subjectKey: 'ciencias' },
-            { key: 'puntajesDetallados.ingles', label: 'Inglés', colorVar: 'var(--color-ingles-end)', subjectKey: 'ingles' },
+            { key: 'puntajesDetallados.lectura', label: 'Lectura Crítica', colorVar: 'var(--color-lectura)', subjectKey: 'lectura' },
+            { key: 'puntajesDetallados.matematicas', label: 'Matemáticas', colorVar: 'var(--color-matematicas)', subjectKey: 'matematicas' },
+            { key: 'puntajesDetallados.sociales', label: 'Sociales', colorVar: 'var(--color-sociales)', subjectKey: 'sociales' },
+            { key: 'puntajesDetallados.ciencias', label: 'Ciencias', colorVar: 'var(--color-ciencias)', subjectKey: 'ciencias' },
+            { key: 'puntajesDetallados.ingles', label: 'Inglés', colorVar: 'var(--color-ingles)', subjectKey: 'ingles' },
         ];
         
         function loadInitialData() {
             const csvFilePath = 'BD - Hoja 1.csv';
             Papa.parse(csvFilePath, {
                 download: true, header: true, skipEmptyLines: true,
-                complete: (results) => { processCSVData(results.data); initializeDashboard(); },
-                error: (error) => { alert(`Error al cargar los datos. Asegúrate de que '${csvFilePath}' está en la misma carpeta.`); console.error("Error CSV:", error); }
+                complete: (results) => {
+                    processCSVData(results.data);
+                    initializeDashboard();
+                },
+                error: (error) => {
+                    alert(`Ocurrió un error al cargar el archivo de datos CSV. Asegúrate de que el archivo '${csvFilePath}' se encuentra en la misma carpeta que este archivo HTML.`);
+                    console.error("Error al cargar CSV:", error);
+                }
             });
         }
         
         function processCSVData(data) {
-             const processed = data.map((row, index) => ({
-                id: `${row['NÚMERO DE REGISTRO']}-${row['NOMBRE']}`, nombre: row['NOMBRE'], registro: row['NÚMERO DE REGISTRO'], municipio: row['MUNICIPIO'],
-                puntajeGlobal: parseInt(row['PUNTAJE'].split('/')[0], 10),
-                puntajesDetallados: { lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0, matematicas: parseInt(row['MATEMÁTICAS'], 10) || 0, sociales: parseInt(row['SOCIALES'], 10) || 0, ciencias: parseInt(row['CIENCIAS'], 10) || 0, ingles: parseInt(row['INGLÉS'], 10) || 0 }
-             }));
+             const processed = data.map((row, index) => {
+                 const s = {
+                    nombre: row['NOMBRE'], registro: row['NÚMERO DE REGISTRO'],
+                    lectura: parseInt(row['LECTURA CRÍTICA'], 10) || 0,
+                    matematicas: parseInt(row['MATEMÁTICAS'], 10) || 0,
+                    sociales: parseInt(row['SOCIALES'], 10) || 0,
+                    ciencias: parseInt(row['CIENCIAS'], 10) || 0,
+                    ingles: parseInt(row['INGLÉS'], 10) || 0,
+                    puntaje: row['PUNTAJE'], municipio: row['MUNICIPIO']
+                 };
+                 return {
+                    id: `${s.registro}-${s.nombre}`, puesto: index + 1, nombre: s.nombre,
+                    registro: s.registro, municipio: s.municipio, colegio: "Seamos Genios", año: 2025,
+                    puntajeGlobal: parseInt(s.puntaje.split('/')[0], 10),
+                    puntajesDetallados: { lectura: s.lectura, matematicas: s.matematicas, sociales: s.sociales, ciencias: s.ciencias, ingles: s.ingles }
+                 };
+             });
+            
              processed.sort((a, b) => b.puntajeGlobal - a.puntajeGlobal);
              processed.forEach((student, index) => { student.globalRank = index + 1; });
+
              const calculatePercentile = (arr, score) => {
-                 const count = arr.length; if (count === 0) return 0;
-                 let lesserOrEqual = arr.filter(s => s <= score).length;
+                 const count = arr.length;
+                 if (count === 0) return 0;
+                 let lesserOrEqual = 0;
+                 for (const s of arr) {
+                     if (s <= score) {
+                         lesserOrEqual++;
+                     }
+                 }
                  return Math.round((lesserOrEqual / count) * 100);
              };
+
              const allGlobalScores = processed.map(s => s.puntajeGlobal);
-             processed.forEach(student => { student.percentil = calculatePercentile(allGlobalScores, student.puntajeGlobal); });
-             filterOptions.slice(1).forEach(opt => {
-                const subjectKey = opt.subjectKey;
-                const allSubjectScores = processed.map(s => s.puntajesDetallados[subjectKey]);
-                processed.forEach(student => { student.puntajesDetallados[`${subjectKey}Percentil`] = calculatePercentile(allSubjectScores, student.puntajesDetallados[subjectKey]); });
+             processed.forEach(student => {
+                 student.percentil = calculatePercentile(allGlobalScores, student.puntajeGlobal);
              });
+
+             const subjects = ['lectura', 'matematicas', 'sociales', 'ciencias', 'ingles'];
+             subjects.forEach(subject => {
+                 const allSubjectScores = processed.map(s => s.puntajesDetallados[subject]);
+                 processed.forEach(student => {
+                     student.puntajesDetallados[`${subject}Percentil`] = calculatePercentile(allSubjectScores, student.puntajesDetallados[subject]);
+                 });
+             });
+
+
              studentData = [...processed];
         }
 
         function initializeDashboard() {
-            populateFilterOptions(); calculateAndDisplayStats(); renderPodium(); renderScatterPlot();
+            populateFilterOptions();
+            calculateAndDisplayStats();
+            renderPodium();
+            renderScatterPlot();
             handleFilterSelection(filterOptions[0].key, filterOptions[0].label, false); 
-            updateDisplay(); setupEventListeners();
+            updateDisplay();
+            setupEventListeners();
         }
+        
+        function renderScatterPlot() {
+            if (!studentData || studentData.length === 0) return;
+
+            const scores = studentData.map(s => s.puntajeGlobal);
+            const minScore = Math.min(...scores);
+            const maxScore = Math.max(...scores);
+            
+            const getPointColor = (score) => {
+                const ratio = (score - minScore) / (maxScore - minScore);
+                const hue = (ratio * 120).toString(10);
+                return `hsl(${hue}, 90%, 55%)`;
+            };
+
+            const chartData = studentData.map(student => ({
+                x: student.globalRank + (Math.random() - 0.5) * 0.6,
+                y: student.puntajeGlobal,
+                studentInfo: student
+            }));
+
+            if (scatterChartInstance) {
+                scatterChartInstance.destroy();
+            }
+
+            const isMobile = window.innerWidth < 768;
+            const titleFontSize = isMobile ? 14 : 16;
+            const ticksFontSize = isMobile ? 10 : 12;
+            
+            const ctx = elements.scatterPlotCanvas.getContext('2d');
+            scatterChartInstance = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Puntaje de Estudiante',
+                        data: chartData,
+                        pointBackgroundColor: studentData.map(s => getPointColor(s.puntajeGlobal)),
+                        pointBorderColor: '#fff',
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        pointBorderWidth: 1,
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: { color: '#e5e7eb' },
+                            ticks: { 
+                                font: { 
+                                    size: ticksFontSize, 
+                                    family: "'Inter', sans-serif" 
+                                } 
+                            },
+                            title: {
+                                display: true,
+                                text: 'Puesto en el Ranking Global',
+                                font: { 
+                                    size: titleFontSize, 
+                                    weight: 'bold', 
+                                    family: "'Inter', sans-serif" 
+                                },
+                                padding: { top: 10 }
+                            }
+                        },
+                        y: {
+                            grid: { color: '#e5e7eb' },
+                            ticks: { 
+                                font: { 
+                                    size: ticksFontSize, 
+                                    family: "'Inter', sans-serif" 
+                                } 
+                            },
+                            title: {
+                                display: true,
+                                text: 'Puntaje Global Individual',
+                                font: { 
+                                    size: titleFontSize, 
+                                    weight: 'bold', 
+                                    family: "'Inter', sans-serif" 
+                                },
+                                padding: { bottom: 10 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'nearest',
+                            intersect: true,
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#3B82F6',
+                            titleFont: { weight: 'bold', size: 16, family: "'Inter', sans-serif" },
+                            bodyColor: '#5c5d5c',
+                            bodyFont: { size: 12, family: "'Inter', sans-serif" },
+                            borderColor: '#d1d5db',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                title: (tooltipItems) => {
+                                    const student = tooltipItems[0].raw.studentInfo;
+                                    return student ? student.nombre : '';
+                                },
+                                label: (context) => {
+                                    const student = context.raw.studentInfo;
+                                    if (!student) return '';
+                                    return [
+                                        `Puntaje Global: ${student.puntajeGlobal}`,
+                                        ``,
+                                        `Lectura: ${student.puntajesDetallados.lectura}`,
+                                        `Matemáticas: ${student.puntajesDetallados.matematicas}`,
+                                        `Sociales: ${student.puntajesDetallados.sociales}`,
+                                        `Ciencias: ${student.puntajesDetallados.ciencias}`,
+                                        `Inglés: ${student.puntajesDetallados.ingles}`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function populateFilterOptions() {
+            elements.sortDropdownOptions.innerHTML = filterOptions.map(opt => 
+                `<a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" data-sort-key="${opt.key}">${opt.label}</a>`
+            ).join('');
+            
+            elements.subjectFilterButtonsPanel.innerHTML = filterOptions.map(opt =>
+                `<button class="subject-btn" data-sort-key="${opt.key}">${opt.label}</button>`
+            ).join('');
+        }
+
         function updateDisplay() {
             filterAndSortData();
             const totalPages = Math.ceil(state.filteredData.length / state.rowsPerPage);
             if(state.currentPage > totalPages) state.currentPage = totalPages || 1;
-            renderPaginatedTable(); renderMobileList(); renderPaginationControls();
+            renderPaginatedTable();
+            renderMobileList();
+            renderPaginationControls();
+            updateAverageAndMedian(state.filteredData);
             elements.totalStudentsEl.textContent = state.filteredData.length;
+            updateSortIcons();
         }
+
         function filterAndSortData() {
             const searchVal = elements.searchInput.value.toLowerCase();
-            state.filteredData = studentData.filter(s => (s.nombre && s.nombre.toLowerCase().includes(searchVal)) || (s.municipio && s.municipio.toLowerCase().includes(searchVal)));
+            elements.clearSearchBtn.classList.toggle('hidden', searchVal.length === 0);
+            elements.clearSearchBtnMobile.classList.toggle('hidden', searchVal.length === 0);
+            
+            state.filteredData = studentData.filter(student => 
+                (student.nombre && student.nombre.toLowerCase().includes(searchVal)) || 
+                (student.municipio && student.municipio.toLowerCase().includes(searchVal))
+            );
+
             state.filteredData.sort((a, b) => {
-                const key = state.currentSort.key; let valA, valB;
-                if (key.includes('.')) { const [obj, prop] = key.split('.'); valA = a[obj][prop]; valB = b[obj][prop]; } else { valA = a[key]; valB = b[key]; }
+                const key = state.currentSort.key;
+                let valA, valB;
+                if (key.includes('.')) {
+                    const [obj, prop] = key.split('.');
+                    valA = a[obj][prop]; valB = b[obj][prop];
+                } else {
+                    valA = a[key]; valB = b[key];
+                }
                 let comparison = (typeof valA === 'string') ? valA.localeCompare(valB) : valA - valB;
                 let primaryDiff = (state.currentSort.direction === 'asc') ? comparison : -comparison;
                 return primaryDiff !== 0 ? primaryDiff : b.puntajeGlobal - a.puntajeGlobal;
             });
         }
-        function renderPaginatedTable() { /* ... */ }
-        function renderMobileList() { /* ... */ }
-        function renderPaginationControls() { /* ... */ }
-        function renderPodium() { /* ... */ }
-        function showDetailsModal(studentId) { /* ... */ }
-        function closeDetailsModal() { /* ... */ }
 
-        function showReportView(studentId) {
+        function renderPaginatedTable() {
+            elements.tableBody.innerHTML = '';
+            const start = (state.currentPage - 1) * state.rowsPerPage;
+            const end = start + state.rowsPerPage;
+            const paginatedItems = state.filteredData.slice(start, end);
+            elements.body.classList.toggle('show-area-score', state.currentSort.key.includes('puntajesDetallados'));
+
+            if (paginatedItems.length === 0) {
+                elements.tableBody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-gray-500">No se encontraron estudiantes.</td></tr>`;
+                return;
+            }
+
+            paginatedItems.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.className = `table-row-animate`;
+                row.style.animationDelay = `${index * 50}ms`;
+                
+                let areaScoreHtml = '';
+                if (state.currentSort.key.includes('puntajesDetallados')) {
+                    const subjectInfo = filterOptions.find(opt => opt.key === state.currentSort.key);
+                    const subjectKey = subjectInfo.key.split('.')[1];
+                    const areaScore = student.puntajesDetallados[subjectKey];
+                    const areaColor = subjectInfo ? getComputedStyle(document.documentElement).getPropertyValue(subjectInfo.colorVar.match(/--[\w-]+/)[0]) : 'inherit';
+                    areaScoreHtml = `<td class="p-6 text-center font-bold text-lg area-score-col" style="color: ${areaColor};">${areaScore}</td>`;
+                } else {
+                    areaScoreHtml = `<td class="p-6 text-center font-bold text-brand-secondary area-score-col"></td>`;
+                }
+
+                let rankHtml = student.globalRank;
+                if (student.globalRank <= 3) rankHtml = `<span class="text-2xl">${['🥇', '🥈', '🥉'][student.globalRank-1]}</span>`;
+                else if (student.globalRank <= 5) rankHtml = `<div class="rank-badge rank-${student.globalRank}">${student.globalRank}</div>`;
+
+                row.innerHTML = `
+                    <td class="p-6 w-16 text-center font-semibold">${rankHtml}</td>
+                    <td class="p-6 font-medium text-brand-text text-left">${student.nombre}</td>
+                    <td class="p-6 text-center text-lg font-bold text-brand-primary">${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span></td>
+                    ${areaScoreHtml}
+                    <td class="p-6 text-left">${student.municipio}</td>
+                    <td class="p-6 text-center"><button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors">Ver más</button></td>`;
+                elements.tableBody.appendChild(row);
+            });
+        }
+        
+        function renderMobileList() {
+            elements.mobileList.innerHTML = '';
+            const start = (state.currentPage - 1) * state.rowsPerPage;
+            const end = start + state.rowsPerPage;
+            const paginatedItems = state.filteredData.slice(start, end);
+            
+            if (paginatedItems.length === 0) {
+                elements.mobileList.innerHTML = `<div class="text-center p-8 text-gray-500">No se encontraron estudiantes.</div>`;
+                return;
+            }
+
+            paginatedItems.forEach((student, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-md p-4 flex flex-col gap-2';
+                
+                const isAreaSort = state.currentSort.key.includes('puntajesDetallados');
+                let rankHtml;
+
+                if (isAreaSort) {
+                    const areaRank = start + index + 1;
+                    const subjectInfo = filterOptions.find(opt => opt.key === state.currentSort.key);
+                    const areaColor = subjectInfo ? getComputedStyle(document.documentElement).getPropertyValue(subjectInfo.colorVar.match(/--[\w-]+/)[0]) : 'inherit';
+                    rankHtml = `
+                        <div class="text-center flex-shrink-0">
+                            <div>
+                                <span class="text-xs text-gray-500">Global</span>
+                                <p class="font-bold text-lg leading-tight">${student.globalRank}°</p>
+                            </div>
+                            <div class="mt-1">
+                                <span class="text-xs font-semibold" style="color: ${areaColor};">Área</span>
+                                <p class="font-bold text-lg leading-tight" style="color: ${areaColor};">${areaRank}°</p>
+                            </div>
+                        </div>`;
+                } else {
+                    if (student.globalRank <= 3) {
+                        rankHtml = `<span class="text-3xl">${['🥇', '🥈', '🥉'][student.globalRank - 1]}</span>`;
+                    } else if (student.globalRank <= 5) {
+                        rankHtml = `<div class="rank-badge rank-${student.globalRank} !w-10 !h-10 text-lg mx-auto">${student.globalRank}</div>`;
+                    } else {
+                        rankHtml = `<div class="font-semibold text-2xl text-gray-500">${student.globalRank}°</div>`;
+                    }
+                    rankHtml = `<div class="w-12 text-center flex-shrink-0 flex items-center justify-center">${rankHtml}</div>`;
+                }
+                
+                let scoreDisplayHtml = '';
+                if (isAreaSort) {
+                    const subjectInfo = filterOptions.find(opt => opt.key === state.currentSort.key);
+                    const subjectKey = subjectInfo.key.split('.')[1];
+                    const areaScore = student.puntajesDetallados[subjectKey];
+                    const areaColor = subjectInfo ? getComputedStyle(document.documentElement).getPropertyValue(subjectInfo.colorVar.match(/--[\w-]+/)[0]) : 'inherit';
+                    
+                    scoreDisplayHtml = `
+                        <div class="text-right">
+                            <p class="font-semibold text-xs truncate" style="color: ${areaColor};">${subjectInfo.label}</p>
+                            <p class="font-bold text-xl" style="color: ${areaColor};">${areaScore}<span class="text-sm font-normal text-gray-400">/100</span></p>
+                        </div>
+                    `;
+                } else {
+                    scoreDisplayHtml = `
+                        <div class="text-right">
+                            <p class="font-semibold text-xs text-brand-primary">Puntaje Global</p>
+                            <p class="font-bold text-xl text-brand-primary">${student.puntajeGlobal}<span class="text-sm font-normal text-gray-400">/500</span></p>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-3">
+                        ${rankHtml}
+                        <div class="flex-grow min-w-0">
+                            <p class="font-bold text-brand-text truncate">${student.nombre}</p>
+                        </div>
+                        <button data-id="${student.id}" class="ver-mas-btn bg-brand-primary text-white font-semibold py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors ml-2 flex-shrink-0">Ver</button>
+                    </div>
+                    <div class="flex items-end justify-between text-sm pl-16">
+                         <p class="text-gray-500 truncate">${student.municipio}</p>
+                         ${scoreDisplayHtml}
+                    </div>
+                `;
+                
+                elements.mobileList.appendChild(card);
+            });
+        }
+
+
+        function renderPaginationControls() {
+            elements.paginationControls.innerHTML = '';
+            const totalPages = Math.ceil(state.filteredData.length / state.rowsPerPage);
+            if (totalPages <= 1) return;
+            let buttons = '';
+            buttons += `<button class="pagination-btn" ${state.currentPage === 1 ? 'disabled' : ''} data-page="${state.currentPage - 1}">Anterior</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                buttons += `<button class="pagination-btn ${i === state.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+            buttons += `<button class="pagination-btn" ${state.currentPage === totalPages ? 'disabled' : ''} data-page="${state.currentPage + 1}">Siguiente</button>`;
+            elements.paginationControls.innerHTML = buttons;
+        }
+
+        function renderPodium() {
+            const top3 = [...studentData].sort((a, b) => b.puntajeGlobal - a.puntajeGlobal).slice(0, 3);
+            
+            let podiumHTML = '';
+            if (top3.length >= 3) {
+                const podiumOrder = [top3[1], top3[0], top3[2]]; // 2do, 1ro, 3ro
+                podiumHTML = podiumOrder.map((student) => {
+                    const rank = student.globalRank;
+                    const podiumClass = { 1: 'podium-1 order-1 md:order-2', 2: 'podium-2 order-2 md:order-1', 3: 'podium-3 order-3 md:order-3' };
+                    const rankColors = {
+                        1: { bg: 'bg-yellow-400', shadow: 'shadow-yellow-500/50' },
+                        2: { bg: 'bg-gray-300', shadow: 'shadow-gray-400/50' },
+                        3: { bg: 'bg-amber-600', shadow: 'shadow-amber-700/50' }
+                    };
+                    const textColor = rank === 3 ? 'text-white' : 'text-gray-800';
+
+                    return `
+                    <div class="podium-card-wrapper w-full max-w-sm md:w-1/3 ${podiumClass[rank]}">
+                        <div class="podium-card-content p-6 text-center flex flex-col justify-between h-full ${textColor}">
+                            <div class="flex-shrink-0">
+                                <div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl font-extrabold shadow-lg ${rankColors[rank].bg} ${rankColors[rank].shadow}">
+                                    ${['🥇', '🥈', '🥉'][rank-1]}
+                                </div>
+                            </div>
+                            <div class="flex-grow flex flex-col justify-center py-4">
+                                <h3 class="text-xl font-bold">${student.nombre}</h3>
+                                <p class="opacity-80 text-sm">${student.municipio}</p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <p class="text-4xl font-extrabold">${student.puntajeGlobal}<span class="text-2xl font-medium opacity-70">/500</span></p>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            } else {
+                podiumHTML = `<div class="text-center text-gray-500">No hay suficientes datos para mostrar el podio.</div>`;
+            }
+            elements.topPerformersContainer.innerHTML = podiumHTML;
+        }
+        
+        function showDetailsModal(studentId) {
             const student = studentData.find(s => s.id === studentId); if (!student) return;
+            elements.body.classList.add('overflow-hidden');
+            
+            let rankDisplay;
+            if (student.globalRank <= 3) {
+                rankDisplay = `<div class="text-5xl md:text-6xl">${['🥇', '🥈', '🥉'][student.globalRank - 1]}</div>`;
+            } else {
+                rankDisplay = `<div class="text-5xl md:text-6xl font-bold">${student.globalRank}<span class="text-3xl font-medium opacity-70">°</span></div>`;
+            }
+
+            const subjectsHtml = filterOptions.slice(1).map(subjectInfo => {
+                const subjectKey = subjectInfo.key.split('.')[1];
+                const subjectColor = subjectInfo.colorVar;
+                const subjectName = subjectInfo.label;
+                const score = student.puntajesDetallados[subjectKey];
+                const percentile = student.puntajesDetallados[`${subjectKey}Percentil`];
+                return `
+                    <div class="bg-white/60 backdrop-blur-sm p-4 rounded-xl border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-gray-700">${subjectName}</span>
+                            <span class="font-extrabold text-2xl" style="color: ${subjectColor};">${score}</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar" style="width: ${score}%; background-color: ${subjectColor};"></div>
+                        </div>
+                        <div class="flex justify-between items-center mt-2 text-xs text-gray-500">
+                            <span>Percentil (Grupo)</span>
+                            <span class="font-semibold">${percentile}%</span>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            elements.studentModal.innerHTML = `
+                <div id="modal-content" class="bg-gray-50 w-full max-w-4xl rounded-2xl shadow-2xl relative transform modal-enter my-8 overflow-hidden flex flex-col md:flex-row">
+                    <!-- Columna Izquierda (Perfil) -->
+                    <div class="w-full md:w-1/3 bg-gradient-to-b from-brand-secondary to-blue-700 text-white p-6 md:p-8 flex flex-col items-center justify-center text-center">
+                        <h2 class="text-2xl md:text-3xl font-bold leading-tight">${student.nombre}</h2>
+                        <p class="opacity-80 mt-2">${student.municipio}</p>
+                        <div class="my-8 space-y-4 w-full">
+                            <div class="bg-white/20 p-4 rounded-lg backdrop-blur-sm">
+                                <p class="font-semibold uppercase text-sm opacity-80">Puesto Global</p>
+                                ${rankDisplay}
+                            </div>
+                            <div class="bg-white/20 p-4 rounded-lg backdrop-blur-sm">
+                                 <p class="font-semibold uppercase text-sm opacity-80">Puntaje Global</p>
+                                 <div class="text-5xl md:text-6xl font-bold flex items-baseline justify-center whitespace-nowrap">
+                                     <span>${student.puntajeGlobal}</span><span class="text-2xl md:text-3xl font-medium opacity-70">/500</span>
+                                 </div>
+                             </div>
+                             <div class="bg-white/20 p-4 rounded-lg backdrop-blur-sm">
+                                 <p class="font-semibold uppercase text-sm opacity-80">Percentil</p>
+                                 <p class="text-3xl md:text-4xl font-bold">${student.percentil}%</p>
+                             </div>
+                        </div>
+                         <!-- NUEVO BOTÓN INFORME VIRTUAL -->
+                         <button data-id="${student.id}" id="show-report-btn" class="bg-brand-primary text-white font-bold py-3 px-6 rounded-full w-full inline-flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors transform hover:scale-105 shadow-lg">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.5a.75.75 0 001.5 0v-8.5z" />
+                                <path d="M10 2a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM10 12a5 5 0 100 10 5 5 0 000-10zM10 12a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5z" />
+                            </svg>
+                            Obtener Informe Virtual
+                        </button>
+                        <p class="text-xs opacity-60 mt-4">Registro: ${maskRegistrationNumber(student.registro)}</p>
+                    </div>
+
+                    <!-- Columna Derecha (Detalles) -->
+                    <div class="w-full md:w-2/3 p-6 md:p-8 overflow-y-auto">
+                         <button id="close-student-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors z-10">
+                             <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                         </button>
+                        <h3 class="text-2xl font-bold text-center text-gray-800 mb-6">Desempeño por Materia</h3>
+                        <div class="space-y-4">
+                            ${subjectsHtml}
+                        </div>
+                    </div>
+                </div>`;
+            elements.studentModal.classList.remove('hidden');
+        }
+        
+        function closeDetailsModal() {
+            elements.body.classList.remove('overflow-hidden');
+            const modalContent = document.getElementById('modal-content');
+            if(!modalContent) return;
+            modalContent.classList.remove('modal-enter'); modalContent.classList.add('modal-leave');
+            setTimeout(() => { elements.studentModal.classList.add('hidden'); }, 300);
+        }
+
+        // --- FUNCIONES PARA EL INFORME VIRTUAL ---
+        
+        function showReportView(studentId) {
+            const student = studentData.find(s => s.id === studentId);
+            if (!student) return;
+
             const subjectCardsHtml = filterOptions.slice(1).map(subjectInfo => {
-                 const subjectKey = subjectInfo.subjectKey; const score = student.puntajesDetallados[subjectKey]; const subjectSkills = skillsData[subjectKey];
+                 const subjectKey = subjectInfo.subjectKey;
+                 const score = student.puntajesDetallados[subjectKey];
+                 const subjectSkills = skillsData[subjectKey];
+
                  const performanceLevels = {
                     lectura: [{min: 0, max:35}, {min:36, max:50}, {min:51, max:65}, {min:66, max:100}],
                     matematicas: [{min: 0, max:35}, {min:36, max:50}, {min:51, max:70}, {min:71, max:100}],
@@ -491,34 +1169,293 @@
                     ciencias: [{min: 0, max:40}, {min:41, max:55}, {min:56, max:70}, {min:71, max:100}],
                     ingles: [{min:0,max:36, label: 'A-'}, {min:37,max:47, label: 'A1'}, {min:48,max:58, label: 'A2'}, {min:59,max:78, label: 'B1'}, {min:79,max:100, label: 'B+'}]
                  };
-                 const levels = performanceLevels[subjectKey]; let studentLevelIndex = levels.findIndex(level => score >= level.min && score <= level.max);
-                 let pointerLeft = (score / 100) * 100;
-                 const segmentsHtml = levels.map((level, i) => {
-                    const width = (level.max - level.min + 1); const isActive = i === studentLevelIndex; const levelLabel = level.label || `${i+1}`;
-                    return `<div class="level-segment ${isActive ? 'active' : ''}" style="flex-grow: ${width}" data-level="${levelLabel}" title="Nivel ${levelLabel}: ${level.min} - ${level.max} pts"></div>`;
-                 }).join('');
+                
+                 const levels = performanceLevels[subjectKey];
+                 let studentLevelIndex = levels.findIndex(level => score >= level.min && score <= level.max);
+                 
+                 const totalSegments = levels.length;
+                 const highlightWidth = 100 / totalSegments;
+                 const highlightLeft = studentLevelIndex * highlightWidth;
+
                  let skillsHtml = '';
                  if (subjectSkills && subjectSkills.categories) {
                     skillsHtml = Object.entries(subjectSkills.categories).map(([category, skills]) => `
-                        <div class="mt-4"><h4 class="font-bold text-gray-800">${category}</h4><ul class="mt-2 list-disc list-inside space-y-2 text-gray-600">${skills.map(skill => `<li>${skill}</li>`).join('')}</ul></div>`).join('');
+                        <div class="mt-4">
+                            <h4 class="font-bold text-gray-700">${category}</h4>
+                            <ul class="mt-2 list-disc list-inside space-y-1 text-gray-600">
+                                ${skills.map(skill => `<li>${skill}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `).join('');
                  }
-                 const levelLabelsHtml = levels.map(level => `<div style="flex-grow: ${(level.max - level.min + 1)}" class="text-center text-xs text-gray-500 font-medium">${level.label || `Nvl ${levels.indexOf(level)+1}`}</div>`).join('');
-                const gradient = `linear-gradient(to right, var(--color-${subjectKey}-start), var(--color-${subjectKey}-end))`;
-                return `<div class="report-card fade-in-up" style="animation-delay: ${filterOptions.indexOf(subjectInfo) * 100}ms"><div class="report-card-header" style="background: ${gradient};"><h3 class="text-2xl font-bold">${subjectInfo.label}</h3><div class="text-right"><span class="text-5xl font-extrabold">${score}</span><span class="text-2xl font-medium opacity-80">/100</span></div></div><div class="report-card-body"><p class="text-sm font-semibold mb-2 text-gray-600">Nivel de Desempeño</p><div class="performance-bar-container"><div class="your-level-pointer" style="left: ${pointerLeft}%;"><div class="pointer-box">Tu Puntaje: ${score}</div><div class="pointer-arrow"></div></div><div class="performance-level-bar">${segmentsHtml}</div><div class="flex mt-2 px-1">${levelLabelsHtml}</div></div><div class="text-center mt-8"><button class="toggle-skills-btn bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-full inline-flex items-center gap-2 hover:bg-gray-200 transition-colors" data-target="skills-${subjectKey}"><span>Ver Habilidades Adquiridas</span><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button></div><div id="skills-${subjectKey}" class="skills-container bg-gray-50 p-6 rounded-lg mt-4 border">${skillsHtml}</div></div></div>`;
+
+                return `
+                    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="text-2xl font-bold" style="color: ${subjectInfo.colorVar};">${subjectInfo.label}</span>
+                            <span class="ml-auto text-3xl font-bold text-gray-800">${score}<span class="text-xl text-gray-400">/100</span></span>
+                        </div>
+
+                        <p class="text-sm font-semibold mb-2 text-gray-600">Nivel de Desempeño</p>
+                        <div class="performance-level-bar">
+                             ${levels.map((level, i) => `<div class="level-segment">${level.label || `Nvl ${i+1}`}</div>`).join('')}
+                             <div class="level-highlight" style="left: ${highlightLeft}%; width: ${highlightWidth}%;"></div>
+                        </div>
+
+                        <div class="text-center mt-6">
+                             <button class="toggle-skills-btn text-brand-secondary font-semibold inline-flex items-center gap-2" data-target="skills-${subjectKey}">
+                                <span>Ver Habilidades del Nivel ${levels[studentLevelIndex].label || (studentLevelIndex+1)}</span>
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                             </button>
+                        </div>
+                        <div id="skills-${subjectKey}" class="skills-container mt-4 border-t pt-4">
+                           ${skillsHtml}
+                        </div>
+                    </div>
+                `;
             }).join('');
-            elements.reportView.innerHTML = `<header class="text-center md:text-left mb-8 md:flex md:items-center md:justify-between"><div><h1 class="text-3xl sm:text-4xl font-extrabold text-brand-header tracking-tight">Informe Virtual Detallado</h1><p class="mt-1 text-lg text-gray-600">${student.nombre}</p></div><button id="back-to-ranking-btn" class="mt-4 md:mt-0 bg-white border border-gray-300 text-gray-700 font-bold py-2 px-5 rounded-lg inline-flex items-center gap-2 shadow-sm hover:bg-gray-50 transition-colors"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>Volver al Ranking</button></header><main>${subjectCardsHtml}</main>`;
+
+            elements.reportView.innerHTML = `
+                <header class="flex items-center justify-between mb-8">
+                     <div>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-brand-header tracking-tight">Informe Virtual Detallado</h1>
+                        <p class="mt-1 text-lg text-gray-600">${student.nombre}</p>
+                     </div>
+                     <button id="back-to-ranking-btn" class="bg-brand-secondary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center gap-2 shadow-md hover:bg-blue-700 transition-colors">
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>
+                        Volver al Ranking
+                     </button>
+                </header>
+                <main>
+                    ${subjectCardsHtml}
+                </main>
+            `;
+            
             elements.rankingView.classList.add('leaving');
             setTimeout(() => {
-                 elements.rankingView.classList.add('hidden'); elements.rankingView.classList.remove('leaving');
-                 elements.reportView.classList.remove('hidden'); elements.reportView.classList.add('entering');
+                 elements.rankingView.classList.add('hidden');
+                 elements.rankingView.classList.remove('leaving');
+                 elements.reportView.classList.remove('hidden');
+                 elements.reportView.classList.add('entering');
                  window.scrollTo(0, 0);
             }, 400);
-        }
-        function hideReportView() { /* ... */ }
-        function setupEventListeners() { /* ... */ }
-        function calculateAndDisplayStats() { /* ... */ }
 
-        // Initialize
+        }
+
+        function hideReportView() {
+            elements.reportView.classList.add('leaving');
+            setTimeout(() => {
+                 elements.reportView.classList.add('hidden');
+                 elements.reportView.classList.remove('leaving');
+                 elements.rankingView.classList.remove('hidden');
+                 elements.rankingView.classList.add('entering');
+                 window.scrollTo(0, 0);
+                 setTimeout(() => elements.rankingView.classList.remove('entering'), 400);
+            }, 400);
+        }
+
+
+        function updateAverageAndMedian(students) {
+            if (students.length === 0) {
+                elements.averageScoreEl.textContent = 0;
+                elements.medianScoreEl.textContent = 0;
+                return;
+            }
+            const scores = students.map(s => s.puntajeGlobal).sort((a, b) => a - b);
+            const sum = scores.reduce((a, b) => a + b, 0);
+            elements.averageScoreEl.textContent = (sum / students.length).toFixed(0);
+
+            const mid = Math.floor(scores.length / 2);
+            const median = scores.length % 2 !== 0 ? scores[mid] : (scores[mid - 1] + scores[mid]) / 2;
+            elements.medianScoreEl.textContent = median.toFixed(0);
+        }
+
+        function updateSortIcons() {
+            document.querySelectorAll('.sort-icon').forEach(icon => icon.remove());
+            const activeHeader = document.querySelector(`.sortable-header[data-sort-key="${state.currentSort.key}"]`);
+            if (activeHeader) {
+                const icon = document.createElement('span');
+                icon.className = 'sort-icon';
+                icon.textContent = state.currentSort.direction === 'asc' ? '▲' : '▼';
+                activeHeader.appendChild(icon);
+            }
+        }
+
+        function openFilterMenu() { elements.filterMenuPanel.classList.remove('hidden'); }
+        function closeFilterMenu() { elements.filterMenuPanel.classList.add('hidden'); }
+        
+        function handleFilterSelection(sortKey, label, shouldUpdateDisplay = true) {
+            state.currentSort = (sortKey === 'puntajeGlobal')
+                ? { key: 'globalRank', direction: 'asc' }
+                : { key: sortKey, direction: 'desc' };
+            state.currentPage = 1;
+
+            elements.rankingSubtitle.textContent = `Ordenado por ${label}`;
+            elements.sortDropdownLabel.textContent = label;
+
+            if (sortKey.includes('puntajesDetallados')) {
+                elements.areaScoreHeader.textContent = `Puntaje ${label}`;
+            }
+
+            const selectedOption = filterOptions.find(opt => opt.key === sortKey);
+            if (selectedOption && selectedOption.colorVar) {
+                const color = getComputedStyle(document.documentElement).getPropertyValue(selectedOption.colorVar.match(/--[\w-]+/)[0]);
+                elements.sortDropdownBtn.style.backgroundColor = color;
+                elements.sortDropdownBtn.style.borderColor = color;
+            } else {
+                elements.sortDropdownBtn.style.backgroundColor = ''; 
+                elements.sortDropdownBtn.style.borderColor = '';
+            }
+
+            elements.subjectFilterButtonsPanel.querySelectorAll('.subject-btn').forEach(btn => {
+                const btnOption = filterOptions.find(opt => opt.key === btn.dataset.sortKey);
+                if (btn.dataset.sortKey === sortKey) {
+                    btn.classList.add('active');
+                    if (btnOption && btnOption.colorVar) {
+                         const color = getComputedStyle(document.documentElement).getPropertyValue(btnOption.colorVar.match(/--[\w-]+/)[0]);
+                        btn.style.backgroundColor = color;
+                    } else {
+                        btn.style.backgroundColor = '#F97316';
+                    }
+                } else {
+                    btn.classList.remove('active');
+                    btn.style.backgroundColor = '';
+                }
+            });
+            
+            if (shouldUpdateDisplay) {
+                updateDisplay();
+            }
+        }
+        
+        function setupEventListeners() {
+            const syncSearchInputs = (e) => {
+                const value = e.target.value;
+                elements.searchInput.value = value;
+                elements.searchInputMobile.value = value;
+                state.currentPage = 1; 
+                updateDisplay();
+            };
+            elements.searchInput.addEventListener('input', syncSearchInputs);
+            elements.searchInputMobile.addEventListener('input', syncSearchInputs);
+            
+            const clearSearch = () => {
+                elements.searchInput.value = '';
+                elements.searchInputMobile.value = '';
+                state.currentPage = 1;
+                updateDisplay();
+            };
+            elements.clearSearchBtn.addEventListener('click', clearSearch);
+            elements.clearSearchBtnMobile.addEventListener('click', clearSearch);
+            
+            elements.thead.addEventListener('click', e => {
+                const header = e.target.closest('.sortable-header'); if (!header) return;
+                const key = header.dataset.sortKey;
+                if (state.currentSort.key === key) {
+                    state.currentSort.direction = state.currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else { state.currentSort.key = key; state.currentSort.direction = 'desc'; }
+                updateDisplay();
+            });
+
+            elements.paginationControls.addEventListener('click', (e) => {
+                if (e.target.matches('.pagination-btn') && !e.target.disabled) {
+                    state.currentPage = Number(e.target.dataset.page);
+                    updateDisplay();
+                }
+            });
+            
+            // Event delegation on the body for dynamically created content
+            document.body.addEventListener('click', e => {
+                const verMasBtn = e.target.closest('.ver-mas-btn');
+                if (verMasBtn) { 
+                    showDetailsModal(verMasBtn.dataset.id); 
+                }
+
+                const showReportBtn = e.target.closest('#show-report-btn');
+                if (showReportBtn) {
+                    const studentId = showReportBtn.dataset.id;
+                    closeDetailsModal();
+                    // Timeout to allow modal to close before page transition
+                    setTimeout(() => showReportView(studentId), 300);
+                }
+
+                const closeStudentModalBtn = e.target.closest('#close-student-modal-btn');
+                if (closeStudentModalBtn) {
+                    closeDetailsModal();
+                }
+
+                const backToRankingBtn = e.target.closest('#back-to-ranking-btn');
+                if (backToRankingBtn) {
+                    hideReportView();
+                }
+
+                const toggleSkillsBtn = e.target.closest('.toggle-skills-btn');
+                if (toggleSkillsBtn) {
+                    const button = toggleSkillsBtn;
+                    const targetId = button.dataset.target;
+                    const targetContainer = document.getElementById(targetId);
+                    if (targetContainer) {
+                        targetContainer.classList.toggle('expanded');
+                        button.classList.toggle('expanded');
+                    }
+                }
+            });
+            
+            elements.sortDropdownBtn.addEventListener('click', () => {
+                elements.sortDropdownOptions.classList.toggle('hidden');
+                elements.sortDropdownArrow.classList.toggle('rotate-180');
+            });
+            elements.sortDropdownOptions.addEventListener('click', e => {
+                e.preventDefault();
+                if (e.target.matches('a')) {
+                    handleFilterSelection(e.target.dataset.sortKey, e.target.textContent);
+                    elements.sortDropdownOptions.classList.add('hidden');
+                    elements.sortDropdownArrow.classList.remove('rotate-180');
+                }
+            });
+            window.addEventListener('click', (e) => {
+                if (!elements.sortDropdownBtn.contains(e.target) && !elements.sortDropdownOptions.contains(e.target)) {
+                    elements.sortDropdownOptions.classList.add('hidden');
+                    elements.sortDropdownArrow.classList.remove('rotate-180');
+                }
+            });
+
+            elements.subjectFilterButtonsPanel.addEventListener('click', e => {
+                if(e.target.matches('.subject-btn')) {
+                    handleFilterSelection(e.target.dataset.sortKey, e.target.textContent);
+                    closeFilterMenu();
+                }
+            });
+            elements.openFilterMenuBtn.addEventListener('click', openFilterMenu);
+            elements.closeFilterMenuBtn.addEventListener('click', closeFilterMenu);
+            elements.filterMenuPanel.addEventListener('click', (e) => { if(e.target === elements.filterMenuPanel) closeFilterMenu(); });
+        }
+        
+        function calculateAndDisplayStats() {
+            if (studentData.length === 0) return;
+
+            const scores = studentData.map(s => s.puntajeGlobal);
+            elements.maxScoreEl.textContent = Math.max(...scores);
+            elements.minScoreEl.textContent = Math.min(...scores);
+            elements.highScorersCount.textContent = studentData.filter(s => s.puntajeGlobal > 350).length;
+
+            elements.subjectAveragesContainer.innerHTML = '';
+            filterOptions.slice(1).forEach(subjectInfo => { // Slice(1) to skip 'Puntaje Global'
+                const subjectKey = subjectInfo.key.split('.')[1];
+                const total = studentData.reduce((sum, s) => sum + (s.puntajesDetallados[subjectKey] || 0), 0);
+                const average = (total / studentData.length).toFixed(1);
+                
+                const statEl = document.createElement('div');
+                statEl.className = 'subject-average-card';
+                statEl.style.setProperty('--subject-color', subjectInfo.colorVar);
+                statEl.innerHTML = `
+                    <span class="text-sm font-semibold">${subjectInfo.label}</span>
+                    <span class="font-bold text-2xl mt-1">${average}</span>
+                `;
+                elements.subjectAveragesContainer.appendChild(statEl);
+            });
+        }
+        
         loadInitialData();
     });
     </script>
