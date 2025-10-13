@@ -1373,25 +1373,34 @@
                 }
             });
             
-            // Event delegation for dynamically created content
-            elements.appContainer.addEventListener('click', e => {
-                if (e.target.closest('.ver-mas-btn')) { 
-                    showDetailsModal(e.target.closest('.ver-mas-btn').dataset.id); 
+            // Event delegation on the body for dynamically created content
+            document.body.addEventListener('click', e => {
+                const verMasBtn = e.target.closest('.ver-mas-btn');
+                if (verMasBtn) { 
+                    showDetailsModal(verMasBtn.dataset.id); 
                 }
-                if (e.target.closest('#show-report-btn')) {
-                    const studentId = e.target.closest('#show-report-btn').dataset.id;
+
+                const showReportBtn = e.target.closest('#show-report-btn');
+                if (showReportBtn) {
+                    const studentId = showReportBtn.dataset.id;
                     closeDetailsModal();
                     // Timeout to allow modal to close before page transition
                     setTimeout(() => showReportView(studentId), 300);
                 }
-                if (e.target.closest('#close-student-modal-btn')) {
+
+                const closeStudentModalBtn = e.target.closest('#close-student-modal-btn');
+                if (closeStudentModalBtn) {
                     closeDetailsModal();
                 }
-                if (e.target.closest('#back-to-ranking-btn')) {
+
+                const backToRankingBtn = e.target.closest('#back-to-ranking-btn');
+                if (backToRankingBtn) {
                     hideReportView();
                 }
-                if (e.target.closest('.toggle-skills-btn')) {
-                    const button = e.target.closest('.toggle-skills-btn');
+
+                const toggleSkillsBtn = e.target.closest('.toggle-skills-btn');
+                if (toggleSkillsBtn) {
+                    const button = toggleSkillsBtn;
                     const targetId = button.dataset.target;
                     const targetContainer = document.getElementById(targetId);
                     if (targetContainer) {
@@ -1461,4 +1470,5 @@
     </script>
 </body>
 </html>
+
 
