@@ -643,7 +643,7 @@
         ];
         
         function loadInitialData() {
-            const csvFilePath = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfl94b33vj53n1tq5MYp320p-2-rVAtTlo3jVvGvB3GQN0wdF9xl0Fm48QXEPMlT19mPL-2rd-i2V_/pub?gid=0&single=true&output=csv';
+            const csvFilePath = 'BD - Hoja 1.csv';
             Papa.parse(csvFilePath, {
                 download: true, header: true, skipEmptyLines: true,
                 complete: (results) => {
@@ -651,7 +651,7 @@
                     initializeDashboard();
                 },
                 error: (error) => {
-                    alert(`Ocurrió un error al cargar el archivo de datos. Por favor, revisa la consola para más detalles.`);
+                    alert(`Ocurrió un error al cargar el archivo de datos CSV. Asegúrate de que el archivo '${csvFilePath}' se encuentra en la misma carpeta que este archivo HTML.`);
                     console.error("Error al cargar CSV:", error);
                 }
             });
@@ -1272,7 +1272,7 @@
             }
             const scores = students.map(s => s.puntajeGlobal).sort((a, b) => a - b);
             const sum = scores.reduce((a, b) => a + b, 0);
-            elements.averageScoreEl.textContent = (sum / scores.length).toFixed(0);
+            elements.averageScoreEl.textContent = (sum / students.length).toFixed(0);
 
             const mid = Math.floor(scores.length / 2);
             const median = scores.length % 2 !== 0 ? scores[mid] : (scores[mid - 1] + scores[mid]) / 2;
@@ -1461,3 +1461,4 @@
     </script>
 </body>
 </html>
+
