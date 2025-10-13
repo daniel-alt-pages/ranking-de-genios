@@ -238,10 +238,10 @@
             position: absolute;
             top: -2px;
             bottom: -2px;
-            background-color: #3b82f6; /* Azul intenso */
+            background-color: transparent; /* Eliminado el fondo azul */
             border: 3px solid white;
             border-radius: 0.5rem;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.5); /* Sombra y borde para resaltar */
             transition: left 0.5s ease-in-out, width 0.5s ease-in-out;
             z-index: 10;
         }
@@ -493,7 +493,7 @@
         return `${prefix}*****${suffix}`;
     }
     
-    // --- BASE DE DATOS DE HABILIDADES ---
+    // --- BASE DE DATOS DE HABILIDADES (ACTUALIZADO DESDE EL PDF) ---
     const skillsData = {
         "lectura": {
             level: 4,
@@ -517,21 +517,21 @@
         "matematicas": {
             level: 4,
             categories: {
-                "Resolución de Problemas y Modelado": [
-                    "Resuelve problemas que requieren construir una representación auxiliar (gráficas y fórmulas) como paso intermedio para su solución.",
-                    "Modela usando lenguaje algebraico información dada en lenguaje natural, tablas o representaciones geométricas.",
-                    "Modela fenómenos variacionales no explícitos haciendo uso de lenguaje simbólico o gráficas."
-                ],
-                "Análisis Algebraico y Aritmético": [
-                    "Realiza transformaciones de subconjuntos de información que pueden requerir el uso de operaciones complejas (cálculos de porcentajes).",
-                    "Manipula expresiones algebraicas o aritméticas haciendo uso de las propiedades de las operaciones."
-                ],
                 "Estadística, Probabilidad y Toma de Decisiones": [
                     "Resuelve problemas que requieren interpretar información de eventos dependientes.",
                     "Reconoce en diferentes formatos el espacio muestral de un experimento aleatorio.",
                     "Resuelve problemas de conteo que requieren el uso de permutaciones.",
                     "Justifica si hay falta de información en una situación problema para tomar una decisión.",
                     "Toma decisiones sobre la veracidad o falsedad de una afirmación cuando requiere el uso de varias propiedades o conceptualizaciones formales."
+                ],
+                "Análisis Algebraico y Aritmético": [
+                    "Realiza transformaciones de subconjuntos de información que pueden requerir el uso de operaciones complejas (cálculos de porcentajes).",
+                    "Manipula expresiones algebraicas o aritméticas haciendo uso de las propiedades de las operaciones."
+                ],
+                "Resolución de Problemas y Modelado": [
+                    "Resuelve problemas que requieren construir una representación auxiliar (gráficas y fórmulas) como paso intermedio para su solución.",
+                    "Modela usando lenguaje algebraico información dada en lenguaje natural, tablas o representaciones geométricas.",
+                    "Modela fenómenos variacionales no explícitos haciendo uso de lenguaje simbólico o gráficas."
                 ]
             }
         },
@@ -555,32 +555,23 @@
         "ciencias": {
             level: 4,
             categories: {
-                "Metodología de la Investigación Científica": [
+                "Investigación y Comunicación Científica": [
                     "Plantea preguntas de investigación desde las ciencias naturales a partir de un contexto determinado.",
                     "Establece conclusiones derivadas de una investigación.",
+                    "Comunica resultados de procesos de investigación científica.",
                     "Analiza fenómenos naturales con base en los procedimientos propios de la investigación científica."
                 ],
-                "Análisis y Aplicación de Conceptos Científicos": [
+                "Análisis y Aplicación de Conceptos": [
                     "Contrasta modelos de las ciencias naturales con fenómenos cotidianos.",
                     "Resuelve situaciones problema haciendo uso de conceptos, leyes y teorías de las ciencias naturales."
-                ],
-                "Comunicación Científica": [
-                    "Comunica resultados de procesos de investigación científica."
                 ]
             }
         },
         "ingles": {
-            level: 'B1',
+            level: 'B+',
             categories: {
-                "Comprensión Comunicativa": [
-                    "Es capaz de comprender los puntos principales de textos claros y en lengua estándar si tratan sobre cuestiones que le son conocidas, ya sea en situaciones de trabajo, de estudio o de ocio."
-                ],
-                "Desenvolvimiento Práctico e Interacción": [
-                    "Sabe desenvolverse en la mayor parte de las situaciones que pueden surgir durante un viaje por zonas donde se utiliza la lengua."
-                ],
-                "Producción y Expresión Personal": [
-                    "Es capaz de producir textos sencillos y coherentes sobre temas que le son familiares o en los que tiene un interés personal.",
-                    "Puede describir experiencias, acontecimientos, deseos y aspiraciones, así como justificar brevemente sus opiniones o explicar sus planes."
+                "Habilidades Superiores": [
+                    "El estudiante promedio clasificado en este nivel supera las preguntas de mayor complejidad de la prueba."
                 ]
             }
         }
@@ -1470,5 +1461,6 @@
     </script>
 </body>
 </html>
+
 
 
