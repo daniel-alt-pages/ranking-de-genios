@@ -212,12 +212,12 @@
                 </section>
                 
                 <section style="animation-delay: 200ms;" class="fade-in-up grid md:grid-cols-2 gap-6 my-8">
-                    <div class="bg-gradient-to-r from-brand-primary to-orange-500 text-white p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-center">
+                    <div class="bg-gradient-to-r from-brand-primary to-orange-500 text-white p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-center h-full">
                         <h3 class="text-2xl font-bold">¿Quieres Ser el Próximo Genio?</h3>
                         <p class="mt-2 max-w-sm">Nuestro Pre-Icfes te da las herramientas para alcanzar la excelencia. ¡Inscripciones abiertas!</p>
                         <button class="mt-4 bg-white text-brand-primary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Ver Planes</button>
                     </div>
-                    <div class="bg-gradient-to-r from-brand-secondary to-blue-500 text-white p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-center">
+                    <div class="bg-gradient-to-r from-brand-secondary to-blue-500 text-white p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-center h-full">
                         <h3 class="text-2xl font-bold">¿Quieres aparecer en este Ranking?</h3>
                         <p class="mt-2 max-w-sm">Inscribe tus resultados del ICFES Saber 11 y compite para ser el mejor.</p>
                         <a href="https://docs.google.com/forms/d/1-oOUf_1Al53G-nKgstr3UZh2heAkwAzap5pb77Y-vRI/edit#responses" target="_blank" class="mt-4 inline-block bg-white text-brand-secondary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Inscribirme Ahora</a>
@@ -355,6 +355,14 @@
     </div>
 
     <script>
+    // --- FUNCIÓN PARA ENMASCARAR REGISTRO ---
+    function maskRegistrationNumber(reg) {
+        if (typeof reg !== 'string' || reg.length < 8) return reg;
+        const prefix = reg.substring(0, 4);
+        const suffix = reg.substring(reg.length - 4);
+        return `${prefix}*****${suffix}`;
+    }
+    
     const skillsData = {
         "lectura": {
             level: 4,
@@ -426,7 +434,6 @@
             Papa.parse(csvFilePath, {
                 download: true, header: true, skipEmptyLines: true,
                 complete: (results) => {
-                    console.log("Datos CSV cargados:", results.data); // DEBUG
                     if (!results.data || results.data.length === 0) {
                         alert("No se encontraron datos en el archivo CSV o el archivo no se pudo cargar. Asegúrate de que 'BD - Hoja 1.csv' esté en la misma carpeta que este archivo HTML y que no esté vacío.");
                         return;
@@ -474,10 +481,7 @@
         }
 
         function initializeDashboard() {
-            if (studentData.length === 0) {
-                console.error("No hay datos de estudiantes válidos para inicializar el dashboard.");
-                return;
-            }
+            if (studentData.length === 0) { return; }
             populateFilterOptions(); calculateAndDisplayStats(); renderPodium(); renderScatterPlot();
             handleFilterSelection(filterOptions[0].key, filterOptions[0].label, false); 
             updateDisplay(); setupEventListeners();
@@ -539,6 +543,19 @@
         function setupEventListeners() {
             // ... (el resto del código de los event listeners)
         }
+
+        // Llama a todas las demás funciones de renderizado y cálculo aquí
+        function renderPaginatedTable() { /* Tu código aquí */ }
+        function renderMobileList() { /* Tu código aquí */ }
+        function renderPaginationControls() { /* Tu código aquí */ }
+        function renderPodium() { /* Tu código aquí */ }
+        function showDetailsModal(id) { /* Tu código aquí */ }
+        function closeDetailsModal() { /* Tu código aquí */ }
+        function hideReportView() { /* Tu código aquí */ }
+        function populateFilterOptions() { /* Tu código aquí */ }
+        function calculateAndDisplayStats() { /* Tu código aquí */ }
+        function renderScatterPlot() { /* Tu código aquí */ }
+        function handleFilterSelection() { /* Tu código aquí */ }
         
         loadInitialData();
     });
