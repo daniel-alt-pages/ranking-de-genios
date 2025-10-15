@@ -1360,21 +1360,13 @@
                  const subjectKey = subjectInfo.subjectKey;
                  const score = student.puntajesDetallados[subjectKey];
                  
-                 const performanceLevels = {
-                     lectura: [{min: 0, max:35, label: 'Nivel 1'}, {min:36, max:50, label: 'Nivel 2'}, {min:51, max:65, label: 'Nivel 3'}, {min:66, max:100, label: 'Nivel 4'}],
-                     matematicas: [{min: 0, max:35, label: 'Nivel 1'}, {min:36, max:50, label: 'Nivel 2'}, {min:51, max:70, label: 'Nivel 3'}, {min:71, max:100, label: 'Nivel 4'}],
-                     sociales: [{min: 0, max:40, label: 'Nivel 1'}, {min:41, max:55, label: 'Nivel 2'}, {min:56, max:70, label: 'Nivel 3'}, {min:71, max:100, label: 'Nivel 4'}],
-                     ciencias: [{min: 0, max:40, label: 'Nivel 1'}, {min:41, max:55, label: 'Nivel 2'}, {min:56, max:70, label: 'Nivel 3'}, {min:71, max:100, label: 'Nivel 4'}],
-                     ingles: [{min:0,max:36, label: 'A-'}, {min:37,max:47, label: 'A1'}, {min:48,max:58, label: 'A2'}, {min:59,max:78, label: 'B1'}, {min:79,max:100, label: 'B+'}]
-                 };
-                
-                 const levels = performanceLevels[subjectKey];
-                 let studentLevelIndex = levels.findIndex(level => score >= level.min && score <= level.max);
+                 const subjectLevels = skillsData[subjectKey];
+                 let studentLevelIndex = subjectLevels.findIndex(level => score >= (level.min || 0) && score <= (level.max || 100));
                  if (studentLevelIndex === -1) studentLevelIndex = 0; // Fallback
 
                  const studentLevelData = skillsData[subjectKey][studentLevelIndex];
                  
-                 const totalSegments = levels.length;
+                 const totalSegments = subjectLevels.length;
                  const highlightWidth = 100 / totalSegments;
                  const highlightLeft = studentLevelIndex * highlightWidth;
 
@@ -1412,9 +1404,9 @@
                             <span class="ml-auto text-3xl font-bold text-gray-800 flex-shrink-0">${score}<span class="text-xl text-gray-400">/100</span></span>
                         </div>
 
-                        <p class="text-sm font-semibold mb-2 text-gray-600">Nivel de Desempeño: <span class="font-bold text-gray-800">${studentLevelData.label} (${studentLevelData.level})</span></p>
+                        <p class="text-sm font-semibold mb-2 text-gray-600">Nivel de Desempeño: <span class="font-bold text-gray-800">${studentLevelData.label}</span></p>
                         <div class="performance-level-bar">
-                             ${levels.map((level, i) => `<div class="level-segment">${level.label}</div>`).join('')}
+                             ${subjectLevels.map((level) => `<div class="level-segment" title="${level.label} - Rango: ${level.min || 0}-${level.max || 100}">${level.label.replace(' (Insuficiente)','').replace(' (Mínimo)','').replace(' (Satisfactorio)','').replace(' (Avanzado)','')}</div>`).join('')}
                              <div class="level-highlight" style="left: ${highlightLeft}%; width: ${highlightWidth}%;"></div>
                         </div>
 
@@ -1432,12 +1424,12 @@
             }).join('');
 
             elements.reportView.innerHTML = `
-                <header class="flex items-center justify-between mb-8">
+                <header class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
                      <div>
-                         <h1 class="text-3xl sm:text-4xl font-extrabold text-brand-header tracking-tight">Informe Virtual Detallado</h1>
-                         <p class="mt-1 text-lg text-gray-600">${student.nombre}</p>
+                         <h1 class="text-3xl sm:text-4xl font-extrabold text-brand-header tracking-tight text-center sm:text-left">Informe de Desempeño</h1>
+                         <p class="mt-1 text-lg text-gray-600 text-center sm:text-left">${student.nombre}</p>
                      </div>
-                     <button id="back-to-ranking-btn" class="bg-brand-secondary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center gap-2 shadow-md hover:bg-blue-700 transition-colors">
+                     <button id="back-to-ranking-btn" class="bg-brand-secondary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center gap-2 shadow-md hover:bg-blue-700 transition-colors w-full sm:w-auto justify-center">
                          <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>
                          Volver al Ranking
                      </button>
@@ -1677,4 +1669,5 @@
     </script>
 </body>
 </html>
+
 
