@@ -261,6 +261,20 @@
         .toggle-skills-btn.expanded svg {
             transform: rotate(180deg);
         }
+        .skill-tag {
+            background-color: #e5e7eb; /* gray-200 */
+            color: #374151; /* gray-700 */
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+        .skill-tag:hover {
+            background-color: #d1d5db; /* gray-300 */
+            transform: scale(1.05);
+        }
         
     </style>
 </head>
@@ -499,25 +513,25 @@
             {
                 level: 1, label: "Insuficiente",
                 description: "Identifica información explícita y el tema general de textos simples.",
-                categories: { "Comprensión Literal": ["Localiza información específica y datos puntuales en un texto.", "Reconoce el tema o la idea principal de un escrito cuando se presenta de forma explícita."] }
+                competencies: { "Identificar y entender los contenidos locales que conforman un texto": ["Localiza información específica y datos puntuales en un texto.", "Reconoce el tema o la idea principal de un escrito cuando se presenta de forma explícita."] }
             },
             {
                 level: 2, label: "Mínimo",
                 description: "Comprende la estructura de un texto e infiere relaciones simples entre sus partes.",
-                categories: { "Comprensión Inferencial": ["Identifica la idea principal y los argumentos de un texto, aunque no estén explícitos.", "Establece relaciones de causa y efecto entre ideas dentro de un párrafo."] }
+                competencies: { "Comprender cómo se articulan las partes de un texto para darle un sentido global": ["Identifica la idea principal y los argumentos de un texto, aunque no estén explícitos.", "Establece relaciones de causa y efecto entre ideas dentro de un párrafo."] }
             },
             {
                 level: 3, label: "Satisfactorio",
                 description: "Analiza y compara textos, evaluando la validez de sus argumentos.",
-                categories: { "Análisis y Comparación": ["Comprende y compara los argumentos presentes en un texto.", "Relaciona información de diferentes partes del texto o de varios textos para llegar a una conclusión.", "Identifica el propósito comunicativo y el contexto de un texto."] }
+                competencies: { "Reflexionar a partir de un texto y evaluar su contenido": ["Comprende y compara los argumentos presentes en un texto.", "Relaciona información de diferentes partes del texto o de varios textos para llegar a una conclusión.", "Identifica el propósito comunicativo y el contexto de un texto."] }
             },
             {
                 level: 4, label: "Avanzado",
                 description: "Asume una postura crítica, evalúa estrategias discursivas y propone soluciones a problemas de interpretación.",
-                categories: {
-                    "Análisis Crítico y Argumentación": ["Evalúa contenidos, estrategias discursivas y argumentativas presentes en un texto.", "Construye argumentos que sustentan una tesis con base en textos relacionados.", "Asume una postura crítica frente a los planteamientos de un texto."],
-                    "Interpretación y Relación de Textos": ["Propone soluciones a problemas de interpretación que subyacen en un texto.", "Plantea hipótesis de lectura a partir de las ideas presentes en un texto."],
-                    "Aplicación de Conceptos Literarios": ["Aplica conceptos de análisis literario para caracterizar diferentes elementos en un texto."]
+                competencies: {
+                    "Reflexionar a partir de un texto y evaluar su contenido": ["Evalúa contenidos, estrategias discursivas y argumentativas presentes en un texto.", "Construye argumentos que sustentan una tesis con base en textos relacionados.", "Asume una postura crítica frente a los planteamientos de un texto."],
+                    "Comprender cómo se articulan las partes de un texto para darle un sentido global": ["Propone soluciones a problemas de interpretación que subyacen en un texto.", "Plantea hipótesis de lectura a partir de las ideas presentes en un texto."],
+                    "Identificar y entender los contenidos locales que conforman un texto": ["Aplica conceptos de análisis literario para caracterizar diferentes elementos en un texto."]
                 }
             }
         ],
@@ -525,25 +539,28 @@
             {
                 level: 1, label: "Insuficiente",
                 description: "Realiza operaciones aritméticas básicas y reconoce datos en tablas y gráficos.",
-                categories: { "Aritmética Básica": ["Ejecuta operaciones como suma, resta, multiplicación y división con números enteros.", "Identifica y extrae datos específicos presentados en tablas simples."] }
+                competencies: { "Interpretación y representación": ["Ejecuta operaciones como suma, resta, multiplicación y división con números enteros.", "Identifica y extrae datos específicos presentados en tablas simples."] }
             },
             {
                 level: 2, label: "Mínimo",
                 description: "Resuelve problemas simples que requieren cálculos directos y la lectura de gráficos.",
-                categories: { "Resolución de Problemas Directos": ["Soluciona problemas que involucran porcentajes y proporcionalidad simple.", "Interpreta información presentada en gráficos de barras, circulares y lineales."] }
+                competencies: { "Formulación y ejecución": ["Soluciona problemas que involucran porcentajes y proporcionalidad simple.", "Interpreta información presentada en gráficos de barras, circulares y lineales."] }
             },
             {
                 level: 3, label: "Satisfactorio",
                 description: "Resuelve problemas que requieren varios pasos, interpreta datos y utiliza propiedades algebraicas.",
-                categories: { "Análisis y Procedimientos": ["Usa propiedades algebraicas para manipular expresiones.", "Interpreta y compara conjuntos de datos en diferentes representaciones.", "Resuelve problemas que requieren la aplicación de varios conceptos o procedimientos."] }
+                competencies: { 
+                    "Formulación y ejecución": ["Usa propiedades algebraicas para manipular expresiones.", "Resuelve problemas que requieren la aplicación de varios conceptos o procedimientos."],
+                    "Interpretación y representación": ["Interpreta y compara conjuntos de datos en diferentes representaciones."] 
+                }
             },
             {
                 level: 4, label: "Avanzado",
                 description: "Modela situaciones, resuelve problemas complejos y toma decisiones basadas en la interpretación de datos.",
-                categories: {
-                    "Estadística y Probabilidad": ["Resuelve problemas de conteo que requieren el uso de permutaciones.", "Interpreta información de eventos dependientes para tomar decisiones."],
-                    "Álgebra y Cálculo": ["Manipula expresiones algebraicas complejas.", "Modela fenómenos de variación usando lenguaje simbólico o gráficas."],
-                    "Resolución de Problemas y Modelado": ["Construye representaciones auxiliares (gráficas, fórmulas) como paso intermedio para la solución de un problema."]
+                competencies: {
+                    "Argumentación": ["Toma decisiones sobre la veracidad o falsedad de una afirmación, justificando con propiedades formales.", "Interpreta información de eventos dependientes para tomar decisiones."],
+                    "Formulación y ejecución": ["Resuelve problemas de conteo que requieren el uso de permutaciones.", "Manipula expresiones algebraicas complejas."],
+                    "Interpretación y representación": ["Modela fenómenos de variación usando lenguaje simbólico o gráficas.", "Construye representaciones auxiliares (gráficas, fórmulas) como paso intermedio para la solución de un problema."]
                 }
             }
         ],
@@ -551,24 +568,27 @@
             {
                 level: 1, label: "Insuficiente",
                 description: "Identifica información explícita sobre eventos sociales y la estructura básica del Estado.",
-                categories: { "Conocimiento Básico": ["Reconoce actores y eventos importantes de la historia de Colombia.", "Identifica las ramas del poder público."] }
+                competencies: { "Pensamiento Social": ["Reconoce actores y eventos importantes de la historia de Colombia.", "Identifica las ramas del poder público."] }
             },
             {
                 level: 2, label: "Mínimo",
                 description: "Reconoce derechos y deberes, e identifica los intereses de diferentes actores en un problema social.",
-                categories: { "Pensamiento Cívico": ["Comprende qué son los derechos fundamentales y los deberes ciudadanos.", "Identifica los intereses y puntos de vista de diferentes grupos en una situación problemática."] }
+                competencies: { "Interpretación y Análisis de Perspectivas": ["Comprende qué son los derechos fundamentales y los deberes ciudadanos.", "Identifica los intereses y puntos de vista de diferentes grupos en una situación problemática."] }
             },
             {
                 level: 3, label: "Satisfactorio",
                 description: "Relaciona conceptos de las ciencias sociales, comprende el impacto de las decisiones y analiza contextos.",
-                categories: { "Pensamiento Social": ["Utiliza conceptos básicos de las ciencias sociales para entender problemáticas.", "Comprende los posibles impactos (económicos, políticos, etc.) de una decisión social.", "Analiza el contexto histórico y geográfico de un evento."] }
+                competencies: { 
+                    "Pensamiento Social": ["Utiliza conceptos básicos de las ciencias sociales para entender problemáticas.", "Analiza el contexto histórico y geográfico de un evento."],
+                    "Pensamiento Reflexivo y Sistémico": ["Comprende los posibles impactos (económicos, políticos, etc.) de una decisión social."] 
+                }
             },
             {
                 level: 4, label: "Avanzado",
                 description: "Analiza críticamente fuentes, compara argumentos complejos y comprende a fondo la Constitución.",
-                categories: {
-                    "Conocimiento Constitucional": ["Conoce los mecanismos de participación ciudadana y las funciones de los organismos de control.", "Entiende los procedimientos para reformar la Constitución."],
-                    "Análisis Crítico de Fuentes": ["Compara argumentos, intereses y posiciones de actores en un debate.", "Analiza fuentes primarias y secundarias para identificar intenciones y valorar su fiabilidad."]
+                competencies: {
+                    "Pensamiento Reflexivo y Sistémico": ["Conoce los mecanismos de participación ciudadana y las funciones de los organismos de control.", "Entiende los procedimientos para reformar la Constitución."],
+                    "Interpretación y Análisis de Perspectivas": ["Compara argumentos, intereses y posiciones de actores en un debate.", "Analiza fuentes primarias y secundarias para identificar intenciones y valorar su fiabilidad."]
                 }
             }
         ],
@@ -576,24 +596,24 @@
             {
                 level: 1, label: "Insuficiente",
                 description: "Reconoce información explícita en textos científicos e identifica partes de un sistema.",
-                categories: { "Comprensión Literal de Fenómenos": ["Identifica datos y hechos presentados en un texto de divulgación científica.", "Reconoce los componentes de un esquema o modelo simple (ej. una célula)."] }
+                competencies: { "Uso comprensivo del conocimiento científico": ["Identifica datos y hechos presentados en un texto de divulgación científica.", "Reconoce los componentes de un esquema o modelo simple (ej. una célula)."] }
             },
             {
                 level: 2, label: "Mínimo",
                 description: "Describe fenómenos naturales, interpreta gráficos simples y usa conceptos básicos.",
-                categories: { "Uso Básico del Conocimiento Científico": ["Interpreta información de gráficos y tablas para describir un fenómeno.", "Aplica conceptos básicos de física, química y biología a situaciones sencillas."] }
+                competencies: { "Explicación de fenómenos": ["Interpreta información de gráficos y tablas para describir un fenómeno.", "Aplica conceptos básicos de física, química y biología a situaciones sencillas."] }
             },
             {
                 level: 3, label: "Satisfactorio",
                 description: "Analiza resultados de experimentos, contrasta modelos con fenómenos y aplica conceptos para resolver problemas.",
-                categories: { "Indagación y Análisis": ["Analiza los resultados de un experimento para validar o refutar una hipótesis.", "Contrasta modelos científicos con fenómenos cotidianos, identificando sus alcances y limitaciones."] }
+                competencies: { "Indagación": ["Analiza los resultados de un experimento para validar o refutar una hipótesis.", "Contrasta modelos científicos con fenómenos cotidianos, identificando sus alcances y limitaciones."] }
             },
             {
                 level: 4, label: "Avanzado",
                 description: "Plantea preguntas de investigación, establece conclusiones y resuelve problemas complejos aplicando leyes y teorías.",
-                categories: {
-                    "Investigación y Comunicación Científica": ["Plantea preguntas de investigación desde las ciencias naturales.", "Establece conclusiones válidas derivadas de una investigación y comunica sus resultados."],
-                    "Análisis y Aplicación de Conceptos": ["Resuelve situaciones problema complejas haciendo uso de conceptos, leyes y teorías de las ciencias naturales."]
+                competencies: {
+                    "Indagación": ["Plantea preguntas de investigación desde las ciencias naturales.", "Establece conclusiones válidas derivadas de una investigación y comunica sus resultados."],
+                    "Uso comprensivo del conocimiento científico": ["Resuelve situaciones problema complejas haciendo uso de conceptos, leyes y teorías de las ciencias naturales."]
                 }
             }
         ],
@@ -601,27 +621,27 @@
             {
                 level: 0, label: "A-",
                 description: "No alcanza el nivel A1. Puede tener dificultades para comprender información básica y explícita en textos muy cortos.",
-                categories: { "Habilidades Limitadas": ["Puede reconocer palabras familiares y frases muy básicas."] }
+                competencies: { "Habilidades Limitadas": ["Puede reconocer palabras familiares y frases muy básicas."] }
             },
             {
                 level: 1, label: "A1",
                 description: "Comprende y utiliza expresiones cotidianas y frases sencillas para satisfacer necesidades inmediatas.",
-                categories: { "Comprensión Básica": ["Puede entender textos cortos y sencillos, como anuncios o menús.", "Es capaz de extraer información específica y predecible de material simple."] }
+                competencies: { "Comprensión Básica": ["Puede entender textos cortos y sencillos, como anuncios o menús.", "Es capaz de extraer información específica y predecible de material simple."] }
             },
             {
                 level: 2, label: "A2",
                 description: "Comprende frases y expresiones de uso frecuente relacionadas con áreas de relevancia inmediata (información personal, compras, etc.).",
-                categories: { "Comprensión de Textos Cotidianos": ["Puede leer textos breves y sencillos y encontrar información específica en material de uso diario, como cartas personales cortas."] }
+                competencies: { "Comprensión de Textos Cotidianos": ["Puede leer textos breves y sencillos y encontrar información específica en material de uso diario, como cartas personales cortas."] }
             },
             {
                 level: 3, label: "B1",
                 description: "Comprende las ideas principales de textos claros sobre temas familiares. Puede describir experiencias, eventos y ambiciones.",
-                categories: { "Lectura Independiente": ["Puede comprender las ideas principales y algunos detalles de textos sobre temas conocidos o de interés personal.", "Infiere el significado de palabras desconocidas a partir del contexto."] }
+                competencies: { "Lectura Independiente": ["Puede comprender las ideas principales y algunos detalles de textos sobre temas conocidos o de interés personal.", "Infiere el significado de palabras desconocidas a partir del contexto."] }
             },
             {
                 level: 4, label: "B+",
                 description: "Supera las preguntas de mayor complejidad de la prueba, demostrando una comprensión sólida de textos con un lenguaje más elaborado.",
-                categories: { "Habilidades Superiores": ["Demuestra una comprensión detallada de textos, incluyendo la identificación de actitudes, opiniones y propósitos del autor."] }
+                competencies: { "Habilidades Superiores": ["Demuestra una comprensión detallada de textos, incluyendo la identificación de actitudes, opiniones y propósitos del autor."] }
             }
         ]
     };
@@ -1238,15 +1258,15 @@
                  const highlightWidth = 100 / totalSegments;
                  const highlightLeft = studentLevelIndex * highlightWidth;
 
-                 let skillsHtml = `<p class="font-semibold text-gray-800">${studentLevelData.description || ''}</p>`;
-                 if (studentLevelData && studentLevelData.categories) {
-                     skillsHtml += Object.entries(studentLevelData.categories).map(([category, skills]) => `
-                         <div class="mt-4">
-                             <h4 class="font-bold text-gray-700">${category}</h4>
-                             <ul class="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                                 ${skills.map(skill => `<li>${skill}</li>`).join('')}
-                             </ul>
-                         </div>
+                 let skillsHtml = `<p class="font-semibold text-gray-800 mb-4">${studentLevelData.description || ''}</p>`;
+                 if (studentLevelData && studentLevelData.competencies) {
+                     skillsHtml += Object.entries(studentLevelData.competencies).map(([competency, skills]) => `
+                        <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                            <h4 class="font-bold text-gray-800">${competency}</h4>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                ${skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                            </div>
+                        </div>
                      `).join('');
                  }
 
@@ -1272,7 +1292,7 @@
                                  <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                              </button>
                         </div>
-                        <div id="skills-${subjectKey}" class="skills-container mt-4 border-t pt-4">
+                        <div id="skills-${subjectKey}" class="skills-container mt-4 border-t pt-4 space-y-4">
                            ${skillsHtml}
                         </div>
                     </div>
