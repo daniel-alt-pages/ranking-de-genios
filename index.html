@@ -252,7 +252,7 @@
             opacity: 0;
         }
         .skills-container.expanded {
-            max-height: 1000px; /* Suficientemente grande */
+            max-height: 1500px; /* Aumentado para más contenido */
             opacity: 1;
         }
         .toggle-skills-btn svg {
@@ -261,20 +261,31 @@
         .toggle-skills-btn.expanded svg {
             transform: rotate(180deg);
         }
-        .skill-tag {
-            background-color: #e5e7eb; /* gray-200 */
-            color: #374151; /* gray-700 */
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            cursor: default;
+        .skill-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease;
         }
-        .skill-tag:hover {
-            background-color: #d1d5db; /* gray-300 */
-            transform: scale(1.05);
+        .skill-item:hover {
+            background-color: #f3f4f6;
         }
+        .competency-card {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+            transition: all 0.3s ease;
+        }
+        .competency-card:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
         
     </style>
 </head>
@@ -512,136 +523,239 @@
         "lectura": [
             {
                 level: 1, label: "Insuficiente",
-                description: "Identifica información explícita y el tema general de textos simples.",
-                competencies: { "Identificar y entender los contenidos locales que conforman un texto": ["Localiza información específica y datos puntuales en un texto.", "Reconoce el tema o la idea principal de un escrito cuando se presenta de forma explícita."] }
+                description: "En este nivel, puedes localizar información explícita en textos sencillos y reconocer su tema principal cuando es evidente. Es un gran primer paso para construir una comprensión más profunda.",
+                competencies: { 
+                    "Identificar y entender los contenidos locales que conforman un texto": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>`,
+                        skills: ["Localiza información específica y datos puntuales en un texto.", "Reconoce el tema o la idea principal de un escrito cuando se presenta de forma explícita."] 
+                    }
+                }
             },
             {
                 level: 2, label: "Mínimo",
-                description: "Comprende la estructura de un texto e infiere relaciones simples entre sus partes.",
-                competencies: { "Comprender cómo se articulan las partes de un texto para darle un sentido global": ["Identifica la idea principal y los argumentos de un texto, aunque no estén explícitos.", "Establece relaciones de causa y efecto entre ideas dentro de un párrafo."] }
+                description: "Aquí ya comprendes cómo se organizan las ideas en un texto. Eres capaz de identificar la idea principal, incluso si no está escrita directamente, y puedes establecer relaciones simples de causa y efecto.",
+                competencies: { 
+                    "Comprender cómo se articulan las partes de un texto para darle un sentido global": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>`,
+                        skills: ["Identifica la idea principal y los argumentos de un texto, aunque no estén explícitos.", "Establece relaciones de causa y efecto entre ideas dentro de un párrafo."] 
+                    }
+                }
             },
             {
                 level: 3, label: "Satisfactorio",
-                description: "Analiza y compara textos, evaluando la validez de sus argumentos.",
-                competencies: { "Reflexionar a partir de un texto y evaluar su contenido": ["Comprende y compara los argumentos presentes en un texto.", "Relaciona información de diferentes partes del texto o de varios textos para llegar a una conclusión.", "Identifica el propósito comunicativo y el contexto de un texto."] }
+                description: "Tienes la capacidad de analizar el contenido de un texto, comparar sus argumentos y relacionar información entre diferentes partes o incluso entre varios textos. Evalúas la validez de los argumentos y comprendes el propósito del autor.",
+                competencies: { 
+                    "Reflexionar a partir de un texto y evaluar su contenido": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>`,
+                        skills: ["Comprende y compara los argumentos presentes en un texto.", "Relaciona información de diferentes partes del texto o de varios textos para llegar a una conclusión.", "Identifica el propósito comunicativo y el contexto de un texto."] 
+                    }
+                }
             },
             {
                 level: 4, label: "Avanzado",
-                description: "Asume una postura crítica, evalúa estrategias discursivas y propone soluciones a problemas de interpretación.",
+                description: "¡Excelente! En este nivel, no solo comprendes y analizas, sino que también asumes una postura crítica frente a los textos. Evalúas las estrategias que usa el autor, construyes tus propios argumentos y propones soluciones a problemas de interpretación.",
                 competencies: {
-                    "Reflexionar a partir de un texto y evaluar su contenido": ["Evalúa contenidos, estrategias discursivas y argumentativas presentes en un texto.", "Construye argumentos que sustentan una tesis con base en textos relacionados.", "Asume una postura crítica frente a los planteamientos de un texto."],
-                    "Comprender cómo se articulan las partes de un texto para darle un sentido global": ["Propone soluciones a problemas de interpretación que subyacen en un texto.", "Plantea hipótesis de lectura a partir de las ideas presentes en un texto."],
-                    "Identificar y entender los contenidos locales que conforman un texto": ["Aplica conceptos de análisis literario para caracterizar diferentes elementos en un texto."]
+                    "Reflexionar a partir de un texto y evaluar su contenido": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+                        skills: ["Evalúa contenidos y estrategias discursivas.", "Construye argumentos que sustentan una tesis.", "Asume una postura crítica frente a los planteamientos de un texto."]
+                    },
+                    "Comprender cómo se articulan las partes de un texto para darle un sentido global": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" /></svg>`,
+                        skills: ["Propone soluciones a problemas de interpretación.", "Plantea hipótesis de lectura a partir de las ideas de un texto."]
+                    },
                 }
             }
         ],
         "matematicas": [
             {
                 level: 1, label: "Insuficiente",
-                description: "Realiza operaciones aritméticas básicas y reconoce datos en tablas y gráficos.",
-                competencies: { "Interpretación y representación": ["Ejecuta operaciones como suma, resta, multiplicación y división con números enteros.", "Identifica y extrae datos específicos presentados en tablas simples."] }
+                description: "Puedes manejar operaciones aritméticas básicas y extraer datos directos de tablas y gráficos. Es el punto de partida para construir el razonamiento cuantitativo.",
+                competencies: { 
+                    "Interpretación y representación": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>`,
+                        skills: ["Ejecuta operaciones como suma, resta, multiplicación y división.", "Identifica y extrae datos específicos de tablas simples."] 
+                    }
+                }
             },
             {
                 level: 2, label: "Mínimo",
-                description: "Resuelve problemas simples que requieren cálculos directos y la lectura de gráficos.",
-                competencies: { "Formulación y ejecución": ["Soluciona problemas que involucran porcentajes y proporcionalidad simple.", "Interpreta información presentada en gráficos de barras, circulares y lineales."] }
+                description: "Eres capaz de resolver problemas cotidianos que implican cálculos directos como porcentajes y proporcionalidad. También puedes interpretar la información de gráficos comunes.",
+                competencies: { 
+                    "Formulación y ejecución": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 14h.01M12 7v3m0 4h.01M12 10h.01M12 4h.01M15 7h.01M18 10h.01M18 14h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+                        skills: ["Soluciona problemas que involucran porcentajes y proporcionalidad.", "Interpreta información de gráficos de barras, circulares y lineales."] 
+                    }
+                }
             },
             {
                 level: 3, label: "Satisfactorio",
-                description: "Resuelve problemas que requieren varios pasos, interpreta datos y utiliza propiedades algebraicas.",
+                description: "Puedes resolver problemas que requieren varios pasos, utilizando propiedades algebraicas para simplificar expresiones y comparando distintos conjuntos de datos para sacar conclusiones.",
                 competencies: { 
-                    "Formulación y ejecución": ["Usa propiedades algebraicas para manipular expresiones.", "Resuelve problemas que requieren la aplicación de varios conceptos o procedimientos."],
-                    "Interpretación y representación": ["Interpreta y compara conjuntos de datos en diferentes representaciones."] 
+                    "Formulación y ejecución": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" /></svg>`,
+                        skills: ["Usa propiedades algebraicas para manipular expresiones.", "Resuelve problemas que requieren la aplicación de varios conceptos."]
+                    },
+                    "Interpretación y representación": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>`,
+                        skills: ["Interpreta y compara conjuntos de datos en diferentes representaciones."] 
+                    }
                 }
             },
             {
                 level: 4, label: "Avanzado",
-                description: "Modela situaciones, resuelve problemas complejos y toma decisiones basadas en la interpretación de datos.",
+                description: "¡Felicidades! Demuestras una alta capacidad para modelar situaciones matemáticamente, resolver problemas no rutinarios y usar el análisis de datos para argumentar y tomar decisiones informadas.",
                 competencies: {
-                    "Argumentación": ["Toma decisiones sobre la veracidad o falsedad de una afirmación, justificando con propiedades formales.", "Interpreta información de eventos dependientes para tomar decisiones."],
-                    "Formulación y ejecución": ["Resuelve problemas de conteo que requieren el uso de permutaciones.", "Manipula expresiones algebraicas complejas."],
-                    "Interpretación y representación": ["Modela fenómenos de variación usando lenguaje simbólico o gráficas.", "Construye representaciones auxiliares (gráficas, fórmulas) como paso intermedio para la solución de un problema."]
+                    "Argumentación": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+                        skills: ["Justifica la veracidad o falsedad de una afirmación usando propiedades formales.", "Toma decisiones basadas en la interpretación de datos y eventos."]
+                    },
+                    "Formulación y ejecución": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>`,
+                        skills: ["Resuelve problemas de conteo usando permutaciones.", "Manipula expresiones algebraicas complejas."]
+                    },
+                    "Interpretación y representación": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" /></svg>`,
+                        skills: ["Modela fenómenos de variación usando lenguaje simbólico o gráficas.", "Construye representaciones auxiliares (gráficas, fórmulas) para resolver un problema."]
+                    }
                 }
             }
         ],
         "sociales": [
             {
                 level: 1, label: "Insuficiente",
-                description: "Identifica información explícita sobre eventos sociales y la estructura básica del Estado.",
-                competencies: { "Pensamiento Social": ["Reconoce actores y eventos importantes de la historia de Colombia.", "Identifica las ramas del poder público."] }
+                description: "Identificas información básica sobre la historia de Colombia y la organización del Estado. Este es el primer paso para convertirte en un ciudadano informado.",
+                competencies: { 
+                    "Pensamiento Social": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>`,
+                        skills: ["Reconoce actores y eventos importantes de la historia.", "Identifica las ramas del poder público."] 
+                    }
+                }
             },
             {
                 level: 2, label: "Mínimo",
-                description: "Reconoce derechos y deberes, e identifica los intereses de diferentes actores en un problema social.",
-                competencies: { "Interpretación y Análisis de Perspectivas": ["Comprende qué son los derechos fundamentales y los deberes ciudadanos.", "Identifica los intereses y puntos de vista de diferentes grupos en una situación problemática."] }
+                description: "Comprendes conceptos fundamentales como los derechos y deberes ciudadanos. Puedes identificar los diferentes puntos de vista que existen en una situación social.",
+                competencies: { 
+                    "Interpretación y Análisis de Perspectivas": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>`,
+                        skills: ["Comprende qué son los derechos fundamentales y los deberes.", "Identifica los intereses de diferentes grupos en un problema."] 
+                    }
+                }
             },
             {
                 level: 3, label: "Satisfactorio",
-                description: "Relaciona conceptos de las ciencias sociales, comprende el impacto de las decisiones y analiza contextos.",
+                description: "Utilizas conceptos de las ciencias sociales para analizar problemáticas. Comprendes cómo el contexto histórico influye en los eventos y puedes prever el impacto de ciertas decisiones sociales.",
                 competencies: { 
-                    "Pensamiento Social": ["Utiliza conceptos básicos de las ciencias sociales para entender problemáticas.", "Analiza el contexto histórico y geográfico de un evento."],
-                    "Pensamiento Reflexivo y Sistémico": ["Comprende los posibles impactos (económicos, políticos, etc.) de una decisión social."] 
+                    "Pensamiento Social": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h8a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.707 4.293l.52-.524a2 2 0 012.828 0l.52.524M7.707 4.293L6.343 5.657m6.344-1.364l1.364 1.364" /></svg>`,
+                        skills: ["Utiliza conceptos de ciencias sociales para entender problemas.", "Analiza el contexto histórico y geográfico de un evento."]
+                    },
+                    "Pensamiento Reflexivo y Sistémico": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>`,
+                        skills: ["Comprende los posibles impactos de una decisión social."] 
+                    }
                 }
             },
             {
                 level: 4, label: "Avanzado",
-                description: "Analiza críticamente fuentes, compara argumentos complejos y comprende a fondo la Constitución.",
+                description: "¡Genial! Tienes un dominio profundo de los conceptos cívicos y sociales. Analizas críticamente fuentes de información, comparas argumentos complejos y entiendes el funcionamiento de la Constitución y sus mecanismos.",
                 competencies: {
-                    "Pensamiento Reflexivo y Sistémico": ["Conoce los mecanismos de participación ciudadana y las funciones de los organismos de control.", "Entiende los procedimientos para reformar la Constitución."],
-                    "Interpretación y Análisis de Perspectivas": ["Compara argumentos, intereses y posiciones de actores en un debate.", "Analiza fuentes primarias y secundarias para identificar intenciones y valorar su fiabilidad."]
+                    "Pensamiento Reflexivo y Sistémico": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+                        skills: ["Conoce los mecanismos de participación ciudadana.", "Entiende los procedimientos para reformar la Constitución."]
+                    },
+                    "Interpretación y Análisis de Perspectivas": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16l4-4m0 0l4-4m-4 4l-4-4m4 4l4 4" /></svg>`,
+                        skills: ["Compara argumentos, intereses y posiciones en un debate.", "Analiza fuentes para identificar intenciones y valorar su fiabilidad."]
+                    }
                 }
             }
         ],
         "ciencias": [
             {
                 level: 1, label: "Insuficiente",
-                description: "Reconoce información explícita en textos científicos e identifica partes de un sistema.",
-                competencies: { "Uso comprensivo del conocimiento científico": ["Identifica datos y hechos presentados en un texto de divulgación científica.", "Reconoce los componentes de un esquema o modelo simple (ej. una célula)."] }
+                description: "Puedes reconocer información presentada de forma explícita en textos científicos sencillos e identificar las partes de un sistema simple, como los organelos de una célula.",
+                competencies: { 
+                    "Uso comprensivo del conocimiento científico": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z" /></svg>`,
+                        skills: ["Identifica datos y hechos en un texto de divulgación.", "Reconoce los componentes de un esquema o modelo simple."] 
+                    }
+                }
             },
             {
                 level: 2, label: "Mínimo",
-                description: "Describe fenómenos naturales, interpreta gráficos simples y usa conceptos básicos.",
-                competencies: { "Explicación de fenómenos": ["Interpreta información de gráficos y tablas para describir un fenómeno.", "Aplica conceptos básicos de física, química y biología a situaciones sencillas."] }
+                description: "Eres capaz de describir fenómenos naturales comunes, interpretar la información de gráficos y tablas, y aplicar conceptos básicos de las ciencias para entender situaciones cotidianas.",
+                competencies: { 
+                    "Explicación de fenómenos": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>`,
+                        skills: ["Interpreta información de gráficos y tablas para describir un fenómeno.", "Aplica conceptos básicos de física, química y biología."] 
+                    }
+                }
             },
             {
                 level: 3, label: "Satisfactorio",
-                description: "Analiza resultados de experimentos, contrasta modelos con fenómenos y aplica conceptos para resolver problemas.",
-                competencies: { "Indagación": ["Analiza los resultados de un experimento para validar o refutar una hipótesis.", "Contrasta modelos científicos con fenómenos cotidianos, identificando sus alcances y limitaciones."] }
+                description: "Puedes ir más allá de la descripción para analizar los resultados de un experimento, contrastar la validez de un modelo científico frente a un fenómeno real y resolver problemas aplicando tus conocimientos.",
+                competencies: { 
+                    "Indagación": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>`,
+                        skills: ["Analiza resultados de un experimento para validar o refutar una hipótesis.", "Contrasta modelos científicos con fenómenos cotidianos."] 
+                    }
+                }
             },
             {
                 level: 4, label: "Avanzado",
-                description: "Plantea preguntas de investigación, establece conclusiones y resuelve problemas complejos aplicando leyes y teorías.",
+                description: "¡Dominas el pensamiento científico! Eres capaz de diseñar preguntas de investigación, sacar conclusiones válidas a partir de datos y aplicar leyes y teorías complejas para resolver problemas en diversos contextos.",
                 competencies: {
-                    "Indagación": ["Plantea preguntas de investigación desde las ciencias naturales.", "Establece conclusiones válidas derivadas de una investigación y comunica sus resultados."],
-                    "Uso comprensivo del conocimiento científico": ["Resuelve situaciones problema complejas haciendo uso de conceptos, leyes y teorías de las ciencias naturales."]
+                    "Indagación": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+                        skills: ["Plantea preguntas de investigación desde las ciencias naturales.", "Establece conclusiones válidas y comunica sus resultados."]
+                    },
+                    "Uso comprensivo del conocimiento científico": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2 1M4 7l2-1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" /></svg>`,
+                        skills: ["Resuelve problemas complejos haciendo uso de conceptos, leyes y teorías."]
+                    }
                 }
             }
         ],
         "ingles": [
             {
                 level: 0, label: "A-",
-                description: "No alcanza el nivel A1. Puede tener dificultades para comprender información básica y explícita en textos muy cortos.",
-                competencies: { "Habilidades Limitadas": ["Puede reconocer palabras familiares y frases muy básicas."] }
+                description: "No alcanzas el nivel A1. Tu comprensión se limita a palabras y frases muy básicas y familiares, lo cual es normal al empezar a aprender un nuevo idioma.",
+                competencies: { "Habilidades Limitadas": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>`,
+                    skills: ["Puede reconocer palabras familiares y frases muy básicas."] }
+                }
             },
             {
                 level: 1, label: "A1",
-                description: "Comprende y utiliza expresiones cotidianas y frases sencillas para satisfacer necesidades inmediatas.",
-                competencies: { "Comprensión Básica": ["Puede entender textos cortos y sencillos, como anuncios o menús.", "Es capaz de extraer información específica y predecible de material simple."] }
+                description: "Puedes comprender y usar expresiones cotidianas y frases sencillas para satisfacer necesidades inmediatas, como presentarte o pedir algo en un restaurante.",
+                competencies: { "Comprensión Básica": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>`,
+                    skills: ["Puede entender textos cortos y sencillos, como anuncios o menús.", "Es capaz de extraer información específica de material simple."] }
+                }
             },
             {
                 level: 2, label: "A2",
-                description: "Comprende frases y expresiones de uso frecuente relacionadas con áreas de relevancia inmediata (información personal, compras, etc.).",
-                competencies: { "Comprensión de Textos Cotidianos": ["Puede leer textos breves y sencillos y encontrar información específica en material de uso diario, como cartas personales cortas."] }
+                description: "Comprendes frases de uso frecuente sobre temas familiares (información personal, compras, geografía local). Puedes comunicarte en tareas simples y rutinarias.",
+                competencies: { "Comprensión de Textos Cotidianos": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>`,
+                    skills: ["Puede leer textos breves y sencillos y encontrar información específica en material de uso diario, como cartas personales cortas."] }
+                }
             },
             {
                 level: 3, label: "B1",
-                description: "Comprende las ideas principales de textos claros sobre temas familiares. Puede describir experiencias, eventos y ambiciones.",
-                competencies: { "Lectura Independiente": ["Puede comprender las ideas principales y algunos detalles de textos sobre temas conocidos o de interés personal.", "Infiere el significado de palabras desconocidas a partir del contexto."] }
+                description: "Puedes comprender las ideas principales de textos sobre temas que te son familiares. Ya puedes describir experiencias, eventos, sueños y ambiciones de forma coherente.",
+                competencies: { "Lectura Independiente": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>`,
+                    skills: ["Puede comprender las ideas principales y algunos detalles de textos sobre temas conocidos.", "Infiere el significado de palabras desconocidas a partir del contexto."] }
+                }
             },
             {
                 level: 4, label: "B+",
-                description: "Supera las preguntas de mayor complejidad de la prueba, demostrando una comprensión sólida de textos con un lenguaje más elaborado.",
-                competencies: { "Habilidades Superiores": ["Demuestra una comprensión detallada de textos, incluyendo la identificación de actitudes, opiniones y propósitos del autor."] }
+                description: "¡Felicidades! Demuestras una competencia sólida en la lectura en inglés. Puedes entender textos complejos, incluyendo los matices, las opiniones y las actitudes del autor.",
+                competencies: { "Habilidades Superiores": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+                    skills: ["Demuestra una comprensión detallada de textos, incluyendo la identificación de actitudes, opiniones y propósitos del autor."] }
+                }
             }
         ]
     };
@@ -1241,10 +1355,10 @@
                  const score = student.puntajesDetallados[subjectKey];
                  
                  const performanceLevels = {
-                     lectura: [{min: 0, max:35, label: 'Nivel 1 (Insuficiente)'}, {min:36, max:50, label: 'Nivel 2 (Mínimo)'}, {min:51, max:65, label: 'Nivel 3 (Satisfactorio)'}, {min:66, max:100, label: 'Nivel 4 (Avanzado)'}],
-                     matematicas: [{min: 0, max:35, label: 'Nivel 1 (Insuficiente)'}, {min:36, max:50, label: 'Nivel 2 (Mínimo)'}, {min:51, max:70, label: 'Nivel 3 (Satisfactorio)'}, {min:71, max:100, label: 'Nivel 4 (Avanzado)'}],
-                     sociales: [{min: 0, max:40, label: 'Nivel 1 (Insuficiente)'}, {min:41, max:55, label: 'Nivel 2 (Mínimo)'}, {min:56, max:70, label: 'Nivel 3 (Satisfactorio)'}, {min:71, max:100, label: 'Nivel 4 (Avanzado)'}],
-                     ciencias: [{min: 0, max:40, label: 'Nivel 1 (Insuficiente)'}, {min:41, max:55, label: 'Nivel 2 (Mínimo)'}, {min:56, max:70, label: 'Nivel 3 (Satisfactorio)'}, {min:71, max:100, label: 'Nivel 4 (Avanzado)'}],
+                     lectura: [{min: 0, max:35, label: 'Nivel 1'}, {min:36, max:50, label: 'Nivel 2'}, {min:51, max:65, label: 'Nivel 3'}, {min:66, max:100, label: 'Nivel 4'}],
+                     matematicas: [{min: 0, max:35, label: 'Nivel 1'}, {min:36, max:50, label: 'Nivel 2'}, {min:51, max:70, label: 'Nivel 3'}, {min:71, max:100, label: 'Nivel 4'}],
+                     sociales: [{min: 0, max:40, label: 'Nivel 1'}, {min:41, max:55, label: 'Nivel 2'}, {min:56, max:70, label: 'Nivel 3'}, {min:71, max:100, label: 'Nivel 4'}],
+                     ciencias: [{min: 0, max:40, label: 'Nivel 1'}, {min:41, max:55, label: 'Nivel 2'}, {min:56, max:70, label: 'Nivel 3'}, {min:71, max:100, label: 'Nivel 4'}],
                      ingles: [{min:0,max:36, label: 'A-'}, {min:37,max:47, label: 'A1'}, {min:48,max:58, label: 'A2'}, {min:59,max:78, label: 'B1'}, {min:79,max:100, label: 'B+'}]
                  };
                 
@@ -1258,14 +1372,26 @@
                  const highlightWidth = 100 / totalSegments;
                  const highlightLeft = studentLevelIndex * highlightWidth;
 
-                 let skillsHtml = `<p class="font-semibold text-gray-800 mb-4">${studentLevelData.description || ''}</p>`;
+                 let skillsHtml = `<p class="text-gray-600 mb-6">${studentLevelData.description || ''}</p>`;
                  if (studentLevelData && studentLevelData.competencies) {
-                     skillsHtml += Object.entries(studentLevelData.competencies).map(([competency, skills]) => `
-                        <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg">
-                            <h4 class="font-bold text-gray-800">${competency}</h4>
-                            <div class="flex flex-wrap gap-2 mt-2">
-                                ${skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                     skillsHtml += Object.entries(studentLevelData.competencies).map(([competency, data]) => `
+                        <div class="competency-card">
+                            <div class="flex items-center gap-4 mb-3">
+                                 <div class="w-10 h-10 bg-brand-secondary/10 text-brand-secondary rounded-lg flex items-center justify-center flex-shrink-0">
+                                     ${data.icon}
+                                 </div>
+                                 <h4 class="font-bold text-brand-secondary text-lg">${competency}</h4>
                             </div>
+                            <ul class="space-y-2">
+                                ${data.skills.map(skill => `
+                                    <li class="skill-item">
+                                        <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="text-gray-700">${skill}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
                         </div>
                      `).join('');
                  }
@@ -1275,12 +1401,12 @@
                         <div class="flex items-start gap-4 mb-4">
                             <div class="flex-grow">
                                <span class="text-2xl font-bold" style="color: ${subjectInfo.colorVar};">${subjectInfo.label}</span>
-                               <p class="text-xs text-gray-500 max-w-xs">${subjectDescriptions[subjectKey]}</p>
+                               <p class="text-sm text-gray-500 max-w-md">${subjectDescriptions[subjectKey]}</p>
                             </div>
                             <span class="ml-auto text-3xl font-bold text-gray-800 flex-shrink-0">${score}<span class="text-xl text-gray-400">/100</span></span>
                         </div>
 
-                        <p class="text-sm font-semibold mb-2 text-gray-600">Nivel de Desempeño: <span class="font-bold text-gray-800">${levels[studentLevelIndex].label}</span></p>
+                        <p class="text-sm font-semibold mb-2 text-gray-600">Nivel de Desempeño: <span class="font-bold text-gray-800">${studentLevelData.label} (${studentLevelData.level})</span></p>
                         <div class="performance-level-bar">
                              ${levels.map((level, i) => `<div class="level-segment">${level.label}</div>`).join('')}
                              <div class="level-highlight" style="left: ${highlightLeft}%; width: ${highlightWidth}%;"></div>
