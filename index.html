@@ -529,59 +529,68 @@
         return `${prefix}*****${suffix}`;
     }
     
-    // --- BASE DE DATOS DE HABILIDADES (ACTUALIZADO CON NIVELES Y DESCRIPCIONES) ---
-    // CORRECCIÓN: Se agregaron los rangos de puntaje (min y max) a cada nivel de desempeño.
+    // --- BASE DE DATOS DE HABILIDADES (ACTUALIZADO CON NIVELES Y DESCRIPCIONES DE DOCUMENTOS OFICIALES) ---
     const skillsData = {
         "lectura": [
             {
                 level: 1, label: "Insuficiente", min: 0, max: 40,
-                description: "En este nivel, puedes localizar información explícita en textos sencillos y reconocer su tema principal cuando es evidente. Es un gran primer paso para construir una comprensión más profunda.",
+                description: "Identificas información explícita en textos literarios e informativos sencillos. Reconoces el significado de palabras y puedes identificar quién habla en un texto.",
                 competencies: { 
                     "Identificar y entender los contenidos locales que conforman un texto": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>`,
-                        tasks: ["Entiende el significado de los elementos locales que constituyen un texto.", "Identifica los eventos narrados de manera explícita en un texto (literario, descriptivo, caricatura o cómic) y los personajes involucrados."] 
+                        tasks: [
+                            "Entiende el significado de los elementos locales que constituyen un texto.",
+                            "Identifica los eventos narrados de manera explícita en un texto (literario, descriptivo, caricatura o cómic) y los personajes involucrados (si los hay)."
+                        ] 
                     }
                 }
             },
             {
                 level: 2, label: "Mínimo", min: 41, max: 55,
-                description: "Aquí ya comprendes cómo se organizan las ideas en un texto. Eres capaz de identificar la idea principal, incluso si no está escrita directamente, y puedes establecer relaciones simples de causa y efecto.",
+                description: "Comprendes la estructura de un texto y la función de sus partes (introducción, argumento, conclusión). Puedes identificar y caracterizar las ideas principales de un texto informativo.",
                 competencies: { 
                     "Comprender cómo se articulan las partes de un texto para darle un sentido global": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>`,
-                        tasks: ["Comprende la estructura formal de un texto y la función de sus partes.", "Identifica y caracteriza las diferentes voces o situaciones presentes en un texto.", "Comprende las relaciones entre diferentes partes o enunciados de un texto."] 
+                        tasks: [
+                            "Comprende la estructura formal de un texto y la función de sus partes.", 
+                            "Identifica y caracteriza las diferentes voces o situaciones presentes en un texto.",
+                            "Comprende las relaciones entre diferentes partes o enunciados de un texto."
+                        ] 
                     }
                 }
             },
             {
                 level: 3, label: "Satisfactorio", min: 56, max: 70,
-                description: "Tienes la capacidad de analizar el contenido de un texto, comparar sus argumentos y relacionar información entre diferentes partes o incluso entre varios textos. Evalúas la validez de los argumentos y comprendes el propósito del autor.",
+                description: "Analizas el contenido de un texto para establecer la validez de sus argumentos. Eres capaz de identificar prejuicios, anticipar supuestos y reconocer las estrategias discursivas utilizadas por el autor.",
                 competencies: { 
                     "Reflexionar a partir de un texto y evaluar su contenido": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>`,
-                        tasks: ["Establece la validez e implicaciones de un enunciado de un texto.", "Reconoce contenidos valorativos presentes en un texto.", "Contextualiza adecuadamente un texto o la información contenida en este."] 
+                        tasks: [
+                            "Establece la validez e implicaciones de un enunciado de un texto (argumentativo o expositivo).",
+                            "Reconoce contenidos valorativos presentes en un texto.",
+                            "Reconoce las estrategias discursivas en un texto."
+                        ] 
                     }
                 }
             },
             {
                 level: 4, label: "Avanzado", min: 71, max: 100,
-                description: "¡Excelente! En este nivel, no solo comprendes y analizas, sino que también asumes una postura crítica frente a los textos. Evalúas las estrategias que usa el autor, construyes tus propios argumentos y propones soluciones a problemas de interpretación.",
+                description: "Asumes una postura crítica frente a los textos. Comparas y evalúas diferentes perspectivas, contextualizas la información y reconoces las relaciones entre diferentes textos y las estrategias discursivas empleadas.",
                 competencies: {
                     "Reflexionar a partir de un texto y evaluar su contenido": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
-                        tasks: ["Establece relaciones entre un texto y otros textos o enunciados.", "Reconoce las estrategias discursivas en un texto."]
-                    },
-                    "Comprender cómo se articulan las partes de un texto para darle un sentido global": {
-                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" /></svg>`,
-                        tasks: ["Identifica y caracteriza las ideas o afirmaciones presentes en un texto informativo.", "Identifica el tipo de relación existente entre diferentes elementos de un texto (discontinuo)."]
-                    },
+                        tasks: [
+                            "Establece relaciones entre un texto y otros textos o enunciados.",
+                            "Contextualiza adecuadamente un texto o la información contenida en este."
+                        ]
+                    }
                 }
             }
         ],
         "matematicas": [
             {
-                level: 1, label: "Insuficiente", min: 0, max: 40,
-                description: "Puedes leer información puntual (un dato, por ejemplo) presentada en tablas o gráficas sencillas y con un lenguaje cotidiano. Es el punto de partida para construir el razonamiento cuantitativo.",
+                level: 1, label: "Insuficiente", min: 0, max: 35,
+                description: "Puedes leer información puntual (un dato, por ejemplo) relacionada con situaciones cotidianas y presentada en tablas o gráficas sencillas.",
                 competencies: { 
                     "Interpretación y representación": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>`,
@@ -590,8 +599,8 @@
                 }
             },
             {
-                level: 2, label: "Mínimo", min: 41, max: 55,
-                description: "Eres capaz de comparar y establecer relaciones entre los datos presentados, e identificar información tanto local como global de manera directa en contextos familiares.",
+                level: 2, label: "Mínimo", min: 36, max: 50,
+                description: "Eres capaz de comparar y establecer relaciones entre los datos presentados, e identificar y extraer información local y global de manera directa en contextos familiares o personales.",
                 competencies: { 
                     "Interpretación y representación": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>`,
@@ -600,22 +609,29 @@
                 }
             },
             {
-                level: 3, label: "Satisfactorio", min: 56, max: 70,
-                description: "Seleccionas información y realizas transformaciones y manipulaciones aritméticas y algebraicas sencillas para resolver problemas que involucran conceptos de proporcionalidad, áreas y desarrollos planos.",
+                level: 3, label: "Satisfactorio", min: 51, max: 70,
+                description: "Seleccionas información, señalas errores y haces distintos tipos de transformaciones y manipulaciones aritméticas y algebraicas sencillas para resolver problemas.",
                 competencies: { 
                     "Formulación y ejecución": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" /></svg>`,
-                        tasks: ["Diseña planes para la solución de problemas que involucran información cuantitativa o esquemática.", "Ejecuta un plan de solución para un problema que involucra información cuantitativa o esquemática."]
+                        tasks: [
+                            "Diseña planes para la solución de problemas que involucran información cuantitativa o esquemática.", 
+                            "Ejecuta un plan de solución para un problema que involucra información cuantitativa o esquemática."
+                        ]
                     }
                 }
             },
             {
                 level: 4, label: "Avanzado", min: 71, max: 100,
-                description: "¡Felicidades! Resuelves problemas y justificas la veracidad o falsedad de afirmaciones que requieren el uso de conceptos de probabilidad, propiedades algebraicas, relaciones trigonométricas y características de funciones, incluso en contextos abstractos.",
+                description: "Resuelves problemas y justificas la veracidad o falsedad de afirmaciones que requieren el uso de conceptos de probabilidad, propiedades algebraicas, relaciones trigonométricas y características de funciones, incluso en contextos abstractos.",
                 competencies: {
                     "Argumentación": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
-                        tasks: ["Plantea afirmaciones que sustentan o refutan una interpretación dada a la información.", "Argumenta a favor o en contra de un procedimiento para resolver un problema.", "Establece la validez o pertinencia de una solución propuesta a un problema dado."]
+                        tasks: [
+                            "Plantea afirmaciones que sustentan o refutan una interpretación dada a la información.",
+                            "Argumenta a favor o en contra de un procedimiento para resolver un problema.",
+                            "Establece la validez o pertinencia de una solución propuesta a un problema dado."
+                        ]
                     }
                 }
             }
@@ -623,49 +639,54 @@
         "sociales": [
             {
                 level: 1, label: "Insuficiente", min: 0, max: 40,
-                description: "Identificas información básica sobre la historia de Colombia y la organización del Estado. Este es el primer paso para convertirte en un ciudadano informado.",
+                description: "Identificas y usas conceptos sociales básicos (económicos, políticos, culturales y geográficos). Puedes localizar en el tiempo y en el espacio algunos eventos históricos y prácticas sociales.",
                 competencies: { 
                     "Pensamiento Social": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>`,
-                        tasks: ["Identifica y usa conceptos sociales básicos (económicos, políticos, culturales y geográficos).", "Localiza en el tiempo y en el espacio eventos históricos y prácticas sociales."] 
+                        tasks: [
+                            "Identifica y usa conceptos sociales básicos (económicos, políticos, culturales y geográficos).", 
+                            "Localiza en el tiempo y en el espacio eventos históricos y prácticas sociales."
+                        ] 
                     }
                 }
             },
             {
                 level: 2, label: "Mínimo", min: 41, max: 55,
-                description: "Comprendes conceptos fundamentales como los derechos y deberes ciudadanos. Puedes identificar los diferentes puntos de vista que existen en una situación social.",
+                description: "Comprendes las perspectivas de distintos actores y grupos sociales. Reconoces que las cosmovisiones, ideologías y roles sociales influyen en diferentes argumentos y conductas.",
                 competencies: { 
                     "Interpretación y Análisis de Perspectivas": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>`,
-                        tasks: ["Reconoce y compara perspectivas de actores y grupos sociales.", "Reconoce que las cosmovisiones, ideologías y roles sociales, influyen en diferentes argumentos, posiciones y conductas."] 
+                        tasks: [
+                            "Reconoce y compara perspectivas de actores y grupos sociales.", 
+                            "Reconoce que las cosmovisiones, ideologías y roles sociales, influyen en diferentes argumentos, posiciones y conductas."
+                        ] 
                     }
                 }
             },
             {
                 level: 3, label: "Satisfactorio", min: 56, max: 70,
-                description: "Utilizas conceptos de las ciencias sociales para analizar problemáticas. Comprendes cómo el contexto histórico influye en los eventos y puedes prever el impacto de ciertas decisiones sociales.",
+                description: "Analizas problemáticas sociales y evalúas la aplicabilidad de sus posibles soluciones. Reconoces las relaciones entre el espacio geográfico y las prácticas sociales.",
                 competencies: { 
-                    "Pensamiento Social": {
-                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h8a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.707 4.293l.52-.524a2 2 0 012.828 0l.52.524M7.707 4.293L6.343 5.657m6.344-1.364l1.364 1.364" /></svg>`,
-                        tasks: ["Relaciona dimensiones históricos y geográficas de eventos y problemáticas sociales.", "Relaciona problemáticas o prácticas sociales con características del espacio geográfico."]
-                    },
                     "Pensamiento Reflexivo y Sistémico": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>`,
-                        tasks: ["Establece relaciones que hay entre dimensiones presentes en una situación problemática.", "Analiza los efectos en distintas dimensiones que tendría una posible intervención."] 
+                        tasks: [
+                            "Establece relaciones que hay entre dimensiones presentes en una situación problemática.", 
+                            "Analiza los efectos en distintas dimensiones que tendría una posible intervención."
+                        ] 
                     }
                 }
             },
             {
                 level: 4, label: "Avanzado", min: 71, max: 100,
-                description: "¡Genial! Tienes un dominio profundo de los conceptos cívicos y sociales. Analizas críticamente fuentes de información, comparas argumentos complejos y entiendes el funcionamiento de la Constitución y sus mecanismos.",
+                description: "Conoces la estructura del Estado colombiano y los mecanismos de participación ciudadana. Evalúas el uso de fuentes y argumentos, y develas prejuicios e intenciones en ellos.",
                 competencies: {
                     "Pensamiento Social": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`,
-                        tasks: ["Conoce el modelo de Estado Social de Derecho y su aplicación en Colombia.", "Conoce la organización del Estado, las funciones y alcances de las ramas del poder y de los organismos de control.", "Conoce los mecanismos de participación ciudadana."]
-                    },
-                    "Interpretación y Análisis de Perspectivas": {
-                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16l4-4m0 0l4-4m-4 4l-4-4m4 4l4 4" /></svg>`,
-                        tasks: ["Inscribe una fuente primaria dada en un contexto económico, político o cultural.", "Evalúa posibilidades y limitaciones del uso de una fuente para apoyar argumentos.", "Devela prejuicios e intenciones en enunciados o argumentos."]
+                        tasks: [
+                            "Conoce el modelo de Estado Social de Derecho y su aplicación en Colombia.",
+                            "Conoce la organización del Estado, las funciones y alcances de las ramas del poder y de los organismos de control.",
+                            "Conoce los mecanismos de participación ciudadana."
+                        ]
                     }
                 }
             }
@@ -673,22 +694,8 @@
         "ciencias": [
             {
                 level: 1, label: "Insuficiente", min: 0, max: 40,
-                description: "Puedes reconocer información presentada de forma explícita en textos científicos sencillos e identificar las partes de un sistema simple, como los organelos de una célula.",
+                description: "Reconoces información explícita, presentada de manera ordenada en tablas o gráficas, con un lenguaje cotidiano y que implica la lectura de una sola variable independiente.",
                 competencies: { 
-                    "Uso comprensivo del conocimiento científico": {
-                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z" /></svg>`,
-                        tasks: ["Identifica características de organismos y ecosistemas.", "Identifica variables físicas que determinan la dinámica de un sistema.", "Identifica propiedades de la materia.", "Reconoce posibles cambios en el entorno por la explotación de recursos."] 
-                    }
-                }
-            },
-            {
-                level: 2, label: "Mínimo", min: 41, max: 55,
-                description: "Eres capaz de describir fenómenos naturales comunes, interpretar la información de gráficos y tablas, y aplicar conceptos básicos de las ciencias para entender situaciones cotidianas.",
-                competencies: { 
-                    "Uso comprensivo del conocimiento científico": {
-                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>`,
-                        tasks: ["Asocia fenómenos naturales con conceptos propios del conocimiento científico.", "Relaciona las distintas variables y constantes físicas que determinan la dinámica de un sistema."] 
-                    },
                     "Indagación": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>`,
                         tasks: ["Reconoce la importancia de la evidencia para comprender fenómenos naturales."]
@@ -696,30 +703,45 @@
                 }
             },
             {
+                level: 2, label: "Mínimo", min: 41, max: 55,
+                description: "Reconoces información suministrada en tablas y gráficas, y la asocias con nociones y conceptos básicos de las ciencias naturales (tiempo, posición, velocidad, etc.).",
+                competencies: { 
+                    "Uso comprensivo del conocimiento científico": {
+                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>`,
+                        tasks: [
+                            "Identifica características de organismos y ecosistemas.",
+                            "Identifica variables físicas que determinan la dinámica de un sistema."
+                        ] 
+                    }
+                }
+            },
+            {
                 level: 3, label: "Satisfactorio", min: 56, max: 70,
-                description: "Puedes ir más allá de la descripción para analizar los resultados de un experimento, contrastar la validez de un modelo científico frente a un fenómeno real y resolver problemas aplicando tus conocimientos.",
+                description: "Interrelacionas conceptos, leyes y teorías científicas con información de diversos contextos para hacer inferencias sobre una situación problema o un fenómeno natural.",
                 competencies: { 
                     "Explicación de fenómenos": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>`,
-                        tasks: ["Construye explicaciones y comprende argumentos y modelos que dan razón de fenómenos.", "Establece la validez o coherencia de una afirmación o argumento relacionado con un fenómeno."]
-                    },
-                    "Indagación": {
-                        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>`,
-                        tasks: ["Interpreta y sintetiza datos representados en textos, gráficas, dibujos, diagramas o tablas.", "Identifica patrones y regularidades en los datos."] 
+                        tasks: [
+                            "Construye explicaciones y comprende argumentos y modelos que dan razón de fenómenos.",
+                            "Establece la validez o coherencia de una afirmación o argumento relacionado con un fenómeno."
+                        ]
                     }
                 }
             },
             {
                 level: 4, label: "Avanzado", min: 71, max: 100,
-                description: "¡Dominas el pensamiento científico! Eres capaz de diseñar preguntas de investigación, sacar conclusiones válidas a partir de datos y aplicar leyes y teorías complejas para resolver problemas en diversos contextos.",
+                description: "Usas conceptos, teorías o leyes en la solución de situaciones problema que involucran procedimientos, habilidades, conocimientos y un lenguaje propio de las ciencias naturales.",
                 competencies: {
                     "Indagación": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
-                        tasks: ["Plantea preguntas de investigación desde las ciencias naturales.", "Establece conclusiones válidas derivadas de una investigación y comunica sus resultados.", "Diseña experimentos para dar respuesta a sus preguntas."]
+                        tasks: [
+                            "Plantea preguntas de investigación desde las ciencias naturales.",
+                            "Establece conclusiones válidas derivadas de una investigación y comunica sus resultados."
+                        ]
                     },
                     "Explicación de fenómenos": {
                         icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2 1M4 7l2-1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" /></svg>`,
-                        tasks: ["Resuelve situaciones problema complejas haciendo uso de conceptos, leyes y teorías.", "Analiza el uso potencial de los recursos naturales o artefactos y sus efectos sobre el entorno y la salud."]
+                        tasks: ["Resuelve situaciones problema complejas haciendo uso de conceptos, leyes y teorías."]
                     }
                 }
             }
@@ -759,7 +781,7 @@
             },
             {
                 level: 4, label: "B+", min: 79, max: 100,
-                description: "¡Felicidades! Demuestras una competencia sólida en la lectura en inglés. Puedes entender textos complejos, incluyendo los matices, las opiniones y las actitudes del autor.",
+                description: "Puedes entender las ideas principales de textos complejos, incluso si son de carácter técnico. Puedes relacionarte con hablantes nativos con fluidez y naturalidad.",
                 competencies: { "Habilidades Superiores": {
                     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
                     tasks: ["Demuestra una comprensión detallada de textos, incluyendo la identificación de actitudes, opiniones y propósitos del autor."] }
@@ -1672,3 +1694,4 @@
     </script>
 </body>
 </html>
+
