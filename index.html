@@ -23,7 +23,7 @@
                         'brand-primary': '#F97316',   // Naranja más vivo
                         'brand-secondary': '#3B82F6', // Azul más vivo
                         'brand-text': '#5c5d5c',      // Dark Gray
-                        'brand-bg': '#f1f1eb',        // Off-white
+                        'brand-bg': '#f1f1eb',       // Off-white
                         'brand-header': '#5c5d5c',   // Dark Gray for table header
                         'brand-red': '#ac3236',
                     }
@@ -256,7 +256,7 @@
             opacity: 1;
         }
         .toggle-skills-btn svg {
-             transition: transform 0.3s ease;
+            transition: transform 0.3s ease;
         }
         .toggle-skills-btn.expanded svg {
             transform: rotate(180deg);
@@ -325,7 +325,8 @@
                     <div class="bg-gradient-to-r from-brand-primary to-orange-500 text-white p-6 rounded-xl shadow-lg text-center">
                         <h3 class="text-2xl font-bold">¿Quieres Ser el Próximo Puntaje Perfecto?</h3>
                         <p class="mt-2">Nuestro Pre-Icfes Seamos Genios te da las herramientas para alcanzar la excelencia. ¡Inscripciones abiertas!</p>
-                        <button class="mt-4 bg-white text-brand-primary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Más Información</button>
+                        <!-- CORRECCIÓN: Se cambió el botón por un enlace <a> a WhatsApp -->
+                        <a href="https://wa.me/573042359048" target="_blank" class="mt-4 inline-block bg-white text-brand-primary font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105">Más Información</a>
                     </div>
                     <div class="bg-gradient-to-r from-brand-secondary to-blue-500 text-white p-6 rounded-xl shadow-lg text-center">
                         <h3 class="text-2xl font-bold">¿Quieres aparecer en este Ranking?</h3>
@@ -398,16 +399,16 @@
                          </div>
                         <div class="flex flex-col sm:flex-row items-stretch gap-4">
                              <div class="bg-blue-50 border border-brand-secondary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-                                  <p class="text-sm font-semibold text-brand-text">Total Estudiantes</p>
-                                  <p id="total-students" class="text-4xl font-bold text-brand-secondary">0</p>
+                                 <p class="text-sm font-semibold text-brand-text">Total Estudiantes</p>
+                                 <p id="total-students" class="text-4xl font-bold text-brand-secondary">0</p>
                              </div>
                              <div class="bg-orange-50 border border-brand-primary/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-                                 <p class="text-sm font-semibold text-brand-text">Promedio</p>
-                                 <p id="average-score" class="text-4xl font-bold text-brand-primary">0</p>
+                                <p class="text-sm font-semibold text-brand-text">Promedio</p>
+                                <p id="average-score" class="text-4xl font-bold text-brand-primary">0</p>
                              </div>
                               <div class="bg-green-50 border border-green-500/20 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-                                 <p class="text-sm font-semibold text-green-800">Mediana</p>
-                                 <p id="median-score" class="text-4xl font-bold text-green-600">0</p>
+                                <p class="text-sm font-semibold text-green-800">Mediana</p>
+                                <p id="median-score" class="text-4xl font-bold text-green-600">0</p>
                               </div>
                         </div>
                      </div>
@@ -432,13 +433,13 @@
                         <div id="desktop-filters" class="hidden md:flex bg-gray-50 p-4 rounded-xl border flex-col md:flex-row items-center gap-4 md:gap-6">
                             <div class="w-full md:flex-1">
                                 <div class="relative">
-                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                          <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
-                                     </div>
-                                     <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                                     <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
+                                    </div>
+                                    <input type="text" id="searchInput" placeholder="Buscar por nombre o municipio..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                    <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
                                          <svg class="h-5 w-5 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
-                                     </button>
+                                    </button>
                                 </div>
                             </div>
 
@@ -529,10 +530,11 @@
     }
     
     // --- BASE DE DATOS DE HABILIDADES (ACTUALIZADO CON NIVELES Y DESCRIPCIONES) ---
+    // CORRECCIÓN: Se agregaron los rangos de puntaje (min y max) a cada nivel de desempeño.
     const skillsData = {
         "lectura": [
             {
-                level: 1, label: "Insuficiente",
+                level: 1, label: "Insuficiente", min: 0, max: 40,
                 description: "En este nivel, puedes localizar información explícita en textos sencillos y reconocer su tema principal cuando es evidente. Es un gran primer paso para construir una comprensión más profunda.",
                 competencies: { 
                     "Identificar y entender los contenidos locales que conforman un texto": {
@@ -542,7 +544,7 @@
                 }
             },
             {
-                level: 2, label: "Mínimo",
+                level: 2, label: "Mínimo", min: 41, max: 55,
                 description: "Aquí ya comprendes cómo se organizan las ideas en un texto. Eres capaz de identificar la idea principal, incluso si no está escrita directamente, y puedes establecer relaciones simples de causa y efecto.",
                 competencies: { 
                     "Comprender cómo se articulan las partes de un texto para darle un sentido global": {
@@ -552,7 +554,7 @@
                 }
             },
             {
-                level: 3, label: "Satisfactorio",
+                level: 3, label: "Satisfactorio", min: 56, max: 70,
                 description: "Tienes la capacidad de analizar el contenido de un texto, comparar sus argumentos y relacionar información entre diferentes partes o incluso entre varios textos. Evalúas la validez de los argumentos y comprendes el propósito del autor.",
                 competencies: { 
                     "Reflexionar a partir de un texto y evaluar su contenido": {
@@ -562,7 +564,7 @@
                 }
             },
             {
-                level: 4, label: "Avanzado",
+                level: 4, label: "Avanzado", min: 71, max: 100,
                 description: "¡Excelente! En este nivel, no solo comprendes y analizas, sino que también asumes una postura crítica frente a los textos. Evalúas las estrategias que usa el autor, construyes tus propios argumentos y propones soluciones a problemas de interpretación.",
                 competencies: {
                     "Reflexionar a partir de un texto y evaluar su contenido": {
@@ -578,7 +580,7 @@
         ],
         "matematicas": [
             {
-                level: 1, label: "Insuficiente",
+                level: 1, label: "Insuficiente", min: 0, max: 40,
                 description: "Puedes leer información puntual (un dato, por ejemplo) presentada en tablas o gráficas sencillas y con un lenguaje cotidiano. Es el punto de partida para construir el razonamiento cuantitativo.",
                 competencies: { 
                     "Interpretación y representación": {
@@ -588,7 +590,7 @@
                 }
             },
             {
-                level: 2, label: "Mínimo",
+                level: 2, label: "Mínimo", min: 41, max: 55,
                 description: "Eres capaz de comparar y establecer relaciones entre los datos presentados, e identificar información tanto local como global de manera directa en contextos familiares.",
                 competencies: { 
                     "Interpretación y representación": {
@@ -598,7 +600,7 @@
                 }
             },
             {
-                level: 3, label: "Satisfactorio",
+                level: 3, label: "Satisfactorio", min: 56, max: 70,
                 description: "Seleccionas información y realizas transformaciones y manipulaciones aritméticas y algebraicas sencillas para resolver problemas que involucran conceptos de proporcionalidad, áreas y desarrollos planos.",
                 competencies: { 
                     "Formulación y ejecución": {
@@ -608,7 +610,7 @@
                 }
             },
             {
-                level: 4, label: "Avanzado",
+                level: 4, label: "Avanzado", min: 71, max: 100,
                 description: "¡Felicidades! Resuelves problemas y justificas la veracidad o falsedad de afirmaciones que requieren el uso de conceptos de probabilidad, propiedades algebraicas, relaciones trigonométricas y características de funciones, incluso en contextos abstractos.",
                 competencies: {
                     "Argumentación": {
@@ -620,7 +622,7 @@
         ],
         "sociales": [
             {
-                level: 1, label: "Insuficiente",
+                level: 1, label: "Insuficiente", min: 0, max: 40,
                 description: "Identificas información básica sobre la historia de Colombia y la organización del Estado. Este es el primer paso para convertirte en un ciudadano informado.",
                 competencies: { 
                     "Pensamiento Social": {
@@ -630,7 +632,7 @@
                 }
             },
             {
-                level: 2, label: "Mínimo",
+                level: 2, label: "Mínimo", min: 41, max: 55,
                 description: "Comprendes conceptos fundamentales como los derechos y deberes ciudadanos. Puedes identificar los diferentes puntos de vista que existen en una situación social.",
                 competencies: { 
                     "Interpretación y Análisis de Perspectivas": {
@@ -640,7 +642,7 @@
                 }
             },
             {
-                level: 3, label: "Satisfactorio",
+                level: 3, label: "Satisfactorio", min: 56, max: 70,
                 description: "Utilizas conceptos de las ciencias sociales para analizar problemáticas. Comprendes cómo el contexto histórico influye en los eventos y puedes prever el impacto de ciertas decisiones sociales.",
                 competencies: { 
                     "Pensamiento Social": {
@@ -654,7 +656,7 @@
                 }
             },
             {
-                level: 4, label: "Avanzado",
+                level: 4, label: "Avanzado", min: 71, max: 100,
                 description: "¡Genial! Tienes un dominio profundo de los conceptos cívicos y sociales. Analizas críticamente fuentes de información, comparas argumentos complejos y entiendes el funcionamiento de la Constitución y sus mecanismos.",
                 competencies: {
                     "Pensamiento Social": {
@@ -670,7 +672,7 @@
         ],
         "ciencias": [
             {
-                level: 1, label: "Insuficiente",
+                level: 1, label: "Insuficiente", min: 0, max: 40,
                 description: "Puedes reconocer información presentada de forma explícita en textos científicos sencillos e identificar las partes de un sistema simple, como los organelos de una célula.",
                 competencies: { 
                     "Uso comprensivo del conocimiento científico": {
@@ -680,7 +682,7 @@
                 }
             },
             {
-                level: 2, label: "Mínimo",
+                level: 2, label: "Mínimo", min: 41, max: 55,
                 description: "Eres capaz de describir fenómenos naturales comunes, interpretar la información de gráficos y tablas, y aplicar conceptos básicos de las ciencias para entender situaciones cotidianas.",
                 competencies: { 
                     "Uso comprensivo del conocimiento científico": {
@@ -694,7 +696,7 @@
                 }
             },
             {
-                level: 3, label: "Satisfactorio",
+                level: 3, label: "Satisfactorio", min: 56, max: 70,
                 description: "Puedes ir más allá de la descripción para analizar los resultados de un experimento, contrastar la validez de un modelo científico frente a un fenómeno real y resolver problemas aplicando tus conocimientos.",
                 competencies: { 
                     "Explicación de fenómenos": {
@@ -708,7 +710,7 @@
                 }
             },
             {
-                level: 4, label: "Avanzado",
+                level: 4, label: "Avanzado", min: 71, max: 100,
                 description: "¡Dominas el pensamiento científico! Eres capaz de diseñar preguntas de investigación, sacar conclusiones válidas a partir de datos y aplicar leyes y teorías complejas para resolver problemas en diversos contextos.",
                 competencies: {
                     "Indagación": {
@@ -724,7 +726,7 @@
         ],
         "ingles": [
             {
-                level: 0, label: "A-",
+                level: 0, label: "A-", min: 0, max: 47,
                 description: "No alcanzas el nivel A1. Tu comprensión se limita a palabras y frases muy básicas y familiares, lo cual es normal al empezar a aprender un nuevo idioma.",
                 competencies: { "Habilidades Limitadas": {
                     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>`,
@@ -732,7 +734,7 @@
                 }
             },
             {
-                level: 1, label: "A1",
+                level: 1, label: "A1", min: 48, max: 57,
                 description: "Puedes comprender y usar expresiones cotidianas y frases sencillas para satisfacer necesidades inmediatas, como presentarte o pedir algo en un restaurante.",
                 competencies: { "Comprensión Básica": {
                     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>`,
@@ -740,7 +742,7 @@
                 }
             },
             {
-                level: 2, label: "A2",
+                level: 2, label: "A2", min: 58, max: 67,
                 description: "Comprendes frases de uso frecuente sobre temas familiares (información personal, compras, geografía local). Puedes comunicarte en tareas simples y rutinarias.",
                 competencies: { "Comprensión de Textos Cotidianos": {
                     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>`,
@@ -748,7 +750,7 @@
                 }
             },
             {
-                level: 3, label: "B1",
+                level: 3, label: "B1", min: 68, max: 78,
                 description: "Puedes comprender las ideas principales de textos claros sobre temas que te son familiares. Ya puedes describir experiencias, eventos, sueños y ambiciones de forma coherente.",
                 competencies: { "Lectura Independiente": {
                     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>`,
@@ -756,7 +758,7 @@
                 }
             },
             {
-                level: 4, label: "B+",
+                level: 4, label: "B+", min: 79, max: 100,
                 description: "¡Felicidades! Demuestras una competencia sólida en la lectura en inglés. Puedes entender textos complejos, incluyendo los matices, las opiniones y las actitudes del autor.",
                 competencies: { "Habilidades Superiores": {
                     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
@@ -1306,15 +1308,15 @@
                                 ${rankDisplay}
                             </div>
                             <div class="bg-white/20 p-4 rounded-lg backdrop-blur-sm">
-                                 <p class="font-semibold uppercase text-sm opacity-80">Puntaje Global</p>
-                                 <div class="text-5xl md:text-6xl font-bold flex items-baseline justify-center whitespace-nowrap">
-                                     <span>${student.puntajeGlobal}</span><span class="text-2xl md:text-3xl font-medium opacity-70">/500</span>
-                                 </div>
-                             </div>
+                                <p class="font-semibold uppercase text-sm opacity-80">Puntaje Global</p>
+                                <div class="text-5xl md:text-6xl font-bold flex items-baseline justify-center whitespace-nowrap">
+                                    <span>${student.puntajeGlobal}</span><span class="text-2xl md:text-3xl font-medium opacity-70">/500</span>
+                                </div>
+                            </div>
                              <div class="bg-white/20 p-4 rounded-lg backdrop-blur-sm">
-                                 <p class="font-semibold uppercase text-sm opacity-80">Percentil Global</p>
-                                 <p class="text-3xl md:text-4xl font-bold">${student.percentil}%</p>
-                                 <p class="text-xs opacity-80 mt-1">Superaste al ${student.percentil}% de los estudiantes del grupo.</p>
+                                <p class="font-semibold uppercase text-sm opacity-80">Percentil Global</p>
+                                <p class="text-3xl md:text-4xl font-bold">${student.percentil}%</p>
+                                <p class="text-xs opacity-80 mt-1">Superaste al ${student.percentil}% de los estudiantes del grupo.</p>
                              </div>
                         </div>
                          <!-- NUEVO BOTÓN INFORME VIRTUAL -->
@@ -1361,8 +1363,9 @@
                  const score = student.puntajesDetallados[subjectKey];
                  
                  const subjectLevels = skillsData[subjectKey];
-                 let studentLevelIndex = subjectLevels.findIndex(level => score >= (level.min || 0) && score <= (level.max || 100));
-                 if (studentLevelIndex === -1) studentLevelIndex = 0; // Fallback
+                 // CORRECCIÓN: Se cambió la lógica para usar los rangos min/max definidos en skillsData
+                 let studentLevelIndex = subjectLevels.findIndex(level => score >= level.min && score <= level.max);
+                 if (studentLevelIndex === -1) studentLevelIndex = 0; // Fallback por si acaso
 
                  const studentLevelData = skillsData[subjectKey][studentLevelIndex];
                  
@@ -1373,25 +1376,25 @@
                  let skillsHtml = `<p class="text-gray-600 mb-6">${studentLevelData.description || ''}</p>`;
                  if (studentLevelData && studentLevelData.competencies) {
                      skillsHtml += Object.entries(studentLevelData.competencies).map(([competency, data]) => `
-                        <div class="competency-card">
-                            <div class="flex items-center gap-4 mb-3">
+                         <div class="competency-card">
+                             <div class="flex items-center gap-4 mb-3">
                                  <div class="w-10 h-10 bg-brand-secondary/10 text-brand-secondary rounded-lg flex items-center justify-center flex-shrink-0">
                                      ${data.icon}
                                  </div>
                                  <h4 class="font-bold text-brand-secondary text-lg">${competency}</h4>
-                            </div>
-                            <ul class="space-y-2">
-                                ${data.tasks.map(task => `
-                                    <li class="skill-item">
-                                        <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                        </svg>
-                                        <span class="text-gray-700">${task}</span>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                     `).join('');
+                             </div>
+                             <ul class="space-y-2">
+                                 ${data.tasks.map(task => `
+                                     <li class="skill-item">
+                                         <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                         </svg>
+                                         <span class="text-gray-700">${task}</span>
+                                     </li>
+                                 `).join('')}
+                             </ul>
+                         </div>
+                       `).join('');
                  }
 
                 return `
@@ -1425,14 +1428,14 @@
 
             elements.reportView.innerHTML = `
                 <header class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-                     <div>
-                         <h1 class="text-3xl sm:text-4xl font-extrabold text-brand-header tracking-tight text-center sm:text-left">Informe de Desempeño</h1>
-                         <p class="mt-1 text-lg text-gray-600 text-center sm:text-left">${student.nombre}</p>
-                     </div>
-                     <button id="back-to-ranking-btn" class="bg-brand-secondary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center gap-2 shadow-md hover:bg-blue-700 transition-colors w-full sm:w-auto justify-center">
-                         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>
-                         Volver al Ranking
-                     </button>
+                    <div>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-brand-header tracking-tight text-center sm:text-left">Informe de Desempeño</h1>
+                        <p class="mt-1 text-lg text-gray-600 text-center sm:text-left">${student.nombre}</p>
+                    </div>
+                    <button id="back-to-ranking-btn" class="bg-brand-secondary text-white font-bold py-2 px-6 rounded-lg inline-flex items-center gap-2 shadow-md hover:bg-blue-700 transition-colors w-full sm:w-auto justify-center">
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>
+                        Volver al Ranking
+                    </button>
                 </header>
                 <main>
                     ${subjectCardsHtml}
@@ -1669,5 +1672,3 @@
     </script>
 </body>
 </html>
-
-
